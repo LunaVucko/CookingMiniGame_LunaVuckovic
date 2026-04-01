@@ -2,7 +2,7 @@
 
 MainMenu::MainMenu(float width, float height) : mainMenu {Text(font), Text(font), Text(font)}
 {
-	if (!font.openFromFile("Fonts/AlexandriaFLF.ttf"))
+	if (!font.openFromFile("Fonts/Super Starfish.ttf"))
 	{
 		cout << "No font is here";
 	}
