@@ -133,9 +133,15 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="PlayState.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MenuState.h" />
+    <ClInclude Include="OptionsState.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="StateManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
