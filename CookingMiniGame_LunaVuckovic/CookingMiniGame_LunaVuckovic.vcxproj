@@ -140,6 +140,7 @@
     <ClCompile Include="StoveState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ingredient.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="GameState.h" />

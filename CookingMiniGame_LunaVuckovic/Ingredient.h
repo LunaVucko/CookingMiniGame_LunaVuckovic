@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-
+/*
 struct Ingredient
 {
     sf::Sprite sprite;
@@ -14,3 +14,4 @@ struct Ingredient
         sprite.setTexture(texture);
     }
 };
+*/

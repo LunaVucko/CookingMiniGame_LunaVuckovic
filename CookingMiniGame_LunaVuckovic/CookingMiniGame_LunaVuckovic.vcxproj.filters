@@ -59,5 +59,8 @@
     <ClInclude Include="StoveState.h">
       <Filter>States</Filter>
     </ClInclude>
+    <ClInclude Include="Ingredient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
