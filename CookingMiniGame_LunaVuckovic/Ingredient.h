@@ -1,6 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-/*
+#include <iostream>
+using namespace std;
+
 struct Ingredient
 {
     sf::Sprite sprite;
@@ -8,10 +10,13 @@ struct Ingredient
 
     bool isDragging = false;
 
-    Ingredient(const std::string& path)
+    Ingredient(const string& path) : texture(), sprite()
     {
-        texture.loadFromFile(path);
+        if (!texture.loadFromFile(path))
+        {
+            cout << "Failed to load: " << path << endl;
+        }
+
         sprite.setTexture(texture);
     }
 };
-*/
