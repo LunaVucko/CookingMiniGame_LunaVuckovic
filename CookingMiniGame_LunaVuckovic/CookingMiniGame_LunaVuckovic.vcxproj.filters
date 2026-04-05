@@ -30,6 +30,15 @@
     <ClCompile Include="PlayState.h">
       <Filter>States</Filter>
     </ClCompile>
+    <ClCompile Include="StoveState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainMenu.h">
@@ -45,6 +54,9 @@
       <Filter>States</Filter>
     </ClInclude>
     <ClInclude Include="OptionsState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="StoveState.h">
       <Filter>States</Filter>
     </ClInclude>
   </ItemGroup>

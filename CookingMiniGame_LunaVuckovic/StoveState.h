@@ -3,17 +3,15 @@
 #include "GameState.h"
 #include "StateManager.h"
 
-class OptionsState : public GameState
+class StoveState : public GameState
 {
 private:
     sf::RectangleShape background;
     sf::Texture texture;
     StateManager& manager;
 
-    sf::FloatRect stoveArea;
-
 public:
-    OptionsState(StateManager& manager);
+    StoveState(StateManager& manager);
 
     void handleEvent(sf::RenderWindow& window, const sf::Event& event) override;
     void update() override;

@@ -134,7 +134,10 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="PlayState.h" />
+    <ClCompile Include="StoveState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MenuState.h" />
@@ -142,6 +145,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="StateManager.h" />
+    <ClInclude Include="StoveState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
