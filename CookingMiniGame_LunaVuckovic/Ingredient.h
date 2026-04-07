@@ -9,14 +9,24 @@ struct Ingredient
     sf::Texture texture;
 
     bool isDragging = false;
+    bool isLoaded = false;
 
-    Ingredient(const string& path) : texture(), sprite()
+    Ingredient(const string& path) : texture(), sprite(texture)
     {
         if (!texture.loadFromFile(path))
         {
             cout << "Failed to load: " << path << endl;
+            isLoaded = false;
         }
+        else 
+        {
+            cout << "Load successfully: " << path
+            << " | Size: "
+            << texture.getSize().x << "x"
+            << texture.getSize().y << std::endl;
+            sprite.setTexture(texture);
+            isLoaded = true;
 
-        sprite.setTexture(texture);
+        }
     }
 };
