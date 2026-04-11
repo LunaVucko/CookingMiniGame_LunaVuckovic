@@ -15,10 +15,54 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
     // Inventory bar
     inventoryBar.setSize({ 960, 100 });
     inventoryBar.setPosition({ 0, 0 });
-    inventoryBar.setFillColor(sf::Color(50, 50, 50, 200));
+    inventoryBar.setFillColor(sf::Color::White);
+    inventoryBar.setOutlineColor(sf::Color::Black);
+    inventoryBar.setOutlineThickness(2.f);
+
+    //Inventory slots
+
+    float slotSize = 80.f;
+    float spacing = 10.f;
+    float startX = 10.f;
+
+    for (int i = 0; i < 10; i++)
+    {
+        sf::RectangleShape slot;
+        slot.setSize({ slotSize, slotSize });
+        slot.setPosition({ startX + i * (slotSize + spacing), 10.f });
+
+        slot.setFillColor(sf::Color::Transparent);
+        slot.setOutlineColor(sf::Color::Black);
+        slot.setOutlineThickness(2.f);
+
+        slots.push_back(slot);
+    }
+
+    //spritesheet
+    
+    if (!ingredientsTexture.loadFromFile("Texture/spritesheet.png")) // <= ingreients assets
+    {
+        std::cout << "Failed to load spritesheet\n";
+    }
 
     // Add ingredients
-    auto addIngredient = [&](const std::string& path)
+
+    auto addIngredient = [&](const sf::IntRect& rect)
+        {
+            auto ing = std::make_unique<Ingredient>(ingredientsTexture, rect);
+            inventory.push_back(std::move(ing));
+
+        };
+
+    addIngredient(sf::IntRect({ 0, 0 },{ 540, 540}));
+    addIngredient(sf::IntRect({ 540, 0 }, {540, 540}));
+    addIngredient(sf::IntRect({ 1080, 0 },{540, 540}));
+
+
+
+
+
+    /*auto addIngredient = [&](const std::string& path)
         {
             auto ing = std::make_unique<Ingredient>(path);
 
@@ -32,14 +76,33 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
     addIngredient("Texture/carrot.png");
     addIngredient("Texture/chicken.jpg");
 
+    */
 
-    // Position ingredients
-    float startX = 20.f;
-    for (auto& ing : inventory)
+
+    // Position ingredients + scale the ingredients within the slots of the inventory
+    for (size_t i = 0; i < inventory.size(); i++)
     {
-        ing->sprite.setPosition({ startX, 20.f });
-        ing->sprite.setScale({ 0.5f, 0.5f });
-        startX += 80.f;
+        auto& ing = inventory[i];
+
+        sf::FloatRect bounds = ing->sprite.getLocalBounds();
+
+        float scaleX = slotSize / bounds.size.x;
+        float scaleY = slotSize / bounds.size.y;
+        float scale = std::min(scaleX, scaleY);
+
+        ing->sprite.setScale({ scale, scale });
+
+        // center origin
+        ing->sprite.setOrigin({
+            bounds.size.x / 2.f,
+            bounds.size.y / 2.f
+            });
+
+        // center in slot
+        ing->sprite.setPosition({
+            slots[i].getPosition().x + slotSize / 2.f,
+            slots[i].getPosition().y + slotSize / 2.f
+            });
     }
 
     // Pot area (adjust if needed)
@@ -144,6 +207,12 @@ void StoveState::draw(sf::RenderWindow& window)
 
     // Inventory bar
     window.draw(inventoryBar);
+
+    //slots in the inventory bar
+    for (auto& slot : slots)
+    {
+        window.draw(slot);
+    }
 
     // Inventory items
     for (auto& ing : inventory)

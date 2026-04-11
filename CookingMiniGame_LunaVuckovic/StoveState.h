@@ -16,10 +16,15 @@ private:
     // Inventory
     std::vector<std::unique_ptr<Ingredient>> inventory;
     sf::RectangleShape inventoryBar;
+    std::vector<sf::RectangleShape> slots;
 
     // Pot
     sf::FloatRect potArea;
     std::vector<std::unique_ptr<Ingredient>> potIngredients;
+
+    //spritesheet
+
+    sf::Texture ingredientsTexture;
 
 
 public:
