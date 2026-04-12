@@ -40,7 +40,7 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
 
     //spritesheet
     
-    if (!ingredientsTexture.loadFromFile("Texture/spritesheet.png")) // <= ingreients assets
+    if (!ingredientsTexture.loadFromFile("Texture/spritesheet_V2.png")) // <= ingreients assets
     {
         std::cout << "Failed to load spritesheet\n";
     }
@@ -54,30 +54,13 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
 
         };
 
-    addIngredient(sf::IntRect({ 0, 0 },{ 540, 540}));
-    addIngredient(sf::IntRect({ 540, 0 }, {540, 540}));
-    addIngredient(sf::IntRect({ 1080, 0 },{540, 540}));
-
-
-
-
-
-    /*auto addIngredient = [&](const std::string& path)
-        {
-            auto ing = std::make_unique<Ingredient>(path);
-
-            if (ing->isLoaded)
-            {
-                inventory.push_back(std::move(ing));
-            }
-        };
-
-    addIngredient("Texture/parsnip.jpg");
-    addIngredient("Texture/carrot.png");
-    addIngredient("Texture/chicken.jpg");
-
-    */
-
+    addIngredient(sf::IntRect({ 0, 0 },{605, 560})); //carrot
+    addIngredient(sf::IntRect({ 605, 0 }, { 605, 560 })); //parsnip
+    addIngredient(sf::IntRect({ 1210, 0 },{ 605, 560 })); //chicken breast
+    addIngredient(sf::IntRect({ 1860, 0 }, { 605, 560 })); //cerialac
+    addIngredient(sf::IntRect({ 2465, 0 }, { 605, 560 })); //garlic
+    addIngredient(sf::IntRect({ 0, 560 }, { 605, 560 })); // soup
+    addIngredient(sf::IntRect({ 605, 560 }, { 605, 560 })); //parsley
 
     // Position ingredients + scale the ingredients within the slots of the inventory
     for (size_t i = 0; i < inventory.size(); i++)
