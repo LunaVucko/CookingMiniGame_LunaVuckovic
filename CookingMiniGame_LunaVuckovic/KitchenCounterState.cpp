@@ -1,12 +1,12 @@
-#include "StoveState.h"
+#include "KitchenCounterState.h"
 #include "PlayState.h"
 #include <iostream>
 
-StoveState::StoveState(StateManager& manager) : manager(manager)
+KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manager)
 {
-    if (!texture.loadFromFile("Texture/stove_layout.png")) // <= background
+    if (!texture.loadFromFile("Texture/counter_layout.png")) // <= background
     {
-        std::cout << "Failed to load stove texture\n";
+        std::cout << "Failed to load counter texture\n";
     }
 
     background.setSize({ 960, 720 });
@@ -39,7 +39,7 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
     }
 
     //spritesheet
-    
+
     if (!ingredientsTexture.loadFromFile("Texture/spritesheet_V2.png")) // <= ingreients assets
     {
         std::cout << "Failed to load spritesheet\n";
@@ -54,9 +54,9 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
 
         };
 
-    addIngredient(sf::IntRect({ 0, 0 },{605, 560})); //carrot
+    addIngredient(sf::IntRect({ 0, 0 }, { 605, 560 })); //carrot
     addIngredient(sf::IntRect({ 605, 0 }, { 605, 560 })); //parsnip
-    addIngredient(sf::IntRect({ 1210, 0 },{ 605, 560 })); //chicken breast
+    addIngredient(sf::IntRect({ 1210, 0 }, { 605, 560 })); //chicken breast
     addIngredient(sf::IntRect({ 1860, 0 }, { 605, 560 })); //cerialac
     addIngredient(sf::IntRect({ 2465, 0 }, { 605, 560 })); //garlic
     addIngredient(sf::IntRect({ 0, 560 }, { 605, 560 })); // soup
@@ -88,12 +88,12 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
             });
     }
 
-    // Pot area (adjust if needed)
-    potArea = sf::FloatRect({ 400.f, 300.f }, { 150.f, 150.f });
+    // Cutting board area (adjust if needed)
+     cuttingBoardArea = sf::FloatRect({ 400.f, 300.f }, { 150.f, 150.f });
 
 }
 
-void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
+void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 {
     if (event.is<sf::Event::KeyPressed>())
     {
@@ -103,7 +103,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         {
             manager.setState(std::make_unique<PlayState>(manager));
 
-           // nextState = std::make_unique<PlayState>(manager);
+            //nextState = std::make_unique<PlayState>(manager);
         }
     }
 
@@ -165,10 +165,10 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
             if (ing->isDragging)
             {
-                if (potArea.contains(mousePos))
+                if ( cuttingBoardArea.contains(mousePos))
                 {
-                    // Move safely to pot
-                    potIngredients.push_back(std::move(ing));
+                    // Move safely to cutting board
+                    counterIngredients.push_back(std::move(ing));
 
                     // Remove from inventory
                     inventory.erase(inventory.begin() + i);
@@ -181,12 +181,12 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
     }
 }
 
-void StoveState::update()
+void KitchenCounterState::update()
 {
     // Nothing yet
 }
 
-void StoveState::draw(sf::RenderWindow& window)
+void KitchenCounterState::draw(sf::RenderWindow& window)
 {
     window.draw(background);
 
@@ -205,16 +205,16 @@ void StoveState::draw(sf::RenderWindow& window)
         window.draw(ing->sprite);
     }
 
-    // Pot ingredients
-    for (auto& ing : potIngredients)
+    // Cutting board ingredients
+    for (auto& ing : counterIngredients)
     {
         window.draw(ing->sprite);
     }
 
     // debug
     sf::RectangleShape debug;
-    debug.setPosition(potArea.position);
-    debug.setSize(potArea.size);
+    debug.setPosition( cuttingBoardArea.position);
+    debug.setSize( cuttingBoardArea.size);
     debug.setFillColor(sf::Color(255, 0, 0, 80));
 
     window.draw(debug);

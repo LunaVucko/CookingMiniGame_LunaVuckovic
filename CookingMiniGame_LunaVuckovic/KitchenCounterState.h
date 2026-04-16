@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-class StoveState : public GameState
+class KitchenCounterState : public GameState
 {
 private:
     sf::RectangleShape background;
@@ -20,9 +20,9 @@ private:
     sf::RectangleShape inventoryBar;
     std::vector<sf::RectangleShape> slots;
 
-    // Pot
-    sf::FloatRect potArea;
-    std::vector<std::unique_ptr<Ingredient>> potIngredients;
+    // Cutting board
+    sf::FloatRect cuttingBoardArea;
+    std::vector<std::unique_ptr<Ingredient>> counterIngredients;
 
     //spritesheet
 
@@ -30,7 +30,7 @@ private:
 
 
 public:
-    StoveState(StateManager& manager);
+    KitchenCounterState(StateManager& manager);
 
     void handleEvent(sf::RenderWindow& window, const sf::Event& event) override;
     void update() override;

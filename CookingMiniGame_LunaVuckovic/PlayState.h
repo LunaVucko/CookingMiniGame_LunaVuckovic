@@ -11,6 +11,10 @@ private:
     StateManager& manager;
 
     sf::FloatRect stoveArea;
+    sf::FloatRect kitchenCounterArea;
+    sf::FloatRect sinkArea;
+
+    std::unique_ptr<GameState> nextState = nullptr;
 
 public:
     PlayState(StateManager& manager);

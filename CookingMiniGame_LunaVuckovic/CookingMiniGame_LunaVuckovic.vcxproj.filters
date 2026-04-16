@@ -39,6 +39,12 @@
     <ClCompile Include="OptionsState.cpp">
       <Filter>States</Filter>
     </ClCompile>
+    <ClCompile Include="KitchenCounterState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="SinkState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainMenu.h">
@@ -61,6 +67,12 @@
     </ClInclude>
     <ClInclude Include="Ingredient.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KitchenCounterState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="SinkState.h">
+      <Filter>States</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
