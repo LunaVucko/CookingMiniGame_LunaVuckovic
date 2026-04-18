@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="KitchenCounterState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
@@ -146,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ingredient.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="KitchenCounterState.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />

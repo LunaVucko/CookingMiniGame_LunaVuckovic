@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "GameState.h"
 #include "StateManager.h"
+#include "Inventory.h"
 
 class PlayState : public GameState
 {
@@ -9,6 +10,9 @@ private:
     sf::RectangleShape background;
     sf::Texture texture;
     StateManager& manager;
+
+    Inventory inventory;
+    sf::Texture ingredientsTexture;
 
     sf::FloatRect stoveArea;
     sf::FloatRect kitchenCounterArea;

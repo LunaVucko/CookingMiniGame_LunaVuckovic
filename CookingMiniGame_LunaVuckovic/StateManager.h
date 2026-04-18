@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "GameState.h"
+#include "Ingredient.h"
 
 class StateManager
 {
@@ -8,6 +9,12 @@ private:
     std::unique_ptr<GameState> currentState;
 
 public:
+
+
+    std::vector<std::unique_ptr<Ingredient>> inventory;
+    sf::Texture ingredientsTexture;
+
+
     void setState(std::unique_ptr<GameState> newState)
     {
         currentState = std::move(newState);

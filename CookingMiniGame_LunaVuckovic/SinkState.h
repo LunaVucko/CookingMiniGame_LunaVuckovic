@@ -3,6 +3,7 @@
 #include "GameState.h"
 #include "StateManager.h"
 #include "Ingredient.h"
+#include "Inventory.h"
 #include <memory>
 #include <vector>
 
@@ -16,9 +17,7 @@ private:
     std::unique_ptr<GameState> nextState = nullptr;
 
     // Inventory
-    std::vector<std::unique_ptr<Ingredient>> inventory;
-    sf::RectangleShape inventoryBar;
-    std::vector<sf::RectangleShape> slots;
+    Inventory inventory;
 
     // Sink
     sf::FloatRect sinkArea;
