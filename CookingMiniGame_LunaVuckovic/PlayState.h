@@ -11,8 +11,8 @@ private:
     sf::Texture texture;
     StateManager& manager;
 
-    Inventory inventory;
-    sf::Texture ingredientsTexture;
+    //Inventory inventory;
+    //sf::Texture ingredientsTexture;
 
     sf::FloatRect stoveArea;
     sf::FloatRect kitchenCounterArea;

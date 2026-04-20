@@ -15,22 +15,6 @@ PlayState::PlayState(StateManager& manager) : manager(manager)
     background.setSize({ 960, 720 });
     background.setTexture(&texture);
 
-    //spritesheet
-
-    if (!ingredientsTexture.loadFromFile("Texture/spritesheet_V2.png")) // <= ingreients assets
-    {
-        std::cout << "Failed to load spritesheet\n";
-    }
-
-    // addiing ingreideints  to the inventory
-
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 0,0 }, { 605,560 }))); //carrot
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 605,0 }, { 605,560 }))); //parsnip
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 1210,0 }, { 605,560 }))); //chicken breast
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 1860, 0 }, { 605, 560 }))); //cerialic
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 2465, 0 }, { 605, 560 }))); //garlic
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 0, 560 }, { 605, 560 }))); //buillion
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 605, 560 }, { 605, 560 }))); //parsley
 
     float inventoryHeight = 100.f;
 
@@ -42,6 +26,8 @@ PlayState::PlayState(StateManager& manager) : manager(manager)
 
 void PlayState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 {
+    manager.inventory.handleEvent(event);
+
     if (event.is<sf::Event::MouseButtonPressed>())
     {
         auto mouse = event.getIf<sf::Event::MouseButtonPressed>();
@@ -53,7 +39,7 @@ void PlayState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 static_cast<float>(mouse->position.y)
             );
             
-            if (inventory.contains(mousePos))
+            if (manager.inventory.contains(mousePos))
                 return;
 
             if (sinkArea.contains(mousePos))
@@ -97,7 +83,7 @@ void PlayState::draw(sf::RenderWindow& window)
 
     //inventory
 
-    inventory.draw(window);
+    manager.inventory.draw(window);
 
     
     sf::RectangleShape debugRect;

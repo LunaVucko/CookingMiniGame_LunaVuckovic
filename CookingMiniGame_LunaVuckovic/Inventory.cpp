@@ -1,14 +1,33 @@
 #include "Inventory.h"
 
-Inventory::Inventory()
+Inventory::Inventory(InventoryType type)
 {
+    if (type == InventoryType::Top)
+    {
+        yOffset = 0.f;
+    }
+    else
+    {
+        yOffset = 620.f; // bottom (720 - 100)
+    }
+        
+
     inventoryBar.setSize({ 960, 100 });
+    inventoryBar.setPosition({ 0, yOffset });
+    inventoryBar.setFillColor(sf::Color::White);
+    inventoryBar.setOutlineColor(sf::Color::Black);
+    inventoryBar.setOutlineThickness(2.f);
+
+    setupSlots();
+
+    /*inventoryBar.setSize({960, 100});
     inventoryBar.setPosition({ 0, 0 });
     inventoryBar.setFillColor(sf::Color::White);
     inventoryBar.setOutlineColor(sf::Color::Black);
     inventoryBar.setOutlineThickness(2.f);
 
     setupSlots();
+    */
 }
 
 void Inventory::setupSlots()
@@ -20,7 +39,8 @@ void Inventory::setupSlots()
     {
         sf::RectangleShape slot;
         slot.setSize({ slotSize, slotSize });
-        slot.setPosition({ startX + i * (slotSize + spacing), 10.f });
+        //slot.setPosition({ startX + i * (slotSize + spacing), 10.f });
+        slot.setPosition({ startX + i * (slotSize + spacing), yOffset + 10.f });
 
         slot.setFillColor(sf::Color::Transparent);
         slot.setOutlineColor(sf::Color::Black);
@@ -32,6 +52,12 @@ void Inventory::setupSlots()
 
 void Inventory::addItem(std::unique_ptr<Ingredient> item)
 {
+    if (items.size() >= slots.size())
+    {
+        cout << "too many items!!";
+        return;
+    }
+    
     size_t i = items.size();
 
     // scale + center
@@ -59,6 +85,11 @@ void Inventory::addItem(std::unique_ptr<Ingredient> item)
 bool Inventory::contains(sf::Vector2f point) const
 {
     return inventoryBar.getGlobalBounds().contains(point);
+}
+
+bool Inventory::isEmpty() const
+{
+    return items.empty();
 }
 
 void Inventory::handleEvent(const sf::Event& event)
@@ -95,6 +126,7 @@ void Inventory::handleEvent(const sf::Event& event)
         }
     }
 }
+
 
 Ingredient* Inventory::getDraggedItem()
 {

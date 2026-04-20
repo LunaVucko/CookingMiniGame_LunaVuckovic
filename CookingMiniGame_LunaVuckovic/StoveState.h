@@ -17,7 +17,7 @@ private:
     std::unique_ptr<GameState> nextState = nullptr;
 
     // Inventory
-    Inventory inventory;
+    //Inventory inventory;
 
     // Pot
     sf::FloatRect potArea;
@@ -25,7 +25,7 @@ private:
 
     //spritesheet
 
-    sf::Texture ingredientsTexture;
+    //sf::Texture ingredientsTexture;
 
 
 public:

@@ -2,6 +2,7 @@
 #include <memory>
 #include "GameState.h"
 #include "Ingredient.h"
+#include "Inventory.h" 
 
 class StateManager
 {
@@ -10,31 +11,18 @@ private:
 
 public:
 
-
-    std::vector<std::unique_ptr<Ingredient>> inventory;
+    Inventory inventory{ InventoryType::Top }; //shared inventory
+    //std::vector<std::unique_ptr<Ingredient>> inventory;
     sf::Texture ingredientsTexture;
 
+    StateManager();
 
-    void setState(std::unique_ptr<GameState> newState)
-    {
-        currentState = std::move(newState);
-    }
 
-    void handleEvent(sf::RenderWindow& window, const sf::Event& event)
-    {
-        if (currentState)
-            currentState->handleEvent(window, event);
-    }
+    void setState(std::unique_ptr<GameState> newState);
 
-    void update()
-    {
-        if (currentState)
-            currentState->update();
-    }
+    void handleEvent(sf::RenderWindow& window, const sf::Event& event);
 
-    void draw(sf::RenderWindow& window)
-    {
-        if (currentState)
-            currentState->draw(window);
-    }
+    void update();
+
+    void draw(sf::RenderWindow& window);
 };

@@ -143,6 +143,7 @@
     </ClCompile>
     <ClCompile Include="PlayState.h" />
     <ClCompile Include="SinkState.cpp" />
+    <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="StoveState.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +157,7 @@
     <ClInclude Include="SinkState.h" />
     <ClInclude Include="StateManager.h" />
     <ClInclude Include="StoveState.h" />
+    <ClInclude Include="Tools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

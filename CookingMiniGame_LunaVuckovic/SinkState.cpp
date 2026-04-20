@@ -12,24 +12,7 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
     background.setSize({ 960, 720 });
     background.setTexture(&texture);
 
-    //spritesheet
-
-    if (!ingredientsTexture.loadFromFile("Texture/spritesheet_V2.png")) // <= ingreients assets
-    {
-        std::cout << "Failed to load spritesheet\n";
-    }
-
-    // addiing ingreideints to the inventory
-
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 0,0 }, { 605,560 }))); //carrot
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 605,0 }, { 605,560 }))); //parsnip
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 1210,0 }, { 605,560 }))); //chicken breast
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 1860, 0 }, { 605, 560 }))); //cerialic
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 2465, 0 }, { 605, 560 }))); //garlic
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 0, 560 }, { 605, 560 }))); //buillion
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 605, 560 }, { 605, 560 }))); //parsley
-
-
+    
     // sink area (adjust if needed)
     sinkArea = sf::FloatRect({ 400.f, 300.f }, { 150.f, 150.f });
 
@@ -37,6 +20,9 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
 
 void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 {
+    //inventory drag
+    manager.inventory.handleEvent(event);
+
     if (event.is<sf::Event::KeyPressed>())
     {
         auto key = event.getIf<sf::Event::KeyPressed>();
@@ -49,9 +35,6 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         }
     }
 
-    // inventory drag
-    inventory.handleEvent(event);
-
     // dropinng and moving mechanic
     if (event.is<sf::Event::MouseButtonReleased>())
     {
@@ -61,7 +44,7 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
         if (sinkArea.contains(mousePos))
         {
-            auto item = inventory.takeDraggedItem();
+            auto item = manager.inventory.takeDraggedItem();
             if (item)
             {
                 sinkIngredients.push_back(move(item));
@@ -80,8 +63,8 @@ void SinkState::draw(sf::RenderWindow& window)
 {
     window.draw(background);
 
-    // Inventory bar
-    inventory.draw(window);
+    // manager.inventory bar
+    manager.inventory.draw(window);
 
     // sink ingredients
     for (auto& ing : sinkIngredients)

@@ -4,6 +4,7 @@
 #include "StateManager.h"
 #include "Ingredient.h"
 #include "Inventory.h"
+#include "Tools.h"
 #include <memory>
 #include <vector>
 
@@ -17,16 +18,22 @@ private:
     std::unique_ptr<GameState> nextState = nullptr;
 
     // Inventory
-    Inventory inventory;
+   // Inventory inventory; //top inventory <= ingredients
 
     // Cutting board
     sf::FloatRect cuttingBoardArea;
     std::vector<std::unique_ptr<Ingredient>> counterIngredients;
 
+    // tools
+
+    std::vector<Tools> toolItems;
+    ToolType currentTool = ToolType::None;
+
+
     //spritesheet
 
-    sf::Texture ingredientsTexture;
-
+   // sf::Texture ingredientsTexture;
+    sf::Texture toolsTexture;
 
 public:
     KitchenCounterState(StateManager& manager);
