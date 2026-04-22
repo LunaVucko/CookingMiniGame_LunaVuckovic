@@ -11,20 +11,6 @@ KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manage
 
     background.setSize({ 960, 720 });
     background.setTexture(&texture);
-
-
-    // addiing ingreideints  to the inventory
-    /*
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 0,0 }, { 605,560 }))); //carrot
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 605,0 }, { 605,560 }))); //parsnip
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 1210,0 }, { 605,560 }))); //chicken breast
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 1860, 0 }, { 605, 560 }))); //cerialic
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 2465, 0 }, { 605, 560 }))); //garlic
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 0, 560 }, { 605, 560 }))); //buillion
-    inventory.addItem(std::make_unique<Ingredient>(ingredientsTexture, sf::IntRect({ 605, 560 }, { 605, 560 }))); //parsley
-
-    */
-
     
     // Cutting board area (adjust if needed)
      cuttingBoardArea = sf::FloatRect({ 400.f, 300.f }, { 150.f, 150.f });
@@ -48,6 +34,7 @@ KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manage
          toolItems[i].sprite.setPosition({ 10.f + i * 90.f, 630.f });
          toolItems[i].sprite.setScale({ 0.1f, 0.1f });
      }
+
 }
 
 void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
@@ -90,7 +77,29 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                     return; 
                 }
             }
+
+            for (auto& ing : counterIngredients)
+            {
+                if (ing->sprite.getGlobalBounds().contains(mousePos))
+                {
+                    if (currentTool == ToolType::Peeler && ing->state == IngredientState::Whole)
+                    {
+                        ing->state = IngredientState::Peeled;
+                        ing->updateSprite();
+                        std::cout << "Peeled!\n";
+                    }
+
+                    else if (currentTool == ToolType::Knife && ing->state == IngredientState::Peeled)
+                    {
+                        ing->state = IngredientState::Cut;
+                        ing->updateSprite();
+                        std::cout << "Cut!\n";
+                    }
+                }
+            }
         }
+
+
     }
 
     // dropinng and moving mechanic
@@ -112,7 +121,38 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
             }
         }
 
+        if (manager.inventory.contains(mousePos))
+        {
+            auto item = takeCounterItem(mousePos);
+            if (item)
+        {
+            if (manager.inventory.contains(mousePos))
+            {
+                manager.inventory.addItem(std::move(item));
+            }
+            else
+            {
+                // drop back if not over inventory
+                counterIngredients.push_back(std::move(item));
+            }
+        }
+        }
+
     }
+}
+
+std::unique_ptr<Ingredient> KitchenCounterState::takeCounterItem(sf::Vector2f mousePos)
+{
+    for (size_t i = 0; i < counterIngredients.size(); i++)
+    {
+        if (counterIngredients[i]->sprite.getGlobalBounds().contains(mousePos))
+        {
+            auto ptr = std::move(counterIngredients[i]);
+            counterIngredients.erase(counterIngredients.begin() + i);
+            return ptr;
+        }
+    }
+    return nullptr;
 }
 
    
@@ -150,3 +190,4 @@ void KitchenCounterState::draw(sf::RenderWindow& window)
 
     window.draw(debug);
 }
+

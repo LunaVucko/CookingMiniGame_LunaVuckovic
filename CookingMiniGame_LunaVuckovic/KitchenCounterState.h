@@ -41,4 +41,6 @@ public:
     void handleEvent(sf::RenderWindow& window, const sf::Event& event) override;
     void update() override;
     void draw(sf::RenderWindow& window) override;
+    std::unique_ptr<Ingredient> takeCounterItem(sf::Vector2f mousePos);
+    
 };

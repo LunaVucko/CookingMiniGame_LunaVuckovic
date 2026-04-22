@@ -12,7 +12,11 @@ StateManager::StateManager()
 
     // Add items ONCE
     inventory.addItem(std::make_unique<Ingredient>(
-        ingredientsTexture, sf::IntRect({ 0,0 }, { 605,560 }), IngredientType::Carrot));
+        ingredientsTexture, sf::IntRect({ 0,0 }, { 605,560 }), sf::IntRect({ 1210,560 }, { 605,560 }), sf::IntRect({ 1860,560 }, { 605,560 }), IngredientType::Carrot));
+
+    //testinhg it out with the carrot only
+
+    /*
 
     inventory.addItem(std::make_unique<Ingredient>(
         ingredientsTexture, sf::IntRect({ 605,0 }, { 605,560 }), IngredientType::Parsnip));
@@ -31,6 +35,8 @@ StateManager::StateManager()
 
     inventory.addItem(std::make_unique<Ingredient>(
         ingredientsTexture, sf::IntRect({ 605,560 }, { 605,560 }), IngredientType::Parsley));
+
+        */
 }
 
 void StateManager::setState(std::unique_ptr<GameState> newState)

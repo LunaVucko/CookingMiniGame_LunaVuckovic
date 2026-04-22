@@ -25,14 +25,28 @@ struct Ingredient
 {
     sf::Sprite sprite;
 
+    sf::IntRect wholeRect;
+    sf::IntRect peeledRect;
+    sf::IntRect cutRect;
+
     IngredientType type;
     IngredientState state = IngredientState::Whole;
 
     bool isDragging = false;
    
-    Ingredient(sf::Texture& texture, const sf::IntRect& rect, IngredientType t) : sprite(texture), type(t)
+    Ingredient(sf::Texture& texture, const sf::IntRect& whole, const sf::IntRect& peeled, const sf::IntRect& cut, IngredientType t) : sprite(texture), wholeRect(whole), peeledRect(peeled), cutRect(cut), type(t)
     {
 
-        sprite.setTextureRect(rect);
+        sprite.setTextureRect(wholeRect);
+    }
+
+    void updateSprite()
+    {
+        if (state == IngredientState::Whole)
+            sprite.setTextureRect(wholeRect);
+        else if (state == IngredientState::Peeled)
+            sprite.setTextureRect(peeledRect);
+        else if (state == IngredientState::Cut)
+            sprite.setTextureRect(cutRect);
     }
 };
