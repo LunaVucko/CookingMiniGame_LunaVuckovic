@@ -1,6 +1,7 @@
 #include "StateManager.h"
 #include <iostream>
 
+
 StateManager::StateManager()
 {
     // Load texture ONCE
@@ -11,12 +12,23 @@ StateManager::StateManager()
     }
 
     // Add items ONCE
+
+    // CARROT
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 0, 0 },          // whole
+        { 1210, 560 },     // peeled
+        { 1860, 560 },     // cut
+        IngredientType::Carrot
+    ));
+
+    //testinhg it out with the carrot only, will add the other ingredients soon
+    /*
+    
     inventory.addItem(std::make_unique<Ingredient>(
         ingredientsTexture, sf::IntRect({ 0,0 }, { 605,560 }), sf::IntRect({ 1210,560 }, { 605,560 }), sf::IntRect({ 1860,560 }, { 605,560 }), IngredientType::Carrot));
 
     //testinhg it out with the carrot only
-
-    /*
 
     inventory.addItem(std::make_unique<Ingredient>(
         ingredientsTexture, sf::IntRect({ 605,0 }, { 605,560 }), IngredientType::Parsnip));
@@ -60,4 +72,9 @@ void StateManager::draw(sf::RenderWindow& window)
 {
     if (currentState)
         currentState->draw(window);
+}
+
+std::unique_ptr<Ingredient> StateManager::createIngredient(sf::Texture& texture, sf::Vector2i wholePos, sf::Vector2i peeledPos, sf::Vector2i cutPos, IngredientType type)
+{
+    return std::make_unique<Ingredient>(texture, sf::IntRect(wholePos, { 605, 560 }), sf::IntRect(peeledPos, { 605, 560 }), sf::IntRect(cutPos, { 605, 560 }), type);
 }

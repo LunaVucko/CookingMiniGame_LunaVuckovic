@@ -9,6 +9,8 @@ class StateManager
 private:
     std::unique_ptr<GameState> currentState;
 
+    std::unique_ptr<Ingredient> createIngredient(sf::Texture& texture, sf::Vector2i wholePos, sf::Vector2i peeledPos, sf::Vector2i cutPos, IngredientType type);
+
 public:
 
     Inventory inventory{ InventoryType::Top }; //shared inventory

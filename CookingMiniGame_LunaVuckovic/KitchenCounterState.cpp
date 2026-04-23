@@ -39,8 +39,6 @@ KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manage
 
 void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 {
-    //inventory drag
-    manager.inventory.handleEvent(event);
 
     if (event.is<sf::Event::KeyPressed>())
     {
@@ -48,6 +46,10 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
 
         if (key && key->code == sf::Keyboard::Key::Escape)
         {
+            //stops the item apearing on the hand when esc
+            if (auto* dragged = manager.inventory.getDraggedItem())
+                dragged->isDragging = false;
+
             manager.setState(std::make_unique<PlayState>(manager));
 
             //nextState = std::make_unique<PlayState>(manager);
@@ -58,6 +60,9 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
     // mouse press
     if (event.is<sf::Event::MouseButtonPressed>())
     {
+        //inventory drag
+        manager.inventory.handleEvent(event);
+
         auto mouse = event.getIf<sf::Event::MouseButtonPressed>();
 
         if (mouse->button == sf::Mouse::Button::Left)
@@ -78,29 +83,47 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 }
             }
 
-            for (auto& ing : counterIngredients)
+            for (size_t i = 0; i < counterIngredients.size(); i++)
             {
-                if (ing->sprite.getGlobalBounds().contains(mousePos))
+                if (counterIngredients[i]->sprite.getGlobalBounds().contains(mousePos))
                 {
-                    if (currentTool == ToolType::Peeler && ing->state == IngredientState::Whole)
+                    auto& item = counterIngredients[i];
+
+                    if (currentTool == ToolType::Peeler && item->state == IngredientState::Whole)
                     {
-                        ing->state = IngredientState::Peeled;
-                        ing->updateSprite();
+                        item->state = IngredientState::Peeled;
+                        item->updateSprite();
                         std::cout << "Peeled!\n";
+                        return;
                     }
 
-                    else if (currentTool == ToolType::Knife && ing->state == IngredientState::Peeled)
+                    else if (currentTool == ToolType::Knife && item->state == IngredientState::Peeled)
                     {
-                        ing->state = IngredientState::Cut;
-                        ing->updateSprite();
+                        item->state = IngredientState::Cut;
+                        item->updateSprite();
                         std::cout << "Cut!\n";
+                        return;
                     }
+
+                    //no tool then pickup from the counter
+
+                    auto pickedItem = std::move(item);
+                    counterIngredients.erase(counterIngredients.begin() + i);
+
+
+                    pickedItem->isDragging = true;
+                    manager.inventory.addItem(std::move(pickedItem));
+
+                    return;
                 }
             }
+
         }
 
 
     }
+
+
 
     // dropinng and moving mechanic
     if (event.is<sf::Event::MouseButtonReleased>())
@@ -114,6 +137,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
             auto item = manager.inventory.takeDraggedItem();
             if (item)
             {
+                item->isDragging = false;
                 // place item at board center
                 item->sprite.setPosition({ 475.f, 375.f });
 
@@ -121,41 +145,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
             }
         }
 
-        if (manager.inventory.contains(mousePos))
-        {
-            auto item = takeCounterItem(mousePos);
-            if (item)
-        {
-            if (manager.inventory.contains(mousePos))
-            {
-                manager.inventory.addItem(std::move(item));
-            }
-            else
-            {
-                // drop back if not over inventory
-                counterIngredients.push_back(std::move(item));
-            }
-        }
-        }
-
     }
-}
-
-std::unique_ptr<Ingredient> KitchenCounterState::takeCounterItem(sf::Vector2f mousePos)
-{
-    for (size_t i = 0; i < counterIngredients.size(); i++)
-    {
-        if (counterIngredients[i]->sprite.getGlobalBounds().contains(mousePos))
-        {
-            auto ptr = std::move(counterIngredients[i]);
-            counterIngredients.erase(counterIngredients.begin() + i);
-            return ptr;
-        }
-    }
-    return nullptr;
-}
-
-   
+}  
 
 void KitchenCounterState::update()
 {
