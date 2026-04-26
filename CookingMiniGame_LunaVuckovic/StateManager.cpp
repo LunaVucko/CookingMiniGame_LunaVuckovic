@@ -22,6 +22,57 @@ StateManager::StateManager()
         IngredientType::Carrot
     ));
 
+    // PARSNIP
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 605, 0 },          // whole
+        { 2465,560 },     // peeled
+        { 0, 1120 },     // cut
+        IngredientType::Parsnip
+    ));
+
+    // CHICKEN
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 1210,0 },          // whole
+        {0,0}, //ignored
+        { 605, 1120 },     // cut
+        IngredientType::Chicken
+    ));
+    // CELERIAC
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 1860,0 },          // whole
+        { 1210, 1120 },      //peeled
+        { 1860, 1120 },     // cut
+        IngredientType::Cereliac
+    ));
+    // PARSLEY
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 605,560 },          // whole
+        { 0, 0},      //ignore
+        { 0, 1680 },       // cut
+        IngredientType::Parsley
+    ));
+    // GARLIC
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 2465,0},          // whole
+        { 0,0 },      //peel
+        { 2465, 1120 },       // ignore
+        IngredientType::Parsley
+    ));
+    // Buillion
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 0,560 },          // whole
+        { 0,0 },      //ignore
+        { 605, 1680 },       // cut
+        IngredientType::Parsley
+    ));
+
+
     //testinhg it out with the carrot only, will add the other ingredients soon
     /*
     

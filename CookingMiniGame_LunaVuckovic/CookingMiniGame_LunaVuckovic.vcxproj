@@ -148,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ingredient.h" />
+    <ClInclude Include="IngredientTypes.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="KitchenCounterState.h" />
     <ClInclude Include="MenuState.h" />

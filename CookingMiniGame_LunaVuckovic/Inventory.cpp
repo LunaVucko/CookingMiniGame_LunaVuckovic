@@ -57,8 +57,8 @@ void Inventory::addItem(std::unique_ptr<Ingredient> item)
         cout << "too many items!!";
         return;
     }
-    
-    size_t i = items.size();
+
+    size_t index = items.size();
 
     // scale + center
     sf::FloatRect bounds = item->sprite.getLocalBounds();
@@ -74,12 +74,30 @@ void Inventory::addItem(std::unique_ptr<Ingredient> item)
         bounds.size.y / 2.f
         });
 
-    item->sprite.setPosition({
-        slots[i].getPosition().x + slotSize / 2.f,
-        slots[i].getPosition().y + slotSize / 2.f
+    item->isDragging = false;
+
+    items.push_back(std::move(item));
+
+   /* item->sprite.setPosition({
+        slots[index].getPosition().x + slotSize / 2.f,
+        slots[index].getPosition().y + slotSize / 2.f
         });
 
     items.push_back(std::move(item));
+    */
+    //rea-align all items after pushing
+
+    for (size_t i = 0; i < items.size(); i++)
+    {
+        if (!items[i]->isDragging)
+        {
+
+            items[i]->sprite.setPosition({
+                slots[i].getPosition().x + slotSize / 2.f,
+                slots[i].getPosition().y + slotSize / 2.f
+                });
+        }
+    }
 }
 
 bool Inventory::contains(sf::Vector2f point) const
@@ -102,11 +120,16 @@ void Inventory::handleEvent(const sf::Event& event)
         {
             sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
 
+            // IMPORTANT: only one drag allowed
+            for (auto& ing : items)
+                ing->isDragging = false;
+
             for (auto& ing : items)
             {
                 if (ing->sprite.getGlobalBounds().contains(mousePos))
                 {
                     ing->isDragging = true;
+                    ing->dragOffset = ing->sprite.getPosition() - mousePos;
                 }
             }
         }
@@ -116,13 +139,24 @@ void Inventory::handleEvent(const sf::Event& event)
     {
         auto mouse = event.getIf<sf::Event::MouseMoved>();
         sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
-
-        for (auto& ing : items)
+/*for (auto& ing : items)
         {
             if (ing->isDragging)
             {
-                ing->sprite.setPosition(mousePos);
+                ing->sprite.setPosition(mousePos + ing->dragOffset);
             }
+        }*/
+        
+    }
+}
+
+void Inventory::update()
+{
+    for (auto& ing : items)
+    {
+        if (ing->isDragging)
+        {
+            ing->sprite.setPosition(currentMousePos + ing->dragOffset);
         }
     }
 }
@@ -138,15 +172,30 @@ Ingredient* Inventory::getDraggedItem()
     return nullptr;
 }
 
+void Inventory::setMousePosition(sf::Vector2f pos)
+{
+    currentMousePos = pos;
+}
+
 std::unique_ptr<Ingredient> Inventory::takeDraggedItem()
 {
     for (size_t i = 0; i < items.size(); i++)
     {
         if (items[i]->isDragging)
         {
-            auto ptr = std::move(items[i]);
+            auto ptr = std::move(items[i]); // take ownership
             items.erase(items.begin() + i);
-            return ptr;
+
+            // realign remaining items
+            for (size_t j = 0; j < items.size(); j++)
+            {
+                items[j]->sprite.setPosition({
+                    slots[j].getPosition().x + slotSize / 2.f,
+                    slots[j].getPosition().y + slotSize / 2.f
+                    });
+            }
+
+            return ptr; //  return moved item
         }
     }
     return nullptr;

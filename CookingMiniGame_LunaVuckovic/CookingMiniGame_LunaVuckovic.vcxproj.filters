@@ -86,5 +86,8 @@
     <ClInclude Include="Tools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IngredientTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

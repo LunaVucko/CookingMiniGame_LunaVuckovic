@@ -1,25 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "IngredientTypes.h"
 #include <iostream>
 using namespace std;
-
-enum class IngredientType
-{
-    Carrot,
-    Parsnip,
-    Chicken,
-    Cereliac,
-    Garlic,
-    Buillion,
-    Parsley
-};
-
-enum class IngredientState
-{
-    Whole,
-    Peeled,
-    Cut
-};
 
 struct Ingredient
 {
@@ -33,6 +16,8 @@ struct Ingredient
     IngredientState state = IngredientState::Whole;
 
     bool isDragging = false;
+
+    sf::Vector2f dragOffset;
    
     Ingredient(sf::Texture& texture, const sf::IntRect& whole, const sf::IntRect& peeled, const sf::IntRect& cut, IngredientType t) : sprite(texture), wholeRect(whole), peeledRect(peeled), cutRect(cut), type(t)
     {

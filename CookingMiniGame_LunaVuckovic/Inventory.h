@@ -23,6 +23,8 @@ private:
     float slotSize = 80.f;
     float yOffset;
 
+    sf::Vector2f currentMousePos;
+
 public:
     Inventory(InventoryType type);
 
@@ -36,6 +38,11 @@ public:
     std::unique_ptr<Ingredient> takeDraggedItem();
 
     bool contains(sf::Vector2f point) const;
+
+    void setMousePosition(sf::Vector2f point);
+    sf::Vector2f getMousePos() const { return currentMousePos; }
+
+    void update();
 
     bool isEmpty() const;
 };
