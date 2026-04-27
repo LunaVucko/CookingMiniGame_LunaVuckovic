@@ -212,7 +212,14 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                     counterIngredients.erase(counterIngredients.begin() + i);
 
                     item->isDragging = false;
-                    manager.inventory.addItem(std::move(item));
+                    //manager.inventory.addItem(std::move(item));
+                    int slotIndex = manager.inventory.getSlotIndexAt(mousePos);
+
+                    if (slotIndex != -1)
+                    {
+                        item->isDragging = false;
+                        manager.inventory.insertItemAt(std::move(item), slotIndex);
+                    }
                 }
                 else
                 {
@@ -230,7 +237,15 @@ void KitchenCounterState::update()
 {
     manager.inventory.update();
 
-    sf::Vector2f mousePos = manager.inventory.getMousePos(); 
+   // sf::Vector2f mousePos = manager.inventory.getMousePos(); 
+
+    for (auto& ing : counterIngredients)
+    {
+        if (ing->isDragging)
+        {
+            ing->sprite.setPosition(currentMousePos + ing->dragOffset);
+        }
+    }
 
  
 }

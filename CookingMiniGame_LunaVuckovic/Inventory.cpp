@@ -135,11 +135,13 @@ void Inventory::handleEvent(const sf::Event& event)
         }
     }
 
-    if (event.is<sf::Event::MouseMoved>())
+/*
+
+ if (event.is<sf::Event::MouseMoved>())
     {
         auto mouse = event.getIf<sf::Event::MouseMoved>();
         sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
-/*for (auto& ing : items)
+for (auto& ing : items)
         {
             if (ing->isDragging)
             {
@@ -147,7 +149,7 @@ void Inventory::handleEvent(const sf::Event& event)
             }
         }*/
         
-    }
+  
 }
 
 void Inventory::update()
@@ -175,6 +177,36 @@ Ingredient* Inventory::getDraggedItem()
 void Inventory::setMousePosition(sf::Vector2f pos)
 {
     currentMousePos = pos;
+}
+
+int Inventory::getSlotIndexAt(sf::Vector2f point) const
+{
+    for (size_t i = 0; i < slots.size(); i++)
+    {
+        if (slots[i].getGlobalBounds().contains(point))
+            return (int)i;
+    }
+    return -1;
+}
+
+void Inventory::insertItemAt(std::unique_ptr<Ingredient> item, int index)
+{
+    if (index < 0 || index >= slots.size())
+        return;
+
+    if (index > items.size())
+        index = items.size();
+
+    items.insert(items.begin() + index, std::move(item));
+
+    // realign ALL items
+    for (size_t i = 0; i < items.size(); i++)
+    {
+        items[i]->sprite.setPosition({
+            slots[i].getPosition().x + slotSize / 2.f,
+            slots[i].getPosition().y + slotSize / 2.f
+            });
+    }
 }
 
 std::unique_ptr<Ingredient> Inventory::takeDraggedItem()

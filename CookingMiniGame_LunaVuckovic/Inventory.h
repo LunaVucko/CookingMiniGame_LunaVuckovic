@@ -39,6 +39,10 @@ public:
 
     bool contains(sf::Vector2f point) const;
 
+    int getSlotIndexAt(sf::Vector2f point) const;
+
+    void insertItemAt(std::unique_ptr<Ingredient> item, int index);
+
     void setMousePosition(sf::Vector2f point);
     sf::Vector2f getMousePos() const { return currentMousePos; }
 
