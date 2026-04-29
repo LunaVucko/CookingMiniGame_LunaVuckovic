@@ -36,10 +36,17 @@ private:
     sf::Texture toolsTexture;
 
     //mouse position
-    Ingredient* draggedCounterItem = nullptr;
+    //Ingredient* draggedCounterItem = nullptr;
     sf::Vector2f currentMousePos;
 
-   // Ingredient* selectedCounterItem = nullptr;
+    // Selected Ingredient
+   Ingredient* selectedIngredient = nullptr;
+
+   // Mouse Action system
+   sf::Vector2f dragStart;
+   sf::Vector2f dragEnd;
+   bool isDraggingGesture = false;
+ 
 
 public:
     KitchenCounterState(StateManager& manager);

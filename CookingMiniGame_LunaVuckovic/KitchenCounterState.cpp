@@ -1,6 +1,7 @@
 #include "KitchenCounterState.h"
 #include "PlayState.h"
 #include <iostream>
+#include <cmath>
 
 KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manager)
 {
@@ -56,6 +57,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
     }
 
 
+
+
     // mouse press
     if (event.is<sf::Event::MouseButtonPressed>())
     {
@@ -71,6 +74,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 (float)mouse->position.y
             );
 
+            dragStart = mousePos;
+            isDraggingGesture = true;
             
             for (auto& tool : toolItems) // <= clicking on the tool
             {
@@ -82,88 +87,28 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 }
             }
 
-            for (size_t i = 0; i < counterIngredients.size(); i++)
+            // selecting the ingredient
+            for (auto& item : counterIngredients)
             {
-                if (counterIngredients[i]->sprite.getGlobalBounds().contains(mousePos))
+                if (item->sprite.getGlobalBounds().contains(mousePos))
                 {
-                    auto& item = counterIngredients[i];
+                    selectedIngredient = item.get();
 
-                    if (currentTool == ToolType::Peeler)
+                    // ONLY DRAG if NO tool selected
+                    if (currentTool == ToolType::None)
                     {
-                        if (item->state == IngredientState::Whole &&
-                            canPeel(item->type))
-                        {
-                            item->state = IngredientState::Peeled;
-                            item->updateSprite();
-                            currentTool = ToolType::None; //unselect the tool
-                            std::cout << "Peeled!\n";
-                            return;
-                        }
-
-                        else
-                        {
-                            std::cout << "Can't peel this!\n";
-                        }
+                        item->isDragging = true;
+                        item->dragOffset = item->sprite.getPosition() - mousePos;
                     }
-                    else if (currentTool == ToolType::Knife)
-                    {
-                        if (canCut(item->type))
-                        {
-                            bool canCutNow = false;
-
-                            // Ingredients that require peeling first!!!
-                            if (item->type == IngredientType::Carrot ||
-                                item->type == IngredientType::Parsnip ||
-                                item->type == IngredientType::Cereliac)
-                            {
-                                canCutNow = (item->state == IngredientState::Peeled);
-                            }
-                            else
-                            {
-                                // Ingredients that can be cut immediately
-                                canCutNow = (item->state == IngredientState::Whole);
-                            }
-                            if (canCutNow)
-                            {
-                                item->state = IngredientState::Cut;
-                                item->updateSprite();
-                                currentTool = ToolType::None; //unselect the tool
-                                std::cout << "Cut!\n";
-                                return;
-                            }
-                            else
-                            {
-                                std::cout << "Can't cut yet!\n";
-                            }
-                        }
-
-                        return;
-                    }
-
-
-                    //no tool then pickup from the counter
-
-                    item->isDragging = true;
-                    item->dragOffset = item->sprite.getPosition() - mousePos;
                     return;
-/*
-
-                    auto pickedItem = std::move(item);
-                    counterIngredients.erase(counterIngredients.begin() + i);
-
-
-                    pickedItem->isDragging = true;
-                    manager.inventory.addItem(std::move(pickedItem));
-    */                
                 }
             }
-
         }
 
 
     }
 
-    if (event.is<sf::Event::MouseMoved>())
+   if (event.is<sf::Event::MouseMoved>())
     {
         auto mouse = event.getIf<sf::Event::MouseMoved>();
 
@@ -183,6 +128,72 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
         auto mouse = event.getIf<sf::Event::MouseButtonReleased>();
 
         sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
+
+        dragEnd = mousePos;
+
+        // Mouse action movement logic
+        if (isDraggingGesture && selectedIngredient)
+        {
+            sf::Vector2f delta = dragEnd - dragStart;
+
+            float dx = std::abs(delta.x);
+            float dy = std::abs(delta.y);
+
+            if (std::hypot(dx, dy) > 30.f) // ignore tiny movement
+            {
+                //CUT (diagonal)
+                if (currentTool == ToolType::Knife && dx > 20.f && dy > 20.f)
+                {
+                    if (canCut(selectedIngredient->type))
+                    {
+                        bool canCutNow = false;
+
+                        if (selectedIngredient->type == IngredientType::Carrot ||
+                            selectedIngredient->type == IngredientType::Parsnip ||
+                            selectedIngredient->type == IngredientType::Cereliac)
+                        {
+                            canCutNow = (selectedIngredient->state == IngredientState::Peeled);
+                        }
+                        else
+                        {
+                            canCutNow = (selectedIngredient->state == IngredientState::Whole);
+                        }
+
+                        if (canCutNow)
+                        {
+                            selectedIngredient->state = IngredientState::Cut;
+                            selectedIngredient->updateSprite();
+                            currentTool = ToolType::None; //unselect the tool
+                            std::cout << "Cut!\n";
+                        }
+                        else
+                        {
+                            std::cout << "Can't cut yet!\n";
+                        }
+                    }
+                }
+
+                //PEEL (horizontal)
+                else if (currentTool == ToolType::Peeler && dx > dy)
+                {
+                    if (selectedIngredient->state == IngredientState::Whole &&
+                        canPeel(selectedIngredient->type))
+                    {
+                        selectedIngredient->state = IngredientState::Peeled;
+                        selectedIngredient->updateSprite();
+                        currentTool = ToolType::None;//unselect the tool
+                        std::cout << "Peeled!\n";
+                    }
+                    else
+                    {
+                        std::cout << "Can't peel this!\n";
+                    }
+                }
+            }
+        }
+
+        isDraggingGesture = false;
+        selectedIngredient = nullptr;
 
         //from inventoy to counter
 
@@ -229,6 +240,9 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 return;
             }
         }
+
+        // Reset!
+        selectedIngredient = nullptr;
 
     }
 }  
