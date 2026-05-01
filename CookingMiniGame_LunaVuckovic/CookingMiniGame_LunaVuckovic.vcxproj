@@ -155,6 +155,7 @@
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="Pot.h" />
     <ClInclude Include="SinkState.h" />
     <ClInclude Include="StateManager.h" />
     <ClInclude Include="StoveState.h" />

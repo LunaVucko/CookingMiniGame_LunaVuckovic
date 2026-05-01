@@ -6,6 +6,7 @@
 #include "Inventory.h"
 #include <memory>
 #include <vector>
+#include "Pot.h"
 
 class SinkState : public GameState
 {
@@ -21,12 +22,16 @@ private:
 
     // Sink
     sf::FloatRect sinkArea;
-    std::vector<std::unique_ptr<Ingredient>> sinkIngredients;
+    //std::vector<std::unique_ptr<Ingredient>> sinkIngredients;
 
     //spritesheet
 
     //sf::Texture ingredientsTexture;
+    std::unique_ptr<Pot> pot;
+    sf::Texture potTexture;
 
+    //mouse 
+    sf::Vector2f currentMousePos;
 
 public:
     SinkState(StateManager& manager);

@@ -16,12 +16,25 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
     // sink area (adjust if needed)
     sinkArea = sf::FloatRect({ 400.f, 300.f }, { 150.f, 150.f });
 
+    if (!potTexture.loadFromFile("Texture/pot_spritesheet.png"))
+    {
+        std::cout << "Failed to load pot texture\n";
+    }
+
+    pot = std::make_unique<Pot>(
+        potTexture,
+        sf::IntRect({ 0,0 }, { 605,560 }),      // empty
+        sf::IntRect({ 605,0 }, { 605,560 })     // filled
+    );
+
+    pot->sprite.setPosition({ 100.f, 500.f });
+    pot->sprite.setScale({ 0.3f, 0.3f });
 }
 
 void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 {
     //inventory drag
-    manager.inventory.handleEvent(event);
+    //manager.inventory.handleEvent(event);
 
     if (event.is<sf::Event::KeyPressed>())
     {
@@ -35,6 +48,35 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         }
     }
 
+    if (event.is<sf::Event::MouseButtonPressed>())
+    {
+        auto mouse = event.getIf<sf::Event::MouseButtonPressed>();
+
+        if (mouse->button == sf::Mouse::Button::Left)
+        {
+            sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
+
+            // pick up pot
+            if (pot && pot->sprite.getGlobalBounds().contains(mousePos))
+            {
+                pot->isDragging = true;
+                pot->dragOffset = pot->sprite.getPosition() - mousePos;
+            }
+        }
+    }
+
+    if (event.is<sf::Event::MouseMoved>())
+    {
+        auto mouse = event.getIf<sf::Event::MouseMoved>();
+
+        currentMousePos = {
+            (float)mouse->position.x,
+            (float)mouse->position.y
+        };
+
+        manager.inventory.setMousePosition(currentMousePos);
+    }
+
     // dropinng and moving mechanic
     if (event.is<sf::Event::MouseButtonReleased>())
     {
@@ -42,7 +84,34 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
         sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
 
-        if (sinkArea.contains(mousePos))
+        // Drop the pot in the sink then fill it
+        if (pot && pot->isDragging && sinkArea.contains(mousePos))
+        {
+            pot->isDragging = false;
+
+            if (pot->state == PotState::Empty)
+            {
+                pot->state = PotState::Filled;
+                pot->updateSprite();
+
+                std::cout << "Pot filled with water!\n";
+            }
+
+            return;
+        }
+
+        if (pot && pot->isDragging && manager.inventory.contains(mousePos))
+        {
+            pot->isDragging = false;
+
+            pot->sprite.setPosition({ 50.f, 20.f }); // fake slot
+
+            std::cout << "Pot placed in inventory (temporary)\n";
+        }
+
+
+
+        /*if (sinkArea.contains(mousePos))
         {
             auto item = manager.inventory.takeDraggedItem();
             if (item)
@@ -50,27 +119,36 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 sinkIngredients.push_back(move(item));
             }
                
-        }
+        }*/
     }
 }
 
 void SinkState::update()
 {
-    // Nothing yet
+    if (pot && pot->isDragging)
+    {
+        pot->sprite.setPosition(currentMousePos + pot->dragOffset);
+    }
 }
 
 void SinkState::draw(sf::RenderWindow& window)
 {
     window.draw(background);
 
+    //if (pot)
+    if (pot)
+        window.draw(pot->sprite);
+
     // manager.inventory bar
     manager.inventory.draw(window);
 
     // sink ingredients
+/*
     for (auto& ing : sinkIngredients)
     {
         window.draw(ing->sprite);
     }
+    */
 
     // debug
     sf::RectangleShape debug;
