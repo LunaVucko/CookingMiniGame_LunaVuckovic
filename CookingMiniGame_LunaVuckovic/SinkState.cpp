@@ -29,6 +29,15 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
 
     pot->sprite.setPosition({ 100.f, 500.f });
     pot->sprite.setScale({ 0.3f, 0.3f });
+
+    //water being turned on
+
+    if (!waterTexture.loadFromFile("Texture/sink_water.png"))
+    {
+        std::cout << "Failed to load water texture\n";
+    }
+
+    knobArea = sf::FloatRect({ 700.f, 290.f }, { 120.f, 120.f });
 }
 
 void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
@@ -62,7 +71,15 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 pot->isDragging = true;
                 pot->dragOffset = pot->sprite.getPosition() - mousePos;
             }
+
+            if (knobArea.contains(mousePos))
+            {
+                isTurningKnob = true;
+                knobTrail.clear();
+            }
         }
+
+
     }
 
     if (event.is<sf::Event::MouseMoved>())
@@ -74,7 +91,14 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             (float)mouse->position.y
         };
 
+        if (isTurningKnob)
+        {
+            knobTrail.push_back(currentMousePos);
+        }
+
         manager.inventory.setMousePosition(currentMousePos);
+
+
     }
 
     // dropinng and moving mechanic
@@ -89,12 +113,16 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         {
             pot->isDragging = false;
 
-            if (pot->state == PotState::Empty)
+            if (waterOn && pot->state == PotState::Empty)
             {
                 pot->state = PotState::Filled;
                 pot->updateSprite();
 
                 std::cout << "Pot filled with water!\n";
+            }
+            else if (!waterOn)
+            {
+                std::cout << "Turn on water first!\n";
             }
 
             return;
@@ -111,6 +139,7 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
 
 
+
         /*if (sinkArea.contains(mousePos))
         {
             auto item = manager.inventory.takeDraggedItem();
@@ -120,6 +149,47 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             }
                
         }*/
+
+        if (isTurningKnob)
+        {
+            isTurningKnob = false;
+
+            if (knobTrail.size() > 10)
+            {
+                float totalAngle = 0.f;
+
+                for (size_t i = 2; i < knobTrail.size(); i++)
+                {
+                    sf::Vector2f a = knobTrail[i - 1] - knobTrail[i - 2];
+                    sf::Vector2f b = knobTrail[i] - knobTrail[i - 1];
+
+                    float cross = a.x * b.y - a.y * b.x;
+                    float dot = a.x * b.x + a.y * b.y;
+
+                    float angle = std::atan2(cross, dot);
+                    totalAngle += angle;
+                }
+
+                // if roughly a circle (~360 degrees)
+                if (std::abs(totalAngle) > 4.5f)
+                {
+                    waterOn = !waterOn;
+
+                    if (waterOn)
+                    {
+                        background.setTexture(&waterTexture);
+                        std::cout << "Water ON\n";
+                    }
+                    else
+                    {
+                        background.setTexture(&texture);
+                        std::cout << "Water OFF\n";
+                    }
+                }
+            }
+
+            knobTrail.clear();
+        }
     }
 }
 
@@ -150,11 +220,22 @@ void SinkState::draw(sf::RenderWindow& window)
     }
     */
 
-    // debug
+    // debug sink
     sf::RectangleShape debug;
     debug.setPosition(sinkArea.position);
     debug.setSize(sinkArea.size);
-    debug.setFillColor(sf::Color(255, 0, 0, 80));
+    debug.setFillColor(sf::Color(255, 0, 0, 80)); // RED
+
+    // debug sink knob
+
+    sf::RectangleShape knobDebug;
+    knobDebug.setPosition(knobArea.position);
+    knobDebug.setSize(knobArea.size);
+    knobDebug.setFillColor(sf::Color(0, 0, 255, 80)); // BLUE
+
+    window.draw(knobDebug);
+
+
 
     window.draw(debug);
 }

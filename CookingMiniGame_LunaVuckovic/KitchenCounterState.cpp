@@ -226,10 +226,15 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                     //manager.inventory.addItem(std::move(item));
                     int slotIndex = manager.inventory.getSlotIndexAt(mousePos);
 
+
                     if (slotIndex != -1)
                     {
-                        item->isDragging = false;
                         manager.inventory.insertItemAt(std::move(item), slotIndex);
+                    }
+                    else
+                    {
+                        // fallback: put in first available slot
+                        manager.inventory.addItem(std::move(item));
                     }
                 }
                 else

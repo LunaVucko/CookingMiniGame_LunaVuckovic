@@ -33,6 +33,18 @@ private:
     //mouse 
     sf::Vector2f currentMousePos;
 
+    // knob area
+    sf::FloatRect knobArea;
+
+    // water state
+    bool waterOn = false;
+
+    sf::Texture waterTexture;
+
+    // mouse action tracking
+    bool isTurningKnob = false;
+    std::vector<sf::Vector2f> knobTrail;
+
 public:
     SinkState(StateManager& manager);
 
