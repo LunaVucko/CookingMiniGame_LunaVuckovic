@@ -46,7 +46,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             auto item = manager.inventory.takeDraggedItem();
             if (item)
             { 
-                potIngredients.push_back(move(item));
+                potItems.push_back(move(item));
             }
                 
         }
@@ -66,7 +66,7 @@ void StoveState::draw(sf::RenderWindow& window)
     manager.inventory.draw(window);
 
     // Pot ingredients
-    for (auto& ing : potIngredients)
+    for (auto& ing : potItems)
     {
         window.draw(ing->sprite);
     }

@@ -25,7 +25,7 @@ inline bool canPeel(IngredientType type)
     case IngredientType::Carrot:
     case IngredientType::Parsnip:
     case IngredientType::Cereliac:
-    case IngredientType::Garlic:
+   // case IngredientType::Garlic:
         return true;
 
     default:
@@ -35,7 +35,10 @@ inline bool canPeel(IngredientType type)
 
 inline bool canCut(IngredientType type)
 {
-    switch (type)
+
+    return true;
+
+   /* switch (type)
     {
     case IngredientType::Garlic: 
         return false;
@@ -43,4 +46,5 @@ inline bool canCut(IngredientType type)
     default:
         return true;
     }
+    */
 }

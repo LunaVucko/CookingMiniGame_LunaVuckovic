@@ -22,7 +22,8 @@ private:
 
     // Cutting board
     sf::FloatRect cuttingBoardArea;
-    std::vector<std::unique_ptr<Ingredient>> counterIngredients;
+    std::vector<std::unique_ptr<Item>> counterItems;
+   // std::vector<std::unique_ptr<Ingredient>> counterIngredients;
 
     // tools
 

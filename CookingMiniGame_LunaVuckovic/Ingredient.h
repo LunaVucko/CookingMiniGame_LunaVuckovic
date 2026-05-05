@@ -1,12 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "IngredientTypes.h"
+#include "Item.h"
 #include <iostream>
 using namespace std;
 
-struct Ingredient
+struct Ingredient : public Item
 {
-    sf::Sprite sprite;
+    //sf::Sprite sprite;
 
     sf::IntRect wholeRect;
     sf::IntRect peeledRect;
@@ -15,13 +16,12 @@ struct Ingredient
     IngredientType type;
     IngredientState state = IngredientState::Whole;
 
-    bool isDragging = false;
+    //bool isDragging = false;
 
-    sf::Vector2f dragOffset;
+    //sf::Vector2f dragOffset;
    
-    Ingredient(sf::Texture& texture, const sf::IntRect& whole, const sf::IntRect& peeled, const sf::IntRect& cut, IngredientType t) : sprite(texture), wholeRect(whole), peeledRect(peeled), cutRect(cut), type(t)
+    Ingredient(sf::Texture& texture, const sf::IntRect& whole, const sf::IntRect& peeled, const sf::IntRect& cut, IngredientType t) : Item(texture), wholeRect(whole), peeledRect(peeled), cutRect(cut), type(t)
     {
-
         sprite.setTextureRect(wholeRect);
     }
 

@@ -10,34 +10,28 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
     }
 
     background.setSize({ 960, 720 });
-    background.setTexture(&texture);
+   // background.setTexture(&texture);
+    currentBackgroundTexture = &texture;
+    background.setTexture(currentBackgroundTexture);
 
     
     // sink area (adjust if needed)
     sinkArea = sf::FloatRect({ 400.f, 300.f }, { 150.f, 150.f });
 
-    if (!potTexture.loadFromFile("Texture/pot_spritesheet.png"))
-    {
-        std::cout << "Failed to load pot texture\n";
-    }
-
-    pot = std::make_unique<Pot>(
-        potTexture,
-        sf::IntRect({ 0,0 }, { 605,560 }),      // empty
-        sf::IntRect({ 605,0 }, { 605,560 })     // filled
-    );
-
-    pot->sprite.setPosition({ 100.f, 500.f });
-    pot->sprite.setScale({ 0.3f, 0.3f });
-
     //water being turned on
+    knobArea = sf::FloatRect({ 700.f, 290.f }, { 120.f, 120.f });
 
-    if (!waterTexture.loadFromFile("Texture/sink_water.png"))
+    //checks if pot is laready in inventory so it doesn't respawn when coming back to the sink
+    if (!manager.hasPot)
     {
-        std::cout << "Failed to load water texture\n";
+        pot = manager.createPot();
+        manager.hasPot = true;
+        pot->sprite.setPosition({ 100.f, 500.f });
+        pot->sprite.setScale({ 0.3f, 0.3f });
     }
 
-    knobArea = sf::FloatRect({ 700.f, 290.f }, { 120.f, 120.f });
+   
+
 }
 
 void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
@@ -51,6 +45,21 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
         if (key && key->code == sf::Keyboard::Key::Escape)
         {
+            // stop dragging ANY item
+            if (auto* dragged = manager.inventory.getDraggedItem())
+            {
+                dragged->isDragging = false;
+            }
+                
+
+            // also stop local pot if it still exists
+            if (pot)
+            {
+                pot->isDragging = false;
+            }
+               
+
+
             manager.setState(std::make_unique<PlayState>(manager));
 
             //nextState = std::make_unique<PlayState>(manager);
@@ -108,47 +117,57 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
         sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
 
-        // Drop the pot in the sink then fill it
+
+        // 1. Fill the pot in the sink FIRST
         if (pot && pot->isDragging && sinkArea.contains(mousePos))
         {
             pot->isDragging = false;
-
-            if (waterOn && pot->state == PotState::Empty)
+            if (auto* potObj = dynamic_cast<Pot*>(pot.get()))
             {
-                pot->state = PotState::Filled;
-                pot->updateSprite();
+                if (waterOn && potObj->state == PotState::Empty)
+                {
+                    pot->state = PotState::Filled;
+                    pot->updateSprite();
 
-                std::cout << "Pot filled with water!\n";
-            }
-            else if (!waterOn)
-            {
-                std::cout << "Turn on water first!\n";
+                    std::cout << "Pot filled with water!\n";
+                }
+                else if (!waterOn)
+                {
+                    std::cout << "Turn on water first!\n";
+                }
             }
 
             return;
         }
 
+        // 2. THEN put the filled pot in the inventory
         if (pot && pot->isDragging && manager.inventory.contains(mousePos))
         {
             pot->isDragging = false;
 
-            pot->sprite.setPosition({ 50.f, 20.f }); // fake slot
+            int slotIndex = manager.inventory.getSlotIndexAt(mousePos);
 
-            std::cout << "Pot placed in inventory (temporary)\n";
+            if (slotIndex != -1)
+            {
+
+                manager.inventory.insertItemAt(std::move(pot), slotIndex);
+
+            }
+            else
+            {
+            
+               manager.inventory.addItem(std::move(pot));
+
+            }
+
+            pot = nullptr; //the pot is gone after it has been moved so that ESC works (pointers are so weird)
+
+            std::cout << "Pot added to inventory!\n";
+
+            return;
         }
 
-
-
-
-        /*if (sinkArea.contains(mousePos))
-        {
-            auto item = manager.inventory.takeDraggedItem();
-            if (item)
-            {
-                sinkIngredients.push_back(move(item));
-            }
-               
-        }*/
+      
 
         if (isTurningKnob)
         {
@@ -175,16 +194,11 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 {
                     waterOn = !waterOn;
 
-                    if (waterOn)
-                    {
-                        background.setTexture(&waterTexture);
-                        std::cout << "Water ON\n";
-                    }
-                    else
-                    {
-                        background.setTexture(&texture);
-                        std::cout << "Water OFF\n";
-                    }
+                    currentBackgroundTexture = waterOn ? &manager.waterTexture : &texture;
+
+                    background.setTexture(currentBackgroundTexture);
+
+                    std::cout << (waterOn ? "Water ON\n" : "Water OFF\n");
                 }
             }
 
@@ -211,14 +225,6 @@ void SinkState::draw(sf::RenderWindow& window)
 
     // manager.inventory bar
     manager.inventory.draw(window);
-
-    // sink ingredients
-/*
-    for (auto& ing : sinkIngredients)
-    {
-        window.draw(ing->sprite);
-    }
-    */
 
     // debug sink
     sf::RectangleShape debug;

@@ -21,7 +21,8 @@ private:
 
     // Pot
     sf::FloatRect potArea;
-    std::vector<std::unique_ptr<Ingredient>> potIngredients;
+   // std::vector<std::unique_ptr<Ingredient>> potIngredients;
+    std::vector<std::unique_ptr<Item>> potItems;
 
     //spritesheet
 

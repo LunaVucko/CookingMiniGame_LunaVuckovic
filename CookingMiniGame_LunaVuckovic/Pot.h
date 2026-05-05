@@ -1,4 +1,5 @@
 #pragma once
+#include "Item.h"
 #include <SFML/Graphics.hpp>
 
 enum class PotState
@@ -7,22 +8,19 @@ enum class PotState
     Filled
 };
 
-struct Pot
+struct Pot : public Item
 {
-    sf::Sprite sprite;
+    //sf::Sprite sprite;
 
     sf::IntRect emptyRect;
     sf::IntRect filledRect;
 
     PotState state = PotState::Empty;
 
-    bool isDragging = false;
-    sf::Vector2f dragOffset;
+    //bool isDragging = false;
+    //sf::Vector2f dragOffset;
 
-    Pot(sf::Texture& texture,
-        const sf::IntRect& empty,
-        const sf::IntRect& filled)
-        : sprite(texture), emptyRect(empty), filledRect(filled)
+    Pot(sf::Texture& texture, const sf::IntRect& empty, const sf::IntRect& filled) : Item(texture), emptyRect(empty), filledRect(filled)
     {
         sprite.setTextureRect(emptyRect);
     }
@@ -34,6 +32,8 @@ struct Pot
             sprite.setTextureRect(emptyRect);
         }
         else
+        { 
             sprite.setTextureRect(filledRect);
+        }
     }
 };

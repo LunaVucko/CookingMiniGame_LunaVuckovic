@@ -11,6 +11,18 @@ StateManager::StateManager()
         return;
     }
 
+
+    if (!potTexture.loadFromFile("Texture/pot_spritesheet.png"))
+    {
+        std::cout << "Failed to load pot texture\n";
+    }
+
+    if (!waterTexture.loadFromFile("Texture/sink_water.png"))
+    {
+        std::cout << "Failed to load water texture\n";
+    }
+
+
     // Add items ONCE
 
     // CARROT
@@ -59,9 +71,9 @@ StateManager::StateManager()
     inventory.addItem(createIngredient(
         ingredientsTexture,
         { 2465,0},          // whole
-        { 0,0 },      //peel
-        { 2465, 1120 },       // ignore
-        IngredientType::Parsley
+        { 2465, 1120 },      //ignore
+        { 2465, 1120 },       // cut
+        IngredientType::Garlic
     ));
     // Buillion
     inventory.addItem(createIngredient(
@@ -69,7 +81,7 @@ StateManager::StateManager()
         { 0,560 },          // whole
         { 0,0 },      //ignore
         { 605, 1680 },       // cut
-        IngredientType::Parsley
+        IngredientType::Buillion
     ));
 
 
@@ -125,7 +137,18 @@ void StateManager::draw(sf::RenderWindow& window)
         currentState->draw(window);
 }
 
-std::unique_ptr<Ingredient> StateManager::createIngredient(sf::Texture& texture, sf::Vector2i wholePos, sf::Vector2i peeledPos, sf::Vector2i cutPos, IngredientType type)
+std::unique_ptr<Item> StateManager::createIngredient(sf::Texture& texture, sf::Vector2i wholePos, sf::Vector2i peeledPos, sf::Vector2i cutPos, IngredientType type)
 {
     return std::make_unique<Ingredient>(texture, sf::IntRect(wholePos, { 605, 560 }), sf::IntRect(peeledPos, { 605, 560 }), sf::IntRect(cutPos, { 605, 560 }), type);
+}
+
+std::unique_ptr<Pot> StateManager::createPot()
+{
+    hasPot = true;
+
+    return std::make_unique<Pot>(
+        potTexture,
+        sf::IntRect({ 0,0 }, { 605,560 }),
+        sf::IntRect({ 605,0 }, { 605,560 })
+    );
 }

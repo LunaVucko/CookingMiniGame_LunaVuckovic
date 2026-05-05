@@ -13,7 +13,8 @@ enum class InventoryType
 class Inventory
 {
 private:
-    std::vector<std::unique_ptr<Ingredient>> items;
+    //std::vector<std::unique_ptr<Ingredient>> items;
+    std::vector<std::unique_ptr<Item>> items;
 
     sf::RectangleShape inventoryBar;
     std::vector<sf::RectangleShape> slots;
@@ -29,19 +30,23 @@ public:
     Inventory(InventoryType type);
 
     void setupSlots();
-    void addItem(std::unique_ptr<Ingredient> item);
+    //void addItem(std::unique_ptr<Ingredient> item);
+    void addItem(std::unique_ptr<Item> item);
 
     void handleEvent(const sf::Event& event);
     void draw(sf::RenderWindow& window);
 
-    Ingredient* getDraggedItem();
-    std::unique_ptr<Ingredient> takeDraggedItem();
+    //Ingredient* getDraggedItem();
+    Item* getDraggedItem();
+    std::unique_ptr<Item> takeDraggedItem();
+   // std::unique_ptr<Ingredient> takeDraggedItem();
 
     bool contains(sf::Vector2f point) const;
 
     int getSlotIndexAt(sf::Vector2f point) const;
 
-    void insertItemAt(std::unique_ptr<Ingredient> item, int index);
+    //void insertItemAt(std::unique_ptr<Ingredient> item, int index);
+    void insertItemAt(std::unique_ptr<Item> item, int index);
 
     void setMousePosition(sf::Vector2f point);
     sf::Vector2f getMousePos() const { return currentMousePos; }

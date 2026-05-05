@@ -50,7 +50,7 @@ void Inventory::setupSlots()
     }
 }
 
-void Inventory::addItem(std::unique_ptr<Ingredient> item)
+void Inventory::addItem(std::unique_ptr<Item> item)
 {
     if (items.size() >= slots.size())
     {
@@ -164,7 +164,7 @@ void Inventory::update()
 }
 
 
-Ingredient* Inventory::getDraggedItem()
+Item* Inventory::getDraggedItem()
 {
     for (auto& ing : items)
     {
@@ -189,13 +189,28 @@ int Inventory::getSlotIndexAt(sf::Vector2f point) const
     return -1;
 }
 
-void Inventory::insertItemAt(std::unique_ptr<Ingredient> item, int index)
+void Inventory::insertItemAt(std::unique_ptr<Item> item, int index)
 {
     if (index < 0 || index >= slots.size())
         return;
 
     if (index > items.size())
         index = items.size();
+
+    sf::FloatRect bounds = item->sprite.getLocalBounds();
+
+    float scaleX = slotSize / bounds.size.x;
+    float scaleY = slotSize / bounds.size.y;
+    float scale = std::min(scaleX, scaleY);
+
+    item->sprite.setScale({ scale, scale });
+
+    item->sprite.setOrigin({
+        bounds.size.x / 2.f,
+        bounds.size.y / 2.f
+        });
+
+    item->isDragging = false;
 
     items.insert(items.begin() + index, std::move(item));
 
@@ -209,7 +224,7 @@ void Inventory::insertItemAt(std::unique_ptr<Ingredient> item, int index)
     }
 }
 
-std::unique_ptr<Ingredient> Inventory::takeDraggedItem()
+std::unique_ptr<Item> Inventory::takeDraggedItem()
 {
     for (size_t i = 0; i < items.size(); i++)
     {

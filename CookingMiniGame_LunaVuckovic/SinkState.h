@@ -17,18 +17,10 @@ private:
 
     std::unique_ptr<GameState> nextState = nullptr;
 
-    // Inventory
-    //Inventory inventory;
-
     // Sink
     sf::FloatRect sinkArea;
-    //std::vector<std::unique_ptr<Ingredient>> sinkIngredients;
 
-    //spritesheet
-
-    //sf::Texture ingredientsTexture;
     std::unique_ptr<Pot> pot;
-    sf::Texture potTexture;
 
     //mouse 
     sf::Vector2f currentMousePos;
@@ -39,7 +31,7 @@ private:
     // water state
     bool waterOn = false;
 
-    sf::Texture waterTexture;
+    sf::Texture* currentBackgroundTexture;
 
     // mouse action tracking
     bool isTurningKnob = false;

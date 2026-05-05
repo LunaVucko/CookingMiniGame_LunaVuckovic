@@ -88,18 +88,33 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
             }
 
             // selecting the ingredient
-            for (auto& item : counterIngredients)
+            for (auto& item : counterItems)
             {
                 if (item->sprite.getGlobalBounds().contains(mousePos))
                 {
-                    selectedIngredient = item.get();
-
-                    // ONLY DRAG if NO tool selected
-                    if (currentTool == ToolType::None)
+                    if (auto* ingredient = dynamic_cast<Ingredient*>(item.get()))
                     {
+                        selectedIngredient = ingredient;
+
+                        //selectedIngredient = item.get();
+
+                        // ONLY DRAG if NO tool selected
+                        if (currentTool == ToolType::None)
+                        {
+                            item->isDragging = true;
+                            item->dragOffset = item->sprite.getPosition() - mousePos;
+                        }
+                    }
+                    else
+                    {
+                        // It's NOT an ingredient (probably a Pot)
+                        selectedIngredient = nullptr;
+
+                        // Still allow dragging!
                         item->isDragging = true;
                         item->dragOffset = item->sprite.getPosition() - mousePos;
                     }
+
                     return;
                 }
             }
@@ -206,21 +221,21 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 // place item at board center
                 item->sprite.setPosition({ 475.f, 375.f });
 
-                counterIngredients.push_back(move(item));
+                counterItems.push_back(move(item));
                 return;
             }
         }
 
         //counter to inventory
 
-        for (size_t i = 0; i < counterIngredients.size(); i++)
+        for (size_t i = 0; i < counterItems.size(); i++)
         {
-            if (counterIngredients[i]->isDragging)
+            if (counterItems[i]->isDragging)
             {
                 if (manager.inventory.contains(mousePos))
                 {
-                    auto item = std::move(counterIngredients[i]);
-                    counterIngredients.erase(counterIngredients.begin() + i);
+                    auto item = std::move(counterItems[i]);
+                    counterItems.erase(counterItems.begin() + i);
 
                     item->isDragging = false;
                     //manager.inventory.addItem(std::move(item));
@@ -240,7 +255,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 else
                 {
                     // snap back if not dropped in inventory
-                    counterIngredients[i]->isDragging = false;
+                    counterItems[i]->isDragging = false;
                 }
                 return;
             }
@@ -258,7 +273,7 @@ void KitchenCounterState::update()
 
    // sf::Vector2f mousePos = manager.inventory.getMousePos(); 
 
-    for (auto& ing : counterIngredients)
+    for (auto& ing : counterItems)
     {
         if (ing->isDragging)
         {
@@ -277,7 +292,7 @@ void KitchenCounterState::draw(sf::RenderWindow& window)
     manager.inventory.draw(window);
 
     // Cutting board ingredients
-    for (auto& ing : counterIngredients)
+    for (auto& ing : counterItems)
     {
         window.draw(ing->sprite);
     }
