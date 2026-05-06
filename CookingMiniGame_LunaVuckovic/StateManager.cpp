@@ -5,23 +5,49 @@
 StateManager::StateManager()
 {
     // Load texture ONCE
+
+    //ingredients
+
     if (!ingredientsTexture.loadFromFile("Texture/spritesheet_V2.png"))
     {
         std::cout << "Failed to load spritesheet\n";
         return;
     }
 
+    //pot
 
     if (!potTexture.loadFromFile("Texture/pot_spritesheet.png"))
     {
         std::cout << "Failed to load pot texture\n";
     }
 
+    // sink
+
+    if (!sinkTexture.loadFromFile("Texture/sink_layout.png"))
+    {
+        std::cout << "Failed to load water texture\n";
+    }
+
+
     if (!waterTexture.loadFromFile("Texture/sink_water.png"))
     {
         std::cout << "Failed to load water texture\n";
     }
 
+    // stove backrounds
+
+    if (!stoveEmptyTexture.loadFromFile("Texture/stove_layout.png"))
+    {
+        std::cout << "Failed to load stove pot texture\n";
+    }
+    if (!stovePotTexture.loadFromFile("Texture/stove_with_pot.png"))
+    { 
+        std::cout << "Failed to load stove pot texture\n";
+    }
+    if (!stoveFlameTexture.loadFromFile("Texture/stove_with_flame.png"))
+    {
+        std::cout << "Failed to load stove flame texture\n";
+    }
 
     // Add items ONCE
 
@@ -144,7 +170,6 @@ std::unique_ptr<Item> StateManager::createIngredient(sf::Texture& texture, sf::V
 
 std::unique_ptr<Pot> StateManager::createPot()
 {
-    hasPot = true;
 
     return std::make_unique<Pot>(
         potTexture,
@@ -152,3 +177,4 @@ std::unique_ptr<Pot> StateManager::createPot()
         sf::IntRect({ 605,0 }, { 605,560 })
     );
 }
+

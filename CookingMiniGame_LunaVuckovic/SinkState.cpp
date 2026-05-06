@@ -4,14 +4,10 @@
 
 SinkState::SinkState(StateManager& manager) : manager(manager)
 {
-    if (!texture.loadFromFile("Texture/sink_layout.png")) // <= background
-    {
-        std::cout << "Failed to load sink texture\n";
-    }
 
     background.setSize({ 960, 720 });
    // background.setTexture(&texture);
-    currentBackgroundTexture = &texture;
+    currentBackgroundTexture = &manager.sinkTexture;
     background.setTexture(currentBackgroundTexture);
 
     
@@ -22,10 +18,10 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
     knobArea = sf::FloatRect({ 700.f, 290.f }, { 120.f, 120.f });
 
     //checks if pot is laready in inventory so it doesn't respawn when coming back to the sink
-    if (!manager.hasPot)
+    if (!manager.hasPotSpawned)
     {
         pot = manager.createPot();
-        manager.hasPot = true;
+        manager.hasPotSpawned = true;
         pot->sprite.setPosition({ 100.f, 500.f });
         pot->sprite.setScale({ 0.3f, 0.3f });
     }
@@ -194,7 +190,7 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 {
                     waterOn = !waterOn;
 
-                    currentBackgroundTexture = waterOn ? &manager.waterTexture : &texture;
+                    currentBackgroundTexture = waterOn ? &manager.waterTexture : &manager.sinkTexture;
 
                     background.setTexture(currentBackgroundTexture);
 

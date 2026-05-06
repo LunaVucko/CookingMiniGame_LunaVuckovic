@@ -4,16 +4,30 @@
 
 StoveState::StoveState(StateManager& manager) : manager(manager)
 {
-    if (!texture.loadFromFile("Texture/stove_layout.png")) // <= background
-    {
-        std::cout << "Failed to load stove texture\n";
-    }
+ 
 
     background.setSize({ 960, 720 });
-    background.setTexture(&texture);
+   // background.setTexture(&manager.stoveEmptyTexture);
 
-    // Pot area (adjust if needed)
+
+    if (!manager.stoveHasPot)
+    {
+        background.setTexture(&manager.stoveEmptyTexture);
+    }
+    else if (manager.stoveHeatOn)
+    {
+        background.setTexture(&manager.stoveFlameTexture);
+    }
+    else
+    {
+        background.setTexture(&manager.stovePotTexture);
+    }
+        
+
+
+    // Pot area and knob area
     potArea = sf::FloatRect({ 400.f, 300.f }, { 150.f, 150.f });
+    knobArea = { {720.f,500.f},{120.f,120.f} };
 
 }
 
@@ -34,6 +48,18 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         }
     }
 
+    if (event.is<sf::Event::MouseMoved>())
+    {
+        auto mouse = event.getIf<sf::Event::MouseMoved>();
+
+        sf::Vector2f mousePos(
+            (float)mouse->position.x,
+            (float)mouse->position.y
+        );
+
+        manager.inventory.setMousePosition(mousePos);
+    }
+
     // dropinng and moving mechanic
     if (event.is<sf::Event::MouseButtonReleased>())
     {
@@ -46,16 +72,71 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             auto item = manager.inventory.takeDraggedItem();
             if (item)
             { 
-                potItems.push_back(move(item));
+                // if it's pot then  place pot
+                if (!manager.stoveHasPot && dynamic_cast<Pot*>(item.get()))
+                {
+                    manager.stoveHasPot = true;
+                    background.setTexture(&manager.stovePotTexture);
+                    std::cout << "Pot placed\n";
+                }
+                else if (manager.stoveHasPot)
+                {
+                    // check if it's an ingredient
+                    if (auto* ingredient = dynamic_cast<Ingredient*>(item.get()))
+                    {
+                        // allow ONLY cut ingredients
+                        if (ingredient->state == IngredientState::Cut)
+                        {
+                            // make the sprites bigger
+                            ingredient->sprite.setScale({ 0.6f, 0.6f });
+
+                            // position inside pot (optional but nice)
+                            ingredient->sprite.setPosition({
+                                potArea.position.x + 40.f + (rand() % 50),
+                                potArea.position.y + 40.f + (rand() % 50)
+                                });
+
+                            //manager.stoveItems.push_back(std::move(item));
+                            CookingItem cookingItem;
+                            cookingItem.item = std::move(item);
+
+                            manager.stoveItems.push_back(std::move(cookingItem));
+
+                            std::cout << "Cut ingredient added\n";
+                        }
+                        else
+                        {
+                            std::cout << "Ingredient must be CUT first!\n";
+
+                            // put it back into inventory
+                            manager.inventory.addItem(std::move(item));
+                        }
+                    }
+                    else
+                    {
+                        // not an ingredient (just in case)
+                        manager.inventory.addItem(std::move(item));
+                    }
+                }
             }
                 
+        }
+
+        // KNOB CLICK
+        if (knobArea.contains(mousePos) && manager.stoveHasPot)
+        {
+            manager.stoveHeatOn = !manager.stoveHeatOn;
+
+            background.setTexture(manager.stoveHeatOn ? &manager.stoveFlameTexture: &manager.stovePotTexture);
+
+            std::cout << (manager.stoveHeatOn ? "Heat ON\n" : "Heat OFF\n");
         }
     }
 }
 
 void StoveState::update()
 {
-    // Nothing yet
+    manager.inventory.update();
 }
 
 void StoveState::draw(sf::RenderWindow& window)
@@ -65,10 +146,15 @@ void StoveState::draw(sf::RenderWindow& window)
     // Inventory bar
     manager.inventory.draw(window);
 
-    // Pot ingredients
-    for (auto& ing : potItems)
+    if (auto* dragged = manager.inventory.getDraggedItem())
     {
-        window.draw(ing->sprite);
+        window.draw(dragged->sprite);
+    }
+
+    // Pot ingredients
+    for (auto& cookingItem : manager.stoveItems)
+    {
+        window.draw(cookingItem.item->sprite);
     }
 
     // debug
@@ -78,4 +164,13 @@ void StoveState::draw(sf::RenderWindow& window)
     debug.setFillColor(sf::Color(255, 0, 0, 80));
 
     window.draw(debug);
+
+    // debug sink knob
+
+    sf::RectangleShape knobDebug;
+    knobDebug.setPosition(knobArea.position);
+    knobDebug.setSize(knobArea.size);
+    knobDebug.setFillColor(sf::Color(0, 0, 255, 80)); // BLUE
+
+    window.draw(knobDebug);
 }

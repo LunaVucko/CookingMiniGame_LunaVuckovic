@@ -4,6 +4,7 @@
 #include "StateManager.h"
 #include "Ingredient.h"
 #include "Inventory.h"
+#include "Pot.h"
 #include <memory>
 #include <vector>
 
@@ -11,7 +12,7 @@ class StoveState : public GameState
 {
 private:
     sf::RectangleShape background;
-    sf::Texture texture;
+    //sf::Texture texture;
     StateManager& manager;
 
     std::unique_ptr<GameState> nextState = nullptr;
@@ -21,12 +22,12 @@ private:
 
     // Pot
     sf::FloatRect potArea;
+    sf::FloatRect knobArea;
    // std::vector<std::unique_ptr<Ingredient>> potIngredients;
-    std::vector<std::unique_ptr<Item>> potItems;
-
-    //spritesheet
-
-    //sf::Texture ingredientsTexture;
+   // std::vector<std::unique_ptr<Item>> potItems;
+    std::unique_ptr<Pot> pot;
+    //bool hasPotOnStove = false;
+    //bool heatOn = false;
 
 
 public:

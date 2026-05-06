@@ -5,6 +5,12 @@
 #include "Inventory.h" 
 #include "Pot.h"
 
+struct CookingItem
+{
+    std::unique_ptr<Item> item;
+};
+
+
 class StateManager
 {
 private:
@@ -26,10 +32,25 @@ public:
     //pot
     sf::Texture potTexture;
 
+    //sink
+    sf::Texture sinkTexture;
     sf::Texture waterTexture;
 
-    bool hasPot = false;
+    //stove state backgrounds
 
+    sf::Texture stoveEmptyTexture;
+    sf::Texture stovePotTexture;
+    sf::Texture stoveFlameTexture;
+    sf::Texture* currentTexture = nullptr;
+
+    // sink state data
+    bool hasPotSpawned = false;
+    // stove state data 
+
+    bool stoveHasPot = false; // checking is stove has pot
+    bool stoveHeatOn = false;
+    //std::vector<std::unique_ptr<Item>> stoveItems;
+    std::vector<CookingItem> stoveItems;
 
     StateManager();
 
