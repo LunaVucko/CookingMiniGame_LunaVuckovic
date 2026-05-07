@@ -49,6 +49,13 @@ StateManager::StateManager()
         std::cout << "Failed to load stove flame texture\n";
     }
 
+    //ingredients in pot
+
+    if (!potIngredientsTexture.loadFromFile("Texture/spritesheet_ingredients_in_pot.png"))
+    {
+        std::cout << "Failed to load pot ingredients texture\n";
+    }
+
     // Add items ONCE
 
     // CARROT
@@ -177,4 +184,102 @@ std::unique_ptr<Pot> StateManager::createPot()
         sf::IntRect({ 605,0 }, { 605,560 })
     );
 }
+
+void StateManager::setupCookingRects(CookingItem& cookingItem, IngredientType type)
+{
+    switch (type)
+    {
+    case IngredientType::Carrot:
+
+        cookingItem.rawRect =
+            sf::IntRect({ 0,0 }, { 605, 560 });
+
+        cookingItem.cookedRect =
+            sf::IntRect({ 605, 0 }, { 605, 560 });
+
+        cookingItem.overcookedRect =
+            sf::IntRect({ 1210,0 }, { 605, 560 });
+
+        break;
+
+    case IngredientType::Cereliac:
+
+        cookingItem.rawRect =
+            sf::IntRect({ 1815,0 }, { 605, 560 });
+
+        cookingItem.cookedRect =
+            sf::IntRect({ 2420,0 }, { 605, 560 });
+
+        cookingItem.overcookedRect =
+            sf::IntRect({ 0,560 }, { 605, 560 });
+
+        break;
+
+    case IngredientType::Parsnip:
+
+        cookingItem.rawRect =
+            sf::IntRect({ 605,560 }, { 605, 560 });
+
+        cookingItem.cookedRect =
+            sf::IntRect({ 1210,560 }, { 605, 560 });
+
+        cookingItem.overcookedRect =
+            sf::IntRect({ 1815,560 }, { 605, 560 });
+
+        break;
+    
+    case IngredientType::Chicken:
+
+        cookingItem.rawRect =
+            sf::IntRect({ 2420,560 }, { 605, 560 });
+
+        cookingItem.cookedRect =
+            sf::IntRect({ 0, 1120 }, { 605, 560 });
+
+        cookingItem.overcookedRect =
+            sf::IntRect({ 605, 1120 }, { 605, 560 });
+
+        break;
+
+    case IngredientType::Parsley:
+
+        cookingItem.rawRect =
+            sf::IntRect({ 1210,1120 }, { 605, 560 });
+
+        cookingItem.cookedRect =
+            sf::IntRect({ 1815, 1120 }, { 605, 560 });
+
+        cookingItem.overcookedRect =
+            sf::IntRect({ 2420, 1120 }, { 605, 560 });
+
+        break;
+
+    case IngredientType::Garlic:
+
+        cookingItem.rawRect =
+            sf::IntRect({ 0,1680 }, { 605, 560 });
+
+        cookingItem.cookedRect =
+            sf::IntRect({ 605, 1680 }, { 605, 560 });
+
+        cookingItem.overcookedRect =
+            sf::IntRect({ 1210, 1680 }, { 605, 560 });
+
+        break;
+    case IngredientType::Buillion:
+
+        cookingItem.rawRect =
+            sf::IntRect({ 1815,1680 }, { 605, 560 });
+
+        cookingItem.cookedRect =
+            sf::IntRect({ 2420, 1680 }, { 605, 560 });
+
+        cookingItem.overcookedRect =
+            sf::IntRect({ 0, 2240 }, { 605, 560 });
+
+        break;
+    }
+    
+}
+    
 

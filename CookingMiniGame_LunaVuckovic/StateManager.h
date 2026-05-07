@@ -8,6 +8,16 @@
 struct CookingItem
 {
     std::unique_ptr<Item> item;
+
+    CookState cookState = CookState::Raw;
+
+    sf::IntRect rawRect;
+    sf::IntRect cookedRect;
+    sf::IntRect overcookedRect;
+
+    sf::Clock cookingClock;
+
+    bool isCookingStarted = false;
 };
 
 
@@ -36,6 +46,9 @@ public:
     sf::Texture sinkTexture;
     sf::Texture waterTexture;
 
+    //ingedients in pot
+    sf::Texture potIngredientsTexture;
+
     //stove state backgrounds
 
     sf::Texture stoveEmptyTexture;
@@ -52,6 +65,9 @@ public:
     //std::vector<std::unique_ptr<Item>> stoveItems;
     std::vector<CookingItem> stoveItems;
 
+    CookingItem* activeCookingItem = nullptr;
+
+
     StateManager();
 
 
@@ -64,4 +80,6 @@ public:
     void draw(sf::RenderWindow& window);
 
     std::unique_ptr<Pot> createPot();
+
+    void setupCookingRects(CookingItem& cookingItem, IngredientType type);
 };

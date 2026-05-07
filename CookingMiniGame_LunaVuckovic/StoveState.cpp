@@ -97,10 +97,30 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                                 });
 
                             //manager.stoveItems.push_back(std::move(item));
+                            Ingredient* ingPtr = dynamic_cast<Ingredient*>(item.get());
+                            if (!ingPtr)
+                            {
+                                return;
+                            }
+
+                            IngredientType ingredientType = ingPtr->type;
+                            IngredientState ingredientState = ingPtr->state;
+
                             CookingItem cookingItem;
                             cookingItem.item = std::move(item);
 
+                            cookingItem.cookState = CookState::Raw;
+                            cookingItem.cookingClock.restart();
+                            cookingItem.isCookingStarted = true;
+
+                            manager.setupCookingRects(cookingItem, ingredientType);
+
+                            cookingItem.item->sprite.setTexture(manager.potIngredientsTexture);
+                            cookingItem.item->sprite.setTextureRect(cookingItem.rawRect);
+
                             manager.stoveItems.push_back(std::move(cookingItem));
+
+                            manager.activeCookingItem = &manager.stoveItems.back();
 
                             std::cout << "Cut ingredient added\n";
                         }
@@ -137,6 +157,42 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 void StoveState::update()
 {
     manager.inventory.update();
+
+    if (manager.stoveHeatOn)
+    {
+        for (auto& cookingItem : manager.stoveItems)
+        {
+            if (!manager.stoveHeatOn)
+            {
+                continue;
+            }
+            // No active item = nothing cooks
+            if (!manager.activeCookingItem)
+            {
+                return;
+            }
+
+            CookingItem& cookingItem = *manager.activeCookingItem;
+
+            float time = cookingItem.cookingClock.getElapsedTime().asSeconds();
+
+            // RAW becomes COOKED
+            if (time >= 5.f && cookingItem.cookState == CookState::Raw)
+            {
+                cookingItem.cookState = CookState::Cooked;
+                cookingItem.item->sprite.setTextureRect(cookingItem.cookedRect);
+                std::cout << "Ingredient cooked\n";
+            }
+
+            // COOKED becomes OVERCOOKED
+            else if (time >= 10.f && cookingItem.cookState == CookState::Cooked)
+            {
+                cookingItem.cookState = CookState::Overcooked;
+                cookingItem.item->sprite.setTextureRect(cookingItem.overcookedRect);
+                std::cout << "Ingredient burned\n";
+            }
+        }
+    }
 }
 
 void StoveState::draw(sf::RenderWindow& window)
