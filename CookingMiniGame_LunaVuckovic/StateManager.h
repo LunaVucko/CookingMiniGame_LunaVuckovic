@@ -5,22 +5,6 @@
 #include "Inventory.h" 
 #include "Pot.h"
 
-struct CookingItem
-{
-    std::unique_ptr<Item> item;
-
-    CookState cookState = CookState::Raw;
-
-    sf::IntRect rawRect;
-    sf::IntRect cookedRect;
-    sf::IntRect overcookedRect;
-
-    sf::Clock cookingClock;
-
-    bool isCookingStarted = false;
-};
-
-
 class StateManager
 {
 private:
@@ -63,9 +47,9 @@ public:
     bool stoveHasPot = false; // checking is stove has pot
     bool stoveHeatOn = false;
     //std::vector<std::unique_ptr<Item>> stoveItems;
-    std::vector<CookingItem> stoveItems;
+   // std::vector<CookingItem> stoveItems;
 
-    CookingItem* activeCookingItem = nullptr;
+    //CookingItem* activeCookingItem = nullptr;
 
 
     StateManager();

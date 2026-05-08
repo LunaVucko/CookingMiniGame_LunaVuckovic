@@ -5,13 +5,6 @@
 #include <iostream>
 using namespace std;
 
-enum class CookState
-{
-    Raw,
-    Cooked,
-    Overcooked
-};
-
 struct Ingredient : public Item
 {
     //sf::Sprite sprite;

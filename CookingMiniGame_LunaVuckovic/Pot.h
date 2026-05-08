@@ -1,6 +1,7 @@
 #pragma once
 #include "Item.h"
 #include <SFML/Graphics.hpp>
+#include "CookingItem.h"
 
 enum class PotState
 {
@@ -14,6 +15,10 @@ struct Pot : public Item
 
     sf::IntRect emptyRect;
     sf::IntRect filledRect;
+
+    std::vector<CookingItem> stoveItems;
+
+    CookingItem* activeCookingItem = nullptr;
 
     PotState state = PotState::Empty;
 

@@ -147,6 +147,7 @@
     <ClCompile Include="StoveState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CookingItem.h" />
     <ClInclude Include="Ingredient.h" />
     <ClInclude Include="IngredientTypes.h" />
     <ClInclude Include="Inventory.h" />

@@ -70,75 +70,89 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         if (potArea.contains(mousePos))
         {
             auto item = manager.inventory.takeDraggedItem();
-            if (item)
-            { 
+            if (!item)
+            {
+                return;
+            }
+            if (!manager.stoveHasPot)
+            {
                 // if it's pot then  place pot
-                if (!manager.stoveHasPot && dynamic_cast<Pot*>(item.get()))
+                if (dynamic_cast<Pot*>(item.get()))
                 {
+                    stovePot.reset(static_cast<Pot*>(item.release()));
+
                     manager.stoveHasPot = true;
                     background.setTexture(&manager.stovePotTexture);
                     std::cout << "Pot placed\n";
                 }
-                else if (manager.stoveHasPot)
+                else
                 {
-                    // check if it's an ingredient
-                    if (auto* ingredient = dynamic_cast<Ingredient*>(item.get()))
-                    {
-                        // allow ONLY cut ingredients
-                        if (ingredient->state == IngredientState::Cut)
+                    std::cout << "Can't add ingredient yet! Place pot first.\n";
+
+                    // return item back to inventory
+                    manager.inventory.addItem(std::move(item));
+                }
+                return;
+            }
+        
+                        // check if it's an ingredient
+                        if (auto* ingredient = dynamic_cast<Ingredient*>(item.get()))
                         {
-                            // make the sprites bigger
-                            ingredient->sprite.setScale({ 0.6f, 0.6f });
-
-                            // position inside pot (optional but nice)
-                            ingredient->sprite.setPosition({
-                                potArea.position.x + 40.f + (rand() % 50),
-                                potArea.position.y + 40.f + (rand() % 50)
-                                });
-
-                            //manager.stoveItems.push_back(std::move(item));
-                            Ingredient* ingPtr = dynamic_cast<Ingredient*>(item.get());
-                            if (!ingPtr)
+                            // allow ONLY cut ingredients
+                            if (ingredient->state == IngredientState::Cut)
                             {
-                                return;
+                                // make the sprites bigger
+                                ingredient->sprite.setScale({ 0.6f, 0.6f });
+
+                                // position inside pot (optional but nice)
+                                ingredient->sprite.setPosition({
+                                    potArea.position.x + 40.f + (rand() % 50),
+                                    potArea.position.y + 40.f + (rand() % 50)
+                                    });
+
+                                //manager.stoveItems.push_back(std::move(item));
+                                Ingredient* ingPtr = dynamic_cast<Ingredient*>(item.get());
+                                if (!ingPtr)
+                                {
+                                    return;
+                                }
+
+                                IngredientType ingredientType = ingPtr->type;
+                                IngredientState ingredientState = ingPtr->state;
+
+                                CookingItem cookingItem;
+                                cookingItem.item = std::move(item);
+
+                                cookingItem.cookState = CookState::Raw;
+                                cookingItem.cookingClock.restart();
+                                cookingItem.isCookingStarted = true;
+
+                                manager.setupCookingRects(cookingItem, ingredientType);
+
+                                cookingItem.item->sprite.setTexture(manager.potIngredientsTexture);
+                                cookingItem.item->sprite.setTextureRect(cookingItem.rawRect);
+
+                                stovePot->stoveItems.push_back(std::move(cookingItem));
+
+                                stovePot->activeCookingItem = &stovePot->stoveItems.back();
+
+                                std::cout << "Cut ingredient added\n";
                             }
+                            else
+                            {
+                                std::cout << "Ingredient must be CUT first!\n";
 
-                            IngredientType ingredientType = ingPtr->type;
-                            IngredientState ingredientState = ingPtr->state;
-
-                            CookingItem cookingItem;
-                            cookingItem.item = std::move(item);
-
-                            cookingItem.cookState = CookState::Raw;
-                            cookingItem.cookingClock.restart();
-                            cookingItem.isCookingStarted = true;
-
-                            manager.setupCookingRects(cookingItem, ingredientType);
-
-                            cookingItem.item->sprite.setTexture(manager.potIngredientsTexture);
-                            cookingItem.item->sprite.setTextureRect(cookingItem.rawRect);
-
-                            manager.stoveItems.push_back(std::move(cookingItem));
-
-                            manager.activeCookingItem = &manager.stoveItems.back();
-
-                            std::cout << "Cut ingredient added\n";
+                                // put it back into inventory
+                                manager.inventory.addItem(std::move(item));
+                            }
                         }
                         else
                         {
-                            std::cout << "Ingredient must be CUT first!\n";
-
-                            // put it back into inventory
+                            // not an ingredient (just in case)
                             manager.inventory.addItem(std::move(item));
                         }
-                    }
-                    else
-                    {
-                        // not an ingredient (just in case)
-                        manager.inventory.addItem(std::move(item));
-                    }
-                }
-            }
+            
+               
                 
         }
 
@@ -158,21 +172,25 @@ void StoveState::update()
 {
     manager.inventory.update();
 
-    if (manager.stoveHeatOn)
-    {
-        for (auto& cookingItem : manager.stoveItems)
-        {
+    //if (manager.stoveHeatOn)
+    //{
+        //for (auto& cookingItem : manager.stoveItems)
+        //{
             if (!manager.stoveHeatOn)
             {
-                continue;
+               return;
+            }
+            if (!stovePot)
+            {
+                return;
             }
             // No active item = nothing cooks
-            if (!manager.activeCookingItem)
+            if (!stovePot->activeCookingItem)
             {
                 return;
             }
 
-            CookingItem& cookingItem = *manager.activeCookingItem;
+            CookingItem& cookingItem = *stovePot->activeCookingItem;
 
             float time = cookingItem.cookingClock.getElapsedTime().asSeconds();
 
@@ -191,8 +209,8 @@ void StoveState::update()
                 cookingItem.item->sprite.setTextureRect(cookingItem.overcookedRect);
                 std::cout << "Ingredient burned\n";
             }
-        }
-    }
+      //  }
+    //}
 }
 
 void StoveState::draw(sf::RenderWindow& window)
@@ -206,11 +224,13 @@ void StoveState::draw(sf::RenderWindow& window)
     {
         window.draw(dragged->sprite);
     }
-
-    // Pot ingredients
-    for (auto& cookingItem : manager.stoveItems)
+    if (stovePot)
     {
-        window.draw(cookingItem.item->sprite);
+        // Pot ingredients
+        for (auto& cookingItem : stovePot->stoveItems)
+        {
+            window.draw(cookingItem.item->sprite);
+        }
     }
 
     // debug
