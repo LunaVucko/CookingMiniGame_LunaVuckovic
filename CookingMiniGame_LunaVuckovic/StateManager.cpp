@@ -40,6 +40,7 @@ StateManager::StateManager()
     {
         std::cout << "Failed to load stove pot texture\n";
     }
+    /**/
     if (!stovePotTexture.loadFromFile("Texture/stove_with_pot.png"))
     { 
         std::cout << "Failed to load stove pot texture\n";
@@ -180,8 +181,14 @@ std::unique_ptr<Pot> StateManager::createPot()
 
     return std::make_unique<Pot>(
         potTexture,
+
+        //side view
         sf::IntRect({ 0,0 }, { 605,560 }),
-        sf::IntRect({ 605,0 }, { 605,560 })
+        sf::IntRect({ 605,0 }, { 605,560 }),
+
+        //top down view
+        sf::IntRect({ 1210,0 }, { 605,560 }),
+        sf::IntRect({ 1815,0 }, { 605,560 })
     );
 }
 

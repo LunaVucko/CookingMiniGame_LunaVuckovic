@@ -79,7 +79,13 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 // if it's pot then  place pot
                 if (dynamic_cast<Pot*>(item.get()))
                 {
-                    stovePot.reset(static_cast<Pot*>(item.release()));
+                    manager.stovePot.reset(static_cast<Pot*>(item.release()));
+
+                    manager.stovePot->isOnStove = true;
+                    manager.stovePot->updateSprite();
+
+                    manager.stovePot->sprite.setPosition({ 480.f, 350.f });
+                    manager.stovePot->sprite.setScale({ 0.8f, 0.8f });
 
                     manager.stoveHasPot = true;
                     background.setTexture(&manager.stovePotTexture);
@@ -132,9 +138,12 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                                 cookingItem.item->sprite.setTexture(manager.potIngredientsTexture);
                                 cookingItem.item->sprite.setTextureRect(cookingItem.rawRect);
 
-                                stovePot->stoveItems.push_back(std::move(cookingItem));
+                                manager.stovePot->stoveItems.push_back(std::move(cookingItem));
 
-                                stovePot->activeCookingItem = &stovePot->stoveItems.back();
+                                manager.stovePot->state = PotState::Filled;
+                                manager.stovePot->updateSprite();
+
+                                manager.stovePot->activeCookingItem = &manager.stovePot->stoveItems.back();
 
                                 std::cout << "Cut ingredient added\n";
                             }
@@ -180,17 +189,17 @@ void StoveState::update()
             {
                return;
             }
-            if (!stovePot)
+            if (!manager.stovePot)
             {
                 return;
             }
             // No active item = nothing cooks
-            if (!stovePot->activeCookingItem)
+            if (!manager.stovePot->activeCookingItem)
             {
                 return;
             }
 
-            CookingItem& cookingItem = *stovePot->activeCookingItem;
+            CookingItem& cookingItem = *manager.stovePot->activeCookingItem;
 
             float time = cookingItem.cookingClock.getElapsedTime().asSeconds();
 
@@ -224,10 +233,12 @@ void StoveState::draw(sf::RenderWindow& window)
     {
         window.draw(dragged->sprite);
     }
-    if (stovePot)
+    if (manager.stovePot)
     {
+        window.draw(manager.stovePot->sprite);
+
         // Pot ingredients
-        for (auto& cookingItem : stovePot->stoveItems)
+        for (auto& cookingItem : manager.stovePot->stoveItems)
         {
             window.draw(cookingItem.item->sprite);
         }

@@ -25,7 +25,7 @@ private:
     sf::FloatRect knobArea;
    // std::vector<std::unique_ptr<Ingredient>> potIngredients;
    // std::vector<std::unique_poptr<Item>> potItems;
-    std::unique_ptr<Pot> stovePot;
+ //   std::unique_ptr<Pot> stovePot;
     //bool hasPotOnStove = false;
     //bool heatOn = false;
    // Pot* pot = nullptr;
