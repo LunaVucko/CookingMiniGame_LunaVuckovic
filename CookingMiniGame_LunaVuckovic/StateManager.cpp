@@ -21,6 +21,13 @@ StateManager::StateManager()
         std::cout << "Failed to load pot texture\n";
     }
 
+    //jug
+
+    if (!jugTexture.loadFromFile("Texture/tools_spritesheet.png"))
+    {
+        std::cout << "Failed to load tools texture\n";
+    }
+
     // sink
 
     if (!sinkTexture.loadFromFile("Texture/sink_layout.png"))
@@ -188,6 +195,19 @@ std::unique_ptr<Pot> StateManager::createPot()
 
         //top down view
         sf::IntRect({ 1210,0 }, { 605,560 }),
+        sf::IntRect({ 1815,0 }, { 605,560 })
+    );
+}
+
+std::unique_ptr<Jug> StateManager::createJug()
+{
+    return std::make_unique<Jug>(
+        jugTexture,
+
+        // empty jug
+        sf::IntRect({ 1210,0 }, { 605,560}),
+
+        // filled jug
         sf::IntRect({ 1815,0 }, { 605,560 })
     );
 }

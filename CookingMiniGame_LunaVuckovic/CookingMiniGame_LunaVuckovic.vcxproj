@@ -152,6 +152,7 @@
     <ClInclude Include="IngredientTypes.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="Jug.h" />
     <ClInclude Include="KitchenCounterState.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />

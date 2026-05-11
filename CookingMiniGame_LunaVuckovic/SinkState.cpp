@@ -26,6 +26,17 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
         pot->sprite.setScale({ 0.3f, 0.3f });
     }
 
+    if (!manager.hasJugSpawned)
+    {
+        jug = manager.createJug();
+
+        manager.hasJugSpawned = true;
+
+        jug->sprite.setPosition({ 350.f, 500.f });
+
+        jug->sprite.setScale({ 0.3f, 0.3f });
+    }
+
    
 
 }
@@ -53,6 +64,11 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             {
                 pot->isDragging = false;
             }
+
+            if (jug)
+            {
+                jug->isDragging = false;
+            }
                
 
 
@@ -75,6 +91,15 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             {
                 pot->isDragging = true;
                 pot->dragOffset = pot->sprite.getPosition() - mousePos;
+            }
+
+            //pick up the jug
+
+            // pick up jug
+            if (jug && jug->sprite.getGlobalBounds().contains(mousePos))
+            {
+                jug->isDragging = true;
+                jug->dragOffset = jug->sprite.getPosition() - mousePos;
             }
 
             if (knobArea.contains(mousePos))
@@ -113,30 +138,6 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
         sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
 
-
-        // 1. Fill the pot in the sink FIRST
-        if (pot && pot->isDragging && sinkArea.contains(mousePos))
-        {
-            pot->isDragging = false;
-            if (auto* potObj = dynamic_cast<Pot*>(pot.get()))
-            {
-                if (waterOn && potObj->state == PotState::Empty)
-                {
-                    pot->state = PotState::Filled;
-                    pot->updateSprite();
-
-                    std::cout << "Pot filled with water!\n";
-                }
-                else if (!waterOn)
-                {
-                    std::cout << "Turn on water first!\n";
-                }
-            }
-
-            return;
-        }
-
-        // 2. THEN put the filled pot in the inventory
         if (pot && pot->isDragging && manager.inventory.contains(mousePos))
         {
             pot->isDragging = false;
@@ -163,6 +164,64 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             return;
         }
 
+        if (jug && jug->isDragging && manager.inventory.contains(mousePos))
+        {
+            jug->isDragging = false;
+
+            int slotIndex = manager.inventory.getSlotIndexAt(mousePos);
+
+            if (slotIndex != -1)
+            {
+                manager.inventory.insertItemAt(std::move(jug), slotIndex);
+            }
+            else
+            {
+                manager.inventory.addItem(std::move(jug));
+            }
+
+            jug = nullptr;
+
+            std::cout << "Jug added to inventory!\n";
+
+            return;
+        }
+
+
+        if (jug && jug->isDragging && sinkArea.contains(mousePos))
+        {
+            jug->isDragging = false;
+
+            if (waterOn)
+            {
+                if (jug->state == JugState::Empty)
+                {
+                    jug->state = JugState::Filled;
+
+                    jug->updateSprite();
+
+                    std::cout << "Jug filled with water!\n";
+                }
+                else
+                {
+                    std::cout << "Jug already filled!\n";
+                }
+            }
+            else
+            {
+                std::cout << "Turn on water first!\n";
+            }
+
+            return;
+        }
+
+        if (pot && pot->isDragging && sinkArea.contains(mousePos))
+        {
+            pot->isDragging = false;
+
+            std::cout << "You can't fill the pot directly! Use the jug.\n";
+
+            return;
+        }
       
 
         if (isTurningKnob)
@@ -209,6 +268,11 @@ void SinkState::update()
     {
         pot->sprite.setPosition(currentMousePos + pot->dragOffset);
     }
+
+    if (jug && jug->isDragging)
+    {
+        jug->sprite.setPosition(currentMousePos + jug->dragOffset);
+    }
 }
 
 void SinkState::draw(sf::RenderWindow& window)
@@ -217,7 +281,14 @@ void SinkState::draw(sf::RenderWindow& window)
 
     //if (pot)
     if (pot)
+    {
         window.draw(pot->sprite);
+    }
+
+    if (jug)
+    {
+        window.draw(jug->sprite);
+    }
 
     // manager.inventory bar
     manager.inventory.draw(window);

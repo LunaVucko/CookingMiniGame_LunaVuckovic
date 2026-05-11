@@ -4,6 +4,7 @@
 #include "Ingredient.h"
 #include "Inventory.h" 
 #include "Pot.h"
+#include "Jug.h"
 
 class StateManager
 {
@@ -26,6 +27,9 @@ public:
     //pot
     sf::Texture potTexture;
 
+    //jug
+    sf::Texture jugTexture;
+
     //sink
     sf::Texture sinkTexture;
     sf::Texture waterTexture;
@@ -42,6 +46,7 @@ public:
 
     // sink state data
     bool hasPotSpawned = false;
+    bool hasJugSpawned = false;
     // stove state data 
 
     bool stoveHasPot = false; // checking is stove has pot
@@ -66,6 +71,8 @@ public:
     void draw(sf::RenderWindow& window);
 
     std::unique_ptr<Pot> createPot();
+
+    std::unique_ptr<Jug> createJug();
 
     void setupCookingRects(CookingItem& cookingItem, IngredientType type);
 };

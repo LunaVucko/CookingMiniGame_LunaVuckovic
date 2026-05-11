@@ -98,5 +98,8 @@
     <ClInclude Include="CookingItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Jug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

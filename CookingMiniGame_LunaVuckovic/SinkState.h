@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include "Pot.h"
+#include "Jug.h"
 
 class SinkState : public GameState
 {
@@ -21,6 +22,8 @@ private:
     sf::FloatRect sinkArea;
 
     std::unique_ptr<Pot> pot;
+
+    std::unique_ptr<Jug> jug;
 
     //mouse 
     sf::Vector2f currentMousePos;
