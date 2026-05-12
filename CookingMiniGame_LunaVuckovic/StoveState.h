@@ -30,6 +30,15 @@ private:
     //bool heatOn = false;
    // Pot* pot = nullptr;
 
+    bool potHasWater = false;
+
+    bool waterInitialized = false;
+
+    CookingItem waterItem;
+
+    sf::IntRect waterRect = sf::IntRect({ 605, 2240 }, { 605,560 });
+    sf::IntRect waterCookedRect = sf::IntRect({ 1860, 2240 }, { 605,560 });
+
 
 public:
     StoveState(StateManager& manager);

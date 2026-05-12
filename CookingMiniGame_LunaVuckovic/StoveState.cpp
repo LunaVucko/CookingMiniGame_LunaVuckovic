@@ -100,7 +100,56 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 }
                 return;
             }
-        
+            if (auto* jug = dynamic_cast<Jug*>(item.get()))
+            {
+
+                if (jug->state != JugState::Filled)
+                {
+                    std::cout << "Jug is empty!\n";
+                    manager.inventory.addItem(std::move(item));
+                    return;
+                }
+
+                if (!manager.stovePot)
+                {
+                    std::cout << "Place pot first!\n";
+                    manager.inventory.addItem(std::move(item));
+                    return;
+                }
+
+                if (manager.stovePot->stoveItems.empty())
+                {
+                    std::cout << "Add ingredients before water!\n";
+                    manager.inventory.addItem(std::move(item));
+                    return;
+                }
+
+                if (potHasWater)
+                {
+                    std::cout << "Pot already has water!\n";
+                    manager.inventory.addItem(std::move(item));
+                    return;
+                }
+
+                potHasWater = true;
+
+                // INIT WATER ONCE
+                waterItem = CookingItem();
+                // convert water into cooking item
+                waterItem.item = std::make_unique<Item>(manager.potIngredientsTexture);
+                waterItem.item->sprite.setTextureRect(waterRect);
+
+                waterItem.cookState = CookState::Raw;
+                waterItem.cookingClock.restart();
+                waterItem.isCookingStarted = true;
+
+                waterInitialized = true;
+
+
+                std::cout << "Water added to pot!\n";
+
+                return;
+            }
                         // check if it's an ingredient
                         if (auto* ingredient = dynamic_cast<Ingredient*>(item.get()))
                         {
@@ -160,6 +209,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                             // not an ingredient (just in case)
                             manager.inventory.addItem(std::move(item));
                         }
+
             
                
                 
@@ -185,39 +235,60 @@ void StoveState::update()
     //{
         //for (auto& cookingItem : manager.stoveItems)
         //{
-            if (!manager.stoveHeatOn)
-            {
-               return;
-            }
-            if (!manager.stovePot)
-            {
-                return;
-            }
-            // No active item = nothing cooks
-            if (!manager.stovePot->activeCookingItem)
-            {
-                return;
-            }
+    if (!manager.stoveHeatOn)
+    {
+        return;
+    }
+    if (!manager.stovePot)
+    {
+        return;
+    }
+    // No active item = nothing cooks
+    if (!manager.stovePot->activeCookingItem)
+    {
+        return;
+    }
 
-            CookingItem& cookingItem = *manager.stovePot->activeCookingItem;
+    bool cookingPaused = potHasWater && waterInitialized;
 
-            float time = cookingItem.cookingClock.getElapsedTime().asSeconds();
+    CookingItem& cookingItem = *manager.stovePot->activeCookingItem;
 
-            // RAW becomes COOKED
-            if (time >= 5.f && cookingItem.cookState == CookState::Raw)
-            {
-                cookingItem.cookState = CookState::Cooked;
-                cookingItem.item->sprite.setTextureRect(cookingItem.cookedRect);
-                std::cout << "Ingredient cooked\n";
-            }
+    float time = cookingItem.cookingClock.getElapsedTime().asSeconds();
 
-            // COOKED becomes OVERCOOKED
-            else if (time >= 10.f && cookingItem.cookState == CookState::Cooked)
-            {
-                cookingItem.cookState = CookState::Overcooked;
-                cookingItem.item->sprite.setTextureRect(cookingItem.overcookedRect);
-                std::cout << "Ingredient burned\n";
-            }
+
+    if (!cookingPaused)
+    {
+        // RAW becomes COOKED
+        if (time >= 5.f && cookingItem.cookState == CookState::Raw)
+        {
+            cookingItem.cookState = CookState::Cooked;
+            cookingItem.item->sprite.setTextureRect(cookingItem.cookedRect);
+            std::cout << "Ingredient cooked\n";
+        }
+
+        // COOKED becomes OVERCOOKED
+        else if (time >= 10.f && cookingItem.cookState == CookState::Cooked)
+        {
+            cookingItem.cookState = CookState::Overcooked;
+            cookingItem.item->sprite.setTextureRect(cookingItem.overcookedRect);
+            std::cout << "Ingredient burned\n";
+        }
+    }
+
+    if (potHasWater && waterInitialized && manager.stoveHeatOn)
+    {
+        float t = waterItem.cookingClock.getElapsedTime().asSeconds();
+
+        if (t >= 5.f && waterItem.cookState == CookState::Raw)
+        {
+            waterItem.cookState = CookState::Cooked;
+
+            waterItem.item->sprite.setTextureRect(waterCookedRect);
+
+            std::cout << "Water is boiling!\n";
+        }
+    }
+
       //  }
     //}
 }
@@ -236,6 +307,24 @@ void StoveState::draw(sf::RenderWindow& window)
     if (manager.stovePot)
     {
         window.draw(manager.stovePot->sprite);
+
+        // draw water layer
+       
+            if (potHasWater && waterInitialized)
+            {
+                sf::Vector2f potPos = manager.stovePot->sprite.getPosition();
+            
+                waterItem.item->sprite.setPosition({
+                    potPos.x - 280.f,
+                    potPos.y - 280.f
+                    });
+
+
+                waterItem.item->sprite.setScale(manager.stovePot->sprite.getScale());
+              
+
+                window.draw(waterItem.item->sprite);
+            }
 
         // Pot ingredients
         for (auto& cookingItem : manager.stovePot->stoveItems)

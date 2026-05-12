@@ -125,34 +125,6 @@ StateManager::StateManager()
         IngredientType::Buillion
     ));
 
-
-    //testinhg it out with the carrot only, will add the other ingredients soon
-    /*
-    
-    inventory.addItem(std::make_unique<Ingredient>(
-        ingredientsTexture, sf::IntRect({ 0,0 }, { 605,560 }), sf::IntRect({ 1210,560 }, { 605,560 }), sf::IntRect({ 1860,560 }, { 605,560 }), IngredientType::Carrot));
-
-    //testinhg it out with the carrot only
-
-    inventory.addItem(std::make_unique<Ingredient>(
-        ingredientsTexture, sf::IntRect({ 605,0 }, { 605,560 }), IngredientType::Parsnip));
-
-    inventory.addItem(std::make_unique<Ingredient>(
-        ingredientsTexture, sf::IntRect({ 1210,0 }, { 605,560 }), IngredientType::Chicken));
-
-    inventory.addItem(std::make_unique<Ingredient>(
-        ingredientsTexture, sf::IntRect({ 1860,0 }, { 605,560 }), IngredientType::Cereliac));
-
-    inventory.addItem(std::make_unique<Ingredient>(
-        ingredientsTexture, sf::IntRect({ 2465,0 }, { 605,560 }), IngredientType::Garlic));
-
-    inventory.addItem(std::make_unique<Ingredient>(
-        ingredientsTexture, sf::IntRect({ 0,560 }, { 605,560 }), IngredientType::Buillion));
-
-    inventory.addItem(std::make_unique<Ingredient>(
-        ingredientsTexture, sf::IntRect({ 605,560 }, { 605,560 }), IngredientType::Parsley));
-
-        */
 }
 
 void StateManager::setState(std::unique_ptr<GameState> newState)

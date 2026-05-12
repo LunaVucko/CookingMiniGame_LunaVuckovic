@@ -18,19 +18,19 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
     knobArea = sf::FloatRect({ 700.f, 290.f }, { 120.f, 120.f });
 
     //checks if pot is laready in inventory so it doesn't respawn when coming back to the sink
-    if (!manager.hasPotSpawned)
+    if (!manager.potInInventory)
     {
         pot = manager.createPot();
-        manager.hasPotSpawned = true;
+        //manager.potInInventory = true;
         pot->sprite.setPosition({ 100.f, 500.f });
         pot->sprite.setScale({ 0.3f, 0.3f });
     }
 
-    if (!manager.hasJugSpawned)
+    if (!manager.jugInInventory)
     {
         jug = manager.createJug();
 
-        manager.hasJugSpawned = true;
+        //manager.jugInInventory = true;
 
         jug->sprite.setPosition({ 350.f, 500.f });
 
@@ -159,6 +159,8 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
             pot = nullptr; //the pot is gone after it has been moved so that ESC works (pointers are so weird)
 
+            manager.potInInventory = true;
+
             std::cout << "Pot added to inventory!\n";
 
             return;
@@ -167,6 +169,16 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         if (jug && jug->isDragging && manager.inventory.contains(mousePos))
         {
             jug->isDragging = false;
+
+            // prevent empty jug from entering inventory
+            if (jug->state == JugState::Empty)
+            {
+                jug->sprite.setPosition({ 350.f, 500.f });
+
+                std::cout << "Fill the jug with water first!\n";
+
+                return;
+            }
 
             int slotIndex = manager.inventory.getSlotIndexAt(mousePos);
 
@@ -180,6 +192,8 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             }
 
             jug = nullptr;
+
+            manager.jugInInventory = true;
 
             std::cout << "Jug added to inventory!\n";
 

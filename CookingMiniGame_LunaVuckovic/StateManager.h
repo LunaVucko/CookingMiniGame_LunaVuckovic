@@ -45,8 +45,8 @@ public:
     sf::Texture* currentTexture = nullptr;
 
     // sink state data
-    bool hasPotSpawned = false;
-    bool hasJugSpawned = false;
+    bool potInInventory = false;
+    bool jugInInventory = false;
     // stove state data 
 
     bool stoveHasPot = false; // checking is stove has pot
