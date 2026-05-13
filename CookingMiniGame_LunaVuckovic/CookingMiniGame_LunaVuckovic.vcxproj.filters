@@ -51,6 +51,9 @@
     <ClCompile Include="StateManager.cpp">
       <Filter>States</Filter>
     </ClCompile>
+    <ClCompile Include="ResultState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainMenu.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="Jug.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResultState.h">
+      <Filter>States</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

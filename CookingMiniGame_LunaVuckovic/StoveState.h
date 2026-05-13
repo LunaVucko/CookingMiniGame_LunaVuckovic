@@ -36,8 +36,8 @@ private:
 
     CookingItem waterItem;
 
-    sf::IntRect waterRect = sf::IntRect({ 605, 2240 }, { 605,560 });
-    sf::IntRect waterCookedRect = sf::IntRect({ 1860, 2240 }, { 605,560 });
+    sf::IntRect waterRect = sf::IntRect({ 615, 2250 }, { 605,560 });
+    sf::IntRect waterCookedRect = sf::IntRect({ 1860, 2250 }, { 605,560 });
 
 
 public:

@@ -142,6 +142,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="PlayState.h" />
+    <ClCompile Include="ResultState.cpp" />
     <ClCompile Include="SinkState.cpp" />
     <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="StoveState.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Pot.h" />
+    <ClInclude Include="ResultState.h" />
     <ClInclude Include="SinkState.h" />
     <ClInclude Include="StateManager.h" />
     <ClInclude Include="StoveState.h" />

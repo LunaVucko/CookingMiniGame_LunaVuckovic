@@ -1,5 +1,6 @@
 #include "StoveState.h"
 #include "PlayState.h"
+#include "ResultState.h"
 #include <iostream>
 
 StoveState::StoveState(StateManager& manager) : manager(manager)
@@ -275,7 +276,7 @@ void StoveState::update()
         }
     }
 
-    if (potHasWater && waterInitialized && manager.stoveHeatOn)
+    if (potHasWater && waterInitialized && manager.stoveHeatOn && !manager.soupFinished)
     {
         float t = waterItem.cookingClock.getElapsedTime().asSeconds();
 
@@ -286,8 +287,31 @@ void StoveState::update()
             waterItem.item->sprite.setTextureRect(waterCookedRect);
 
             std::cout << "Water is boiling!\n";
+
+            // calculate final soup score
+            manager.soupScore = 0;
+
+            for (auto& cookingItem : manager.stovePot->stoveItems)
+            {
+                manager.addIngredientScore(cookingItem.cookState);
+            }
+
+            manager.soupFinished = true;
+
+           
+
+            std::cout << "Soup complete!\n";
+            std::cout << "Final score: " << manager.soupScore << "\n";
+
+            manager.setState(std::make_unique<ResultState>(manager));
+
+            return;
         }
+
+        
     }
+
+
 
       //  }
     //}
@@ -308,28 +332,29 @@ void StoveState::draw(sf::RenderWindow& window)
     {
         window.draw(manager.stovePot->sprite);
 
-        // draw water layer
-       
-            if (potHasWater && waterInitialized)
-            {
-                sf::Vector2f potPos = manager.stovePot->sprite.getPosition();
-            
-                waterItem.item->sprite.setPosition({
-                    potPos.x - 280.f,
-                    potPos.y - 280.f
-                    });
-
-
-                waterItem.item->sprite.setScale(manager.stovePot->sprite.getScale());
-              
-
-                window.draw(waterItem.item->sprite);
-            }
 
         // Pot ingredients
         for (auto& cookingItem : manager.stovePot->stoveItems)
         {
             window.draw(cookingItem.item->sprite);
+        }
+
+        // draw water layer
+
+        if (potHasWater && waterInitialized)
+        {
+            sf::Vector2f potPos = manager.stovePot->sprite.getPosition();
+
+            waterItem.item->sprite.setPosition({
+                potPos.x - 240.f,
+                potPos.y - 250.f
+                });
+
+
+            waterItem.item->sprite.setScale(manager.stovePot->sprite.getScale());
+
+
+            window.draw(waterItem.item->sprite);
         }
     }
 

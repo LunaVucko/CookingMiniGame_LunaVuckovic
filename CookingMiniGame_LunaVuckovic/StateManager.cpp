@@ -184,6 +184,27 @@ std::unique_ptr<Jug> StateManager::createJug()
     );
 }
 
+void StateManager::addIngredientScore(CookState state)
+{
+    switch (state)
+    {
+    case CookState::Raw:
+        soupScore += 5;
+        break;
+
+    case CookState::Cooked:
+        soupScore += 15;
+        break;
+
+    case CookState::Overcooked:
+        soupScore += 10;
+        break;
+    }
+
+    std::cout << "Current soup score: " << soupScore << "\n";
+}
+
+
 void StateManager::setupCookingRects(CookingItem& cookingItem, IngredientType type)
 {
     switch (type)
@@ -280,5 +301,85 @@ void StateManager::setupCookingRects(CookingItem& cookingItem, IngredientType ty
     }
     
 }
+
+
+void StateManager::resetGame()
+{
+    soupScore = 0;
+    soupFinished = false;
+
+    stoveHasPot = false;
+    stoveHeatOn = false;
+
+    potInInventory = false;
+    jugInInventory = false;
+
+    loadStartingInventory();
+
+}
+
+void StateManager::loadStartingInventory()
+{
+
+    // CARROT
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 0, 0 },          // whole
+        { 1210, 560 },     // peeled
+        { 1860, 560 },     // cut
+        IngredientType::Carrot
+    ));
+
+    // PARSNIP
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 605, 0 },          // whole
+        { 2465,560 },     // peeled
+        { 0, 1120 },     // cut
+        IngredientType::Parsnip
+    ));
+
+    // CHICKEN
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 1210,0 },          // whole
+        { 0,0 }, //ignored
+        { 605, 1120 },     // cut
+        IngredientType::Chicken
+    ));
+    // CELERIAC
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 1860,0 },          // whole
+        { 1210, 1120 },      //peeled
+        { 1860, 1120 },     // cut
+        IngredientType::Cereliac
+    ));
+    // PARSLEY
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 605,560 },          // whole
+        { 0, 0 },      //ignore
+        { 0, 1680 },       // cut
+        IngredientType::Parsley
+    ));
+    // GARLIC
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 2465,0 },          // whole
+        { 2465, 1120 },      //ignore
+        { 2465, 1120 },       // cut
+        IngredientType::Garlic
+    ));
+    // Buillion
+    inventory.addItem(createIngredient(
+        ingredientsTexture,
+        { 0,560 },          // whole
+        { 0,0 },      //ignore
+        { 605, 1680 },       // cut
+        IngredientType::Buillion
+    ));
+}
+
     
 

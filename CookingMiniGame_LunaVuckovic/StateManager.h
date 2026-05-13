@@ -58,6 +58,11 @@ public:
 
     //CookingItem* activeCookingItem = nullptr;
 
+    //end game
+
+    int soupScore = 0;
+    bool soupFinished = false;
+
 
     StateManager();
 
@@ -74,5 +79,11 @@ public:
 
     std::unique_ptr<Jug> createJug();
 
+    void addIngredientScore(CookState state);
+
     void setupCookingRects(CookingItem& cookingItem, IngredientType type);
+
+    void resetGame();
+
+    void loadStartingInventory();
 };
