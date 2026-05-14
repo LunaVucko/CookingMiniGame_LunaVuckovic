@@ -21,7 +21,7 @@ private:
     // Sink
     sf::FloatRect sinkArea;
 
-    std::unique_ptr<Pot> pot;
+   // std::unique_ptr<Pot> pot;
 
     std::unique_ptr<Jug> jug;
 

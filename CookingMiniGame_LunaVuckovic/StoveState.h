@@ -23,6 +23,13 @@ private:
     // Pot
     sf::FloatRect potArea;
     sf::FloatRect knobArea;
+
+    //std::unique_ptr<Pot> pot;
+
+    //mouse 
+    sf::Vector2f currentMousePos;
+
+
    // std::vector<std::unique_ptr<Ingredient>> potIngredients;
    // std::vector<std::unique_poptr<Item>> potItems;
  //   std::unique_ptr<Pot> stovePot;

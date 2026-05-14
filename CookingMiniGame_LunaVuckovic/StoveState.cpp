@@ -11,10 +11,31 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
    // background.setTexture(&manager.stoveEmptyTexture);
 
 
-    if (!manager.stoveHasPot)
+    // POT ALREADY PLACED ON STOVE
+    if (manager.stoveHasPot)
     {
-        background.setTexture(&manager.stoveEmptyTexture);
+        background.setTexture(
+            manager.stoveHeatOn
+            ? &manager.stoveFlameTexture
+            : &manager.stovePotTexture
+        );
+
     }
+    else {
+        
+            background.setTexture(&manager.stoveEmptyTexture);
+
+            if (!manager.stovePot)
+            {
+                manager.stovePot = manager.createPot();
+
+                manager.stovePot->sprite.setPosition({ 100.f, 500.f });
+                manager.stovePot->sprite.setScale({ 0.3f, 0.3f });
+
+               // manager.stovePotSpawned = true;
+            }
+    }
+    /*
     else if (manager.stoveHeatOn)
     {
         background.setTexture(&manager.stoveFlameTexture);
@@ -23,12 +44,15 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
     {
         background.setTexture(&manager.stovePotTexture);
     }
+    */
         
-
 
     // Pot area and knob area
     potArea = sf::FloatRect({ 400.f, 300.f }, { 150.f, 150.f });
     knobArea = { {720.f,500.f},{120.f,120.f} };
+
+
+   
 
 }
 
@@ -45,20 +69,50 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         {
             manager.setState(std::make_unique<PlayState>(manager));
 
+            
+
+
            // nextState = std::make_unique<PlayState>(manager);
         }
+
+
+
+    }
+
+    if (event.is<sf::Event::MouseButtonPressed>())
+    {
+        auto mouse = event.getIf<sf::Event::MouseButtonPressed>();
+
+        if (mouse->button == sf::Mouse::Button::Left)
+        {
+            sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
+
+
+             // pick up pot
+            if (manager.stovePot && manager.stovePot->sprite.getGlobalBounds().contains(mousePos))
+            {
+                manager.stovePot->isDragging = true;
+                manager.stovePot->dragOffset = manager.stovePot->sprite.getPosition() - mousePos;
+            }
+           
+        }
+
+
     }
 
     if (event.is<sf::Event::MouseMoved>())
     {
         auto mouse = event.getIf<sf::Event::MouseMoved>();
 
-        sf::Vector2f mousePos(
+        //mouse 
+        currentMousePos = {
             (float)mouse->position.x,
             (float)mouse->position.y
-        );
+        };
 
-        manager.inventory.setMousePosition(mousePos);
+        manager.inventory.setMousePosition(currentMousePos);
+
+
     }
 
     // dropinng and moving mechanic
@@ -68,15 +122,52 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
         sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
 
+        if (manager.stovePot && manager.stovePot->isDragging)
+        {
+            manager.stovePot->isDragging = false;
+
+            if (potArea.contains(mousePos))
+            {
+                manager.stovePot = std::move(manager.stovePot);
+
+                manager.stovePot->isOnStove = true;
+                manager.stovePot->updateSprite();
+
+                
+                manager.stovePot->sprite.setScale({ 0.8f, 0.8f });
+                manager.stovePot->sprite.setPosition({ 220.f, 100.f });
+
+                manager.stoveHasPot = true;
+
+                background.setTexture(&manager.stovePotTexture);
+
+                std::cout << "Pot placed!\n";
+            }
+
+            return;
+        }
+
         if (potArea.contains(mousePos))
         {
+
             auto item = manager.inventory.takeDraggedItem();
             if (!item)
             {
                 return;
             }
+
             if (!manager.stoveHasPot)
             {
+                std::cout << "Can't add ingredient yet! Place pot first.\n";
+
+                // put item back
+                manager.inventory.addItem(std::move(item));
+
+                return;
+            }
+            //if (!manager.stoveHasPot)
+            //{
+                /*
                 // if it's pot then  place pot
                 if (dynamic_cast<Pot*>(item.get()))
                 {
@@ -94,13 +185,14 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 }
                 else
                 {
-                    std::cout << "Can't add ingredient yet! Place pot first.\n";
+                    */
+                //    std::cout << "Can't add ingredient yet! Place pot first.\n";
 
                     // return item back to inventory
-                    manager.inventory.addItem(std::move(item));
-                }
-                return;
-            }
+                 //   manager.inventory.addItem(std::move(item));
+                //}
+                //return;
+           // }
             if (auto* jug = dynamic_cast<Jug*>(item.get()))
             {
 
@@ -174,7 +266,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                                 }
 
                                 IngredientType ingredientType = ingPtr->type;
-                                IngredientState ingredientState = ingPtr->state;
+                                //IngredientState ingredientState = ingPtr->state;
 
                                 CookingItem cookingItem;
                                 cookingItem.item = std::move(item);
@@ -230,6 +322,11 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
 void StoveState::update()
 {
+    if (manager.stovePot && manager.stovePot->isDragging)
+    {
+        manager.stovePot->sprite.setPosition(currentMousePos + manager.stovePot->dragOffset);
+    }
+
     manager.inventory.update();
 
     //if (manager.stoveHeatOn)
@@ -328,6 +425,7 @@ void StoveState::draw(sf::RenderWindow& window)
     {
         window.draw(dragged->sprite);
     }
+    
     if (manager.stovePot)
     {
         window.draw(manager.stovePot->sprite);
@@ -346,8 +444,8 @@ void StoveState::draw(sf::RenderWindow& window)
             sf::Vector2f potPos = manager.stovePot->sprite.getPosition();
 
             waterItem.item->sprite.setPosition({
-                potPos.x - 240.f,
-                potPos.y - 250.f
+                potPos.x - 0.f,
+                potPos.y - 0.f
                 });
 
 

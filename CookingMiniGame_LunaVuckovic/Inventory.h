@@ -54,4 +54,6 @@ public:
     void update();
 
     bool isEmpty() const;
+
+    void clear();
 };

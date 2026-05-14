@@ -258,3 +258,8 @@ void Inventory::draw(sf::RenderWindow& window)
     for (auto& ing : items)
         window.draw(ing->sprite);
 }
+
+void Inventory::clear()
+{
+    slots.clear();
+}

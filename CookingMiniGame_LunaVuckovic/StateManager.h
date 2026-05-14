@@ -52,7 +52,11 @@ public:
     bool stoveHasPot = false; // checking is stove has pot
     bool stoveHeatOn = false;
 
+    bool stovePotSpawned = false;
+
         std::unique_ptr<Pot> stovePot;
+
+        //Pot* pot = nullptr;
     //std::vector<std::unique_ptr<Item>> stoveItems;
    // std::vector<CookingItem> stoveItems;
 

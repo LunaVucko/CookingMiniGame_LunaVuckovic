@@ -18,13 +18,17 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
     knobArea = sf::FloatRect({ 700.f, 290.f }, { 120.f, 120.f });
 
     //checks if pot is laready in inventory so it doesn't respawn when coming back to the sink
-    if (!manager.potInInventory)
+
+    /*
+    *  if (!manager.potInInventory)
     {
         pot = manager.createPot();
         //manager.potInInventory = true;
         pot->sprite.setPosition({ 100.f, 500.f });
         pot->sprite.setScale({ 0.3f, 0.3f });
     }
+    */
+   
 
     if (!manager.jugInInventory)
     {
@@ -58,12 +62,15 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 dragged->isDragging = false;
             }
                 
-
-            // also stop local pot if it still exists
-            if (pot)
+            /*
+            * if (pot)
             {
                 pot->isDragging = false;
             }
+            */
+
+            // also stop local pot if it still exists
+            
 
             if (jug)
             {
@@ -86,16 +93,18 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         {
             sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
 
-            // pick up pot
+
+            /*
+            * // pick up pot
             if (pot && pot->sprite.getGlobalBounds().contains(mousePos))
             {
                 pot->isDragging = true;
                 pot->dragOffset = pot->sprite.getPosition() - mousePos;
             }
+            */
+          
 
             //pick up the jug
-
-            // pick up jug
             if (jug && jug->sprite.getGlobalBounds().contains(mousePos))
             {
                 jug->isDragging = true;
@@ -138,6 +147,7 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
         sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
 
+        /*
         if (pot && pot->isDragging && manager.inventory.contains(mousePos))
         {
             pot->isDragging = false;
@@ -165,6 +175,9 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
             return;
         }
+        */
+
+        
 
         if (jug && jug->isDragging && manager.inventory.contains(mousePos))
         {
@@ -228,6 +241,8 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             return;
         }
 
+        /*
+        
         if (pot && pot->isDragging && sinkArea.contains(mousePos))
         {
             pot->isDragging = false;
@@ -236,6 +251,8 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
             return;
         }
+        */
+
       
 
         if (isTurningKnob)
@@ -278,10 +295,11 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
 void SinkState::update()
 {
-    if (pot && pot->isDragging)
+    /* if (pot && pot->isDragging)
     {
         pot->sprite.setPosition(currentMousePos + pot->dragOffset);
-    }
+    }*/
+   
 
     if (jug && jug->isDragging)
     {
@@ -293,11 +311,15 @@ void SinkState::draw(sf::RenderWindow& window)
 {
     window.draw(background);
 
+    /*
+    
     //if (pot)
     if (pot)
     {
         window.draw(pot->sprite);
     }
+    */
+
 
     if (jug)
     {

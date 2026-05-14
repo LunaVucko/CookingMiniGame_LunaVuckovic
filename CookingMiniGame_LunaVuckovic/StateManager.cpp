@@ -189,7 +189,7 @@ void StateManager::addIngredientScore(CookState state)
     switch (state)
     {
     case CookState::Raw:
-        soupScore += 5;
+        soupScore += 0;
         break;
 
     case CookState::Cooked:
@@ -197,7 +197,7 @@ void StateManager::addIngredientScore(CookState state)
         break;
 
     case CookState::Overcooked:
-        soupScore += 10;
+        soupScore += 5;
         break;
     }
 
@@ -311,8 +311,16 @@ void StateManager::resetGame()
     stoveHasPot = false;
     stoveHeatOn = false;
 
+    stovePotSpawned = false;
+
     potInInventory = false;
     jugInInventory = false;
+
+    // clear old inventory
+    //inventory.clear();
+
+    //reset stove dtata
+    stovePot.reset();
 
     loadStartingInventory();
 
