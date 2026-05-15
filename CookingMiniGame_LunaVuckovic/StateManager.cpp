@@ -64,6 +64,18 @@ StateManager::StateManager()
         std::cout << "Failed to load pot ingredients texture\n";
     }
 
+    //TIMER 
+
+    if (!timerFont.openFromFile("Fonts/Super Starfish.ttf"))
+    {
+        std::cout << "Failed to load font\n";
+    }
+
+    timerText.setCharacterSize(64);
+    timerText.setFillColor(sf::Color::Black);
+
+    timerText.setPosition({ 760.f, 150.f });
+
     // Add items ONCE
 
     // CARROT
@@ -140,14 +152,60 @@ void StateManager::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
 void StateManager::update()
 {
+    if (showTimer && currentState)
+    {
+        timeRemaining = gameDuration - gameTimer.getElapsedTime().asSeconds();
+
+        if (timeRemaining < 0.f)
+        {
+            timeRemaining = 0.f;
+        }
+
+        int minutes = static_cast<int>(timeRemaining) / 60;
+        int seconds = static_cast<int>(timeRemaining) % 60;
+
+        timerText.setString(
+            std::to_string(minutes) + ":" +
+            (seconds < 10 ? "0" : "") +
+            std::to_string(seconds)
+        );
+
+        if (timeRemaining <= 0.f && !gameOver)
+        {
+            gameOver = true;
+
+            setState(std::make_unique<ResultState>(
+                *this,
+                ResultType::TimeUp
+            ));
+        }
+    }
+
     if (currentState)
         currentState->update();
 }
 
 void StateManager::draw(sf::RenderWindow& window)
 {
+
     if (currentState)
         currentState->draw(window);
+
+
+    /*
+      //TIMER
+
+    if (timerStarted)
+    {
+        window.draw(timerText);
+    }
+    */
+
+    if (showTimer)
+    {
+        window.draw(timerText);
+    }
+  
 }
 
 std::unique_ptr<Item> StateManager::createIngredient(sf::Texture& texture, sf::Vector2i wholePos, sf::Vector2i peeledPos, sf::Vector2i cutPos, IngredientType type)
@@ -319,7 +377,16 @@ void StateManager::resetGame()
     // clear old inventory
     //inventory.clear();
 
+    gameTimer.restart();
+    timeRemaining = gameDuration;
+
+    showTimer = false;
+    timerStarted = false;
+
+    gameOver = false;
+
     //reset stove dtata
+
     stovePot.reset();
 
     loadStartingInventory();

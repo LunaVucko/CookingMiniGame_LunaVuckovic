@@ -1,13 +1,20 @@
 #include "ResultState.h"
 #include "MenuState.h"
+#include "StateManager.h"
 
 #include <iostream>
 
-ResultState::ResultState(StateManager& manager)
-    : manager(manager), resultText(font),
+ResultState::ResultState(StateManager& manager, ResultType type)
+    : manager(manager), resultType(type),
+    resultText(font),
     scoreText(font),
     continueText(font)
 {
+
+    manager.showTimer = false;
+
+   // ResultType resultType;
+
     // background
     background.setSize({ 960.f, 720.f });
     background.setFillColor(sf::Color(30, 30, 30));
@@ -38,18 +45,30 @@ ResultState::ResultState(StateManager& manager)
 
     continueText.setString("Click anywhere to return to menu");
 
-    // determine ranking
-    if (manager.soupScore < 40)
+    //timer running out
+    if (resultType == ResultType::TimeUp)
     {
-        resultText.setString("TRY AGAIN");
+        resultText.setString("TIME'S UP!");
+        scoreText.setString("You ran out of time\nTry again!");
     }
-    else if (manager.soupScore < 70)
-    {
-        resultText.setString("GOOD");
-    }
-    else
-    {
-        resultText.setString("AMAZING");
+    else {
+
+
+        // determine ranking
+        if (manager.soupScore < 40)
+        {
+            resultText.setString("TRY AGAIN");
+        }
+        else if (manager.soupScore < 70)
+        {
+            resultText.setString("GOOD");
+        }
+        else
+        {
+            resultText.setString("AMAZING");
+        }
+
+       // scoreText.setString("Final Score: " + std::to_string(manager.soupScore));
     }
 
     // center result text
@@ -62,10 +81,13 @@ ResultState::ResultState(StateManager& manager)
 
     resultText.setPosition({ 510.f, 180.f });
 
-    // score text
-    scoreText.setString(
-        "Final Score: " + std::to_string(manager.soupScore)
-    );
+    if (resultType != ResultType::TimeUp)
+    {
+        // score text
+        scoreText.setString(
+            "Final Score: " + std::to_string(manager.soupScore)
+        );
+    }
 
     sf::FloatRect scoreBounds = scoreText.getLocalBounds();
 

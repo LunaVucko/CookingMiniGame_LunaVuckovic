@@ -64,6 +64,9 @@ void PlayState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
         if (key && key->code == sf::Keyboard::Key::Escape)
         {
+            manager.timerStarted = false;
+            manager.showTimer = false;
+            manager.gameTimer.restart();
             nextState = std::make_unique<MenuState>(manager, 960, 720);
         }
     }

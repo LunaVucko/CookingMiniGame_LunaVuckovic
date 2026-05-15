@@ -3,6 +3,14 @@
 #include "GameState.h"
 #include "StateManager.h"
 
+class StateManager;
+
+enum class ResultType
+{
+    Score,
+    TimeUp
+};
+
 class ResultState : public GameState
 {
 private:
@@ -16,8 +24,12 @@ private:
 
     sf::RectangleShape background;
 
+    ResultType resultType;
+
+
+
 public:
-    ResultState(StateManager& manager);
+    ResultState(StateManager& manager, ResultType resultType);
 
     void handleEvent(sf::RenderWindow& window, const sf::Event& event) override;
 

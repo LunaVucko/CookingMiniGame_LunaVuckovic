@@ -20,13 +20,26 @@ void MenuState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             int x = menu.MainMenuPressed();
 
             if (x == 0)
+            {
+                manager.soupScore = 0;
+                manager.gameTimer.restart();
+
+                manager.timerStarted = true;
+                manager.showTimer = true;
                 manager.setState(std::make_unique<PlayState>(manager)); // PLAY
+            }
 
             if (x == 1)
+            {
                 manager.setState(std::make_unique<OptionsState>(manager)); //OPTIONS
+            }
 
+       
             if (x == 2)
+            {
                 window.close(); // EXIT
+            }
+               
         }
     }
 }

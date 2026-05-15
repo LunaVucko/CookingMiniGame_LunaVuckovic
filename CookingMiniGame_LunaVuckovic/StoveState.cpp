@@ -400,7 +400,11 @@ void StoveState::update()
             std::cout << "Soup complete!\n";
             std::cout << "Final score: " << manager.soupScore << "\n";
 
-            manager.setState(std::make_unique<ResultState>(manager));
+            //manager.setState(std::make_unique<ResultState>(manager));
+            manager.setState(std::make_unique<ResultState>(
+                manager,
+                ResultType::Score
+            ));
 
             return;
         }

@@ -5,6 +5,10 @@
 #include "Inventory.h" 
 #include "Pot.h"
 #include "Jug.h"
+#include "ResultState.h"
+#include <SFML/System/Clock.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Font.hpp>
 
 class StateManager
 {
@@ -66,6 +70,21 @@ public:
 
     int soupScore = 0;
     bool soupFinished = false;
+
+    // TIMER
+    sf::Clock gameTimer;
+
+    float gameDuration = 10.f; // 10 seconds for testing
+    float timeRemaining = 10.f;
+
+    sf::Font timerFont;
+    sf::Text timerText{ timerFont };
+
+    bool gameOver = false;
+
+    bool timerStarted = false;
+
+    bool showTimer = false;
 
 
     StateManager();
