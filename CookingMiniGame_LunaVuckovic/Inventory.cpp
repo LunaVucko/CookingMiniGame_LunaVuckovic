@@ -261,5 +261,5 @@ void Inventory::draw(sf::RenderWindow& window)
 
 void Inventory::clear()
 {
-    slots.clear();
+    items.clear();
 }

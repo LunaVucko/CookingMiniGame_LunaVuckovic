@@ -173,8 +173,12 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         {
                             canCutNow = (selectedIngredient->state == IngredientState::Whole);
                         }
-
-                        if (canCutNow)
+                        if (selectedIngredient->state == IngredientState::Cut)
+                        {
+                            std::cout << "Already cut!\n";
+                            currentTool = ToolType::None;
+                        }
+                        else if (canCutNow)
                         {
                             selectedIngredient->state = IngredientState::Cut;
                             selectedIngredient->updateSprite();
@@ -184,6 +188,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         else
                         {
                             std::cout << "Can't cut yet!\n";
+                            currentTool = ToolType::None;
                         }
                     }
                 }
@@ -191,7 +196,12 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 //PEEL (horizontal)
                 else if (currentTool == ToolType::Peeler && dx > dy)
                 {
-                    if (selectedIngredient->state == IngredientState::Whole &&
+                    if (selectedIngredient->state == IngredientState::Peeled)
+                    {
+                        std::cout << "Already peeled!\n";
+                        currentTool = ToolType::None;
+                    }
+                    else if (selectedIngredient->state == IngredientState::Whole &&
                         canPeel(selectedIngredient->type))
                     {
                         selectedIngredient->state = IngredientState::Peeled;
@@ -202,6 +212,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                     else
                     {
                         std::cout << "Can't peel this!\n";
+                        currentTool = ToolType::None;
                     }
                 }
             }

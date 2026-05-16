@@ -24,4 +24,7 @@ struct CookingItem
     sf::Clock cookingClock;
 
     bool isCookingStarted = false;
+
+    float cookTime = 5.f;
+    float burnTime = 10.f;
 };

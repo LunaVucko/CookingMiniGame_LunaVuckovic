@@ -210,10 +210,13 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                     return;
                 }
 
-                if (manager.stovePot->stoveItems.empty())
+                if (manager.stovePot->stoveItems.size() < manager.requiredIngredients)
                 {
-                    std::cout << "Add ingredients before water!\n";
+                    std::cout << "Add all the ingredients before adding the water!\n";
+
+                    // return jug back to inventory
                     manager.inventory.addItem(std::move(item));
+
                     return;
                 }
 
@@ -276,6 +279,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                                 cookingItem.isCookingStarted = true;
 
                                 manager.setupCookingRects(cookingItem, ingredientType);
+                                manager.setupCookingTimes(cookingItem, ingredientType);
 
                                 cookingItem.item->sprite.setTexture(manager.potIngredientsTexture);
                                 cookingItem.item->sprite.setTextureRect(cookingItem.rawRect);
@@ -357,7 +361,7 @@ void StoveState::update()
     if (!cookingPaused)
     {
         // RAW becomes COOKED
-        if (time >= 5.f && cookingItem.cookState == CookState::Raw)
+        if (time >= cookingItem.cookTime && cookingItem.cookState == CookState::Raw)
         {
             cookingItem.cookState = CookState::Cooked;
             cookingItem.item->sprite.setTextureRect(cookingItem.cookedRect);
@@ -365,7 +369,7 @@ void StoveState::update()
         }
 
         // COOKED becomes OVERCOOKED
-        else if (time >= 10.f && cookingItem.cookState == CookState::Cooked)
+        else if (time >= cookingItem.burnTime && cookingItem.cookState == CookState::Cooked)
         {
             cookingItem.cookState = CookState::Overcooked;
             cookingItem.item->sprite.setTextureRect(cookingItem.overcookedRect);

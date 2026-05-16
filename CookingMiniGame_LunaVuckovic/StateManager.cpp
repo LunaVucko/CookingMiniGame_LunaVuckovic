@@ -170,6 +170,25 @@ void StateManager::update()
             std::to_string(seconds)
         );
 
+        // NORMAL COLOR
+        timerText.setFillColor(sf::Color::Black);
+
+        // LAST 10 SECONDS then BLINK RED
+        if (timeRemaining <= 10.f)
+        {
+            // blinking effect
+            int blink = static_cast<int>(timeRemaining * 4) % 2;
+
+            if (blink == 0)
+            {
+                timerText.setFillColor(sf::Color::Red);
+            }
+            else
+            {
+                timerText.setFillColor(sf::Color::White);
+            }
+        }
+
         if (timeRemaining <= 0.f && !gameOver)
         {
             gameOver = true;
@@ -360,6 +379,47 @@ void StateManager::setupCookingRects(CookingItem& cookingItem, IngredientType ty
     
 }
 
+void StateManager::setupCookingTimes(CookingItem& cookingItem, IngredientType type)
+{
+    switch (type)
+    {
+    case IngredientType::Garlic:
+        cookingItem.cookTime = 5.f;
+        cookingItem.burnTime = 8.f;
+        break;
+
+    case IngredientType::Chicken:
+        cookingItem.cookTime = 15.f;
+        cookingItem.burnTime = 25.f;
+        break;
+
+    case IngredientType::Carrot:
+        cookingItem.cookTime = 8.f;
+        cookingItem.burnTime = 14.f;
+        break;
+
+    case IngredientType::Parsnip:
+        cookingItem.cookTime = 7.f;
+        cookingItem.burnTime = 12.f;
+        break;
+
+    case IngredientType::Parsley:
+        cookingItem.cookTime = 3.f;
+        cookingItem.burnTime = 6.f;
+        break;
+
+    case IngredientType::Cereliac:
+        cookingItem.cookTime = 10.f;
+        cookingItem.burnTime = 18.f;
+        break;
+
+    case IngredientType::Buillion:
+        cookingItem.cookTime = 2.f;
+        cookingItem.burnTime = 5.f;
+        break;
+    }
+}
+
 
 void StateManager::resetGame()
 {
@@ -375,7 +435,7 @@ void StateManager::resetGame()
     jugInInventory = false;
 
     // clear old inventory
-    //inventory.clear();
+    inventory.clear();
 
     gameTimer.restart();
     timeRemaining = gameDuration;

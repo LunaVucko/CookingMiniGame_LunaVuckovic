@@ -58,7 +58,9 @@ public:
 
     bool stovePotSpawned = false;
 
-        std::unique_ptr<Pot> stovePot;
+    std::unique_ptr<Pot> stovePot;
+
+    int requiredIngredients = 7;
 
         //Pot* pot = nullptr;
     //std::vector<std::unique_ptr<Item>> stoveItems;
@@ -74,8 +76,14 @@ public:
     // TIMER
     sf::Clock gameTimer;
 
-    float gameDuration = 10.f; // 10 seconds for testing
-    float timeRemaining = 10.f;
+    //float gameDuration = 10.f; // 10 seconds for testing
+    // float timeRemaining = 10.f;
+    float gameDuration = 241.f; // 4 minutes
+    float timeRemaining = 241.f;
+       
+  // float gameDuration = 21.f; // 20 seconds
+   //float timeRemaining = 21.f;
+   
 
     sf::Font timerFont;
     sf::Text timerText{ timerFont };
@@ -106,7 +114,11 @@ public:
 
     void setupCookingRects(CookingItem& cookingItem, IngredientType type);
 
+    void setupCookingTimes(CookingItem& cookingItem, IngredientType type);
+
     void resetGame();
 
     void loadStartingInventory();
+
+
 };
