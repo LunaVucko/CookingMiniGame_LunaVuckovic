@@ -41,6 +41,8 @@ public:
     std::unique_ptr<Item> takeDraggedItem();
    // std::unique_ptr<Ingredient> takeDraggedItem();
 
+    Item* getItemAt(sf::Vector2f mousePos);
+
     bool contains(sf::Vector2f point) const;
 
     int getSlotIndexAt(sf::Vector2f point) const;
@@ -56,4 +58,5 @@ public:
     bool isEmpty() const;
 
     void clear();
+
 };

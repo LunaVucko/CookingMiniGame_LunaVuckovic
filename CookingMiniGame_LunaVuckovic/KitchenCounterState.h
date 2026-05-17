@@ -47,6 +47,18 @@ private:
    sf::Vector2f dragStart;
    sf::Vector2f dragEnd;
    bool isDraggingGesture = false;
+
+   // animation
+   bool isAnimating = false;
+
+   ToolType animationTool = ToolType::None;
+
+   sf::Clock animationClock;
+
+   float animationDuration = 0.7f;
+
+   // animated tool sprite
+   std::optional<sf::Sprite> animationSprite;
  
 
 public:

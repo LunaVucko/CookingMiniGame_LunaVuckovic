@@ -63,7 +63,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
     if (event.is<sf::Event::MouseButtonPressed>())
     {
         //inventory drag
-        manager.inventory.handleEvent(event);
+        //manager.inventory.handleEvent(event);
 
         auto mouse = event.getIf<sf::Event::MouseButtonPressed>();
 
@@ -73,6 +73,18 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 (float)mouse->position.x,
                 (float)mouse->position.y
             );
+
+            Item* clickedItem = manager.inventory.getItemAt(mousePos);
+
+            // BLOCK dragging the jug
+            if (dynamic_cast<Jug*>(clickedItem))
+            {
+                std::cout << "Can't use the jug here!\n";
+            }
+            else
+            {
+                manager.inventory.handleEvent(event);
+            }
 
             dragStart = mousePos;
             isDraggingGesture = true;
@@ -182,6 +194,17 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         {
                             selectedIngredient->state = IngredientState::Cut;
                             selectedIngredient->updateSprite();
+
+                            // START CUT ANIMATION
+                            isAnimating = true;
+                            animationTool = ToolType::Knife;
+
+                            animationSprite = toolItems[0].sprite;
+                            animationSprite.value().setPosition({ 500.f, 250.f });
+
+                            animationClock.restart();
+
+
                             currentTool = ToolType::None; //unselect the tool
                             std::cout << "Cut!\n";
                         }
@@ -206,6 +229,17 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                     {
                         selectedIngredient->state = IngredientState::Peeled;
                         selectedIngredient->updateSprite();
+
+
+                        // START PEEL ANIMATION
+                        isAnimating = true;
+                        animationTool = ToolType::Peeler;
+
+                        animationSprite = toolItems[1].sprite;
+                        animationSprite.value().setPosition({ 500.f, 250.f });
+
+                        animationClock.restart();
+
                         currentTool = ToolType::None;//unselect the tool
                         std::cout << "Peeled!\n";
                     }
@@ -292,6 +326,41 @@ void KitchenCounterState::update()
         }
     }
 
+    if (isAnimating)
+    {
+        float t = animationClock.getElapsedTime().asSeconds();
+
+        // animation finished
+        if (t >= animationDuration)
+        {
+            isAnimating = false;
+        }
+        else
+        {
+            // KNIFE animation
+            if (animationTool == ToolType::Knife)
+            {
+                float offset = std::sin(t * 40.f) * 20.f;
+
+                animationSprite.value().setPosition({
+                        450.f,
+                        300.f + offset
+                    });
+            }
+
+            // PEELER animation
+            else if (animationTool == ToolType::Peeler)
+            {
+                float offset = std::sin(t * 20.f) * 30.f;
+
+
+                animationSprite.value().setPosition({
+                        450.f,
+                        300.f + offset
+                    });
+            }
+        }
+    }
  
 }
 
@@ -313,6 +382,12 @@ void KitchenCounterState::draw(sf::RenderWindow& window)
     for (auto& tool : toolItems)
     {
         window.draw(tool.sprite);
+    }
+
+    //animation
+    if (isAnimating && animationSprite.has_value())
+    {
+        window.draw(animationSprite.value());
     }
 
     // debug

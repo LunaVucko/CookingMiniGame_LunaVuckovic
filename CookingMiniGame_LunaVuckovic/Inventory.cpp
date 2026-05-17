@@ -248,6 +248,19 @@ std::unique_ptr<Item> Inventory::takeDraggedItem()
     return nullptr;
 }
 
+Item* Inventory::getItemAt(sf::Vector2f mousePos)
+{
+    for (auto& item : items)
+    {
+        if (item && item->sprite.getGlobalBounds().contains(mousePos))
+        {
+            return item.get();
+        }
+    }
+
+    return nullptr;
+}
+
 void Inventory::draw(sf::RenderWindow& window)
 {
     window.draw(inventoryBar);
