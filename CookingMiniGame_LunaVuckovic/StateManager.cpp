@@ -28,6 +28,22 @@ StateManager::StateManager()
         std::cout << "Failed to load tools texture\n";
     }
 
+    //bowl
+
+
+    if (!bowlTexture.loadFromFile("Texture/tools_spritesheet.png"))
+    {
+        std::cout << "Failed to load tools texture\n";
+    }
+
+
+    //ladl
+
+    if (!ladleTexture.loadFromFile("Texture/tools_spritesheet.png"))
+    {
+        std::cout << "Failed to load tools texture\n";
+    }
+
     // sink
 
     if (!sinkTexture.loadFromFile("Texture/sink_layout.png"))
@@ -62,6 +78,13 @@ StateManager::StateManager()
     if (!potIngredientsTexture.loadFromFile("Texture/spritesheet_ingredients_in_pot.png"))
     {
         std::cout << "Failed to load pot ingredients texture\n";
+    }
+
+    //plating
+
+    if (!platingTexture.loadFromFile("Texture/plating_layout.png"))
+    {
+        std::cout << "Failed to load stove pot texture\n";
     }
 
     //TIMER 
@@ -258,6 +281,27 @@ std::unique_ptr<Jug> StateManager::createJug()
 
         // filled jug
         sf::IntRect({ 1815,0 }, { 605,560 })
+    );
+}
+
+std::unique_ptr<Ladle> StateManager::createLadle()
+{
+    return std::make_unique<Ladle>(
+        ladleTexture, 
+
+        sf::IntRect({ 2420,0 }, { 605,560 }),   // empty
+        sf::IntRect({ 0, 560 }, { 605, 560 })  // filled
+    );
+}
+
+std::unique_ptr<Bowl> StateManager::createBowl()
+{
+    return std::make_unique<Bowl>(
+        bowlTexture,
+
+        sf::IntRect({ 605, 560 }, { 605, 560 }), //empty
+        sf::IntRect({ 1210, 560 }, { 605, 560 }), //half full
+        sf::IntRect({ 1815, 560 }, { 605, 560 })  //full
     );
 }
 

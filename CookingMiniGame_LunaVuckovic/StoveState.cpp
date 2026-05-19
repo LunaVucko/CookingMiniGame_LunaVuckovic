@@ -2,6 +2,7 @@
 #include "PlayState.h"
 #include "ResultState.h"
 #include <iostream>
+#include "PlatingState.h"
 
 StoveState::StoveState(StateManager& manager) : manager(manager)
 {
@@ -405,10 +406,14 @@ void StoveState::update()
             std::cout << "Final score: " << manager.soupScore << "\n";
 
             //manager.setState(std::make_unique<ResultState>(manager));
-            manager.setState(std::make_unique<ResultState>(
+
+            /*  manager.setState(std::make_unique<ResultState>(
                 manager,
                 ResultType::Score
-            ));
+            ));*/
+          
+
+            manager.setState(std::make_unique<PlatingState>(manager));
 
             return;
         }

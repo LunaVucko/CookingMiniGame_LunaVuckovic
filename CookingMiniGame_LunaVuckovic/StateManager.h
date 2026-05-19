@@ -9,6 +9,8 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include "Ladle.h"
+#include "Bowl.h"
 
 class StateManager
 {
@@ -26,6 +28,12 @@ public:
 
     //ingredients
     sf::Texture ingredientsTexture;
+
+    //bowl
+    sf::Texture bowlTexture;
+
+    //ladle
+    sf::Texture ladleTexture;
 
 
     //pot
@@ -47,6 +55,10 @@ public:
     sf::Texture stovePotTexture;
     sf::Texture stoveFlameTexture;
     sf::Texture* currentTexture = nullptr;
+
+    //plating texture bacground
+
+    sf::Texture platingTexture;
 
     // sink state data
     bool potInInventory = false;
@@ -76,10 +88,10 @@ public:
     // TIMER
     sf::Clock gameTimer;
 
-    //float gameDuration = 10.f; // 10 seconds for testing
-    // float timeRemaining = 10.f;
+   // float gameDuration = 10.f; // 10 seconds for testing
+   // float timeRemaining = 10.f;
     float gameDuration = 241.f; // 4 minutes
-    float timeRemaining = 241.f;
+   float timeRemaining = 241.f;
        
   // float gameDuration = 21.f; // 20 seconds
    //float timeRemaining = 21.f;
@@ -109,6 +121,10 @@ public:
     std::unique_ptr<Pot> createPot();
 
     std::unique_ptr<Jug> createJug();
+
+    std::unique_ptr<Ladle> createLadle();
+
+    std::unique_ptr<Bowl> createBowl();
 
     void addIngredientScore(CookState state);
 

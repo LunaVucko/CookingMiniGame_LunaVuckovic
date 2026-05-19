@@ -18,9 +18,9 @@ PlayState::PlayState(StateManager& manager) : manager(manager)
 
     float inventoryHeight = 100.f;
 
-    stoveArea = sf::FloatRect({ 320.f, 0.f }, { 320.f, 720.f - inventoryHeight}); //position of where to click the stove in the full kitchen layout
+    stoveArea = sf::FloatRect({ 220.f, 0.f }, { 420.f, 720.f - inventoryHeight}); //position of where to click the stove in the full kitchen layout
     kitchenCounterArea = sf::FloatRect({ 640.f, 0.f }, { 320.f, 720.f - inventoryHeight}); //position of where to click the counter in the full kitchen layout
-    sinkArea = sf::FloatRect({ 0.f, 0.f }, { 320.f, 720.f - inventoryHeight}); //position of where to click the sink in the full kitchen layout
+    sinkArea = sf::FloatRect({ 0.f, 0.f }, { 220.f, 720.f - inventoryHeight}); //position of where to click the sink in the full kitchen layout
 
 }
 

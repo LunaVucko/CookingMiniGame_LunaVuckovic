@@ -131,12 +131,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bowl.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="KitchenCounterState.cpp" />
+    <ClCompile Include="Ladl.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="OptionsState.cpp" />
+    <ClCompile Include="PlatingState.cpp" />
     <ClCompile Include="PlayState.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -148,6 +151,7 @@
     <ClCompile Include="StoveState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bowl.h" />
     <ClInclude Include="CookingItem.h" />
     <ClInclude Include="Ingredient.h" />
     <ClInclude Include="IngredientTypes.h" />
@@ -155,10 +159,12 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="Jug.h" />
     <ClInclude Include="KitchenCounterState.h" />
+    <ClInclude Include="Ladle.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OptionsState.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="PlatingState.h" />
     <ClInclude Include="Pot.h" />
     <ClInclude Include="ResultState.h" />
     <ClInclude Include="SinkState.h" />
