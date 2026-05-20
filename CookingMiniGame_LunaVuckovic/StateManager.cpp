@@ -175,9 +175,17 @@ void StateManager::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
 void StateManager::update()
 {
-    if (showTimer && currentState)
+    float current = gameTimer.getElapsedTime().asSeconds();
+    float delta = current - lastFrameTime;
+    lastFrameTime = current;
+
+    // ONLY accumulate time when NOT paused
+    if (!pauseTimer && showTimer)
     {
-        timeRemaining = gameDuration - gameTimer.getElapsedTime().asSeconds();
+        elapsedTime += delta;
+    }
+
+    timeRemaining = gameDuration - elapsedTime;
 
         if (timeRemaining < 0.f)
         {
@@ -221,7 +229,7 @@ void StateManager::update()
                 ResultType::TimeUp
             ));
         }
-    }
+    
 
     if (currentState)
         currentState->update();

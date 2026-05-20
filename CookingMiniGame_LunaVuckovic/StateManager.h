@@ -106,6 +106,14 @@ public:
 
     bool showTimer = false;
 
+    bool pauseTimer = false;
+
+    float totalPausedTime = 0.f;
+    float pausedAt = 0.f;
+    bool wasPaused = false;
+
+    float elapsedTime = 0.f;
+    float lastFrameTime = 0.f;
 
     StateManager();
 

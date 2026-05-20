@@ -12,6 +12,12 @@ PlayState::PlayState(StateManager& manager) : manager(manager)
         std::cout << "Failed to load kitchen background\n";
     }
 
+    manager.pauseTimer = false;
+    manager.showTimer = true;
+
+    manager.gameTimer.restart();
+    manager.lastFrameTime = manager.gameTimer.getElapsedTime().asSeconds();
+
     background.setSize({ 960, 720 });
     background.setTexture(&texture);
 
