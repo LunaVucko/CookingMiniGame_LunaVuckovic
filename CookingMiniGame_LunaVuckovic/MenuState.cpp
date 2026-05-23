@@ -42,7 +42,12 @@ void MenuState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                         "Texture/tutorial_screens_how.png",
                         "Texture/tutorial_screen_full_layout.png",
                         "Texture/tutorial_screens_sink.png",
-                        "Texture/tutorial_screens_cut.png"
+                        "Texture/tutorial_screens_cut.png",
+                        "Texture/tutorial_screens_cut_two.png",
+                        "Texture/tutorial_screens_stove.png",
+                        "Texture/tutorial_screens_stove_two_version_two.png",
+                        "Texture/tutorial_screens_plating.png"
+
                 }
                         )
                     )
