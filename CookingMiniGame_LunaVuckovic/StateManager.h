@@ -9,6 +9,7 @@
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Audio.hpp>
 #include "Ladle.h"
 #include "Bowl.h"
 
@@ -59,6 +60,25 @@ public:
     //plating texture bacground
 
     sf::Texture platingTexture;
+
+    //music
+
+    sf::Music menuMusic;
+    sf::Music gameMusic;
+
+    //sfx
+
+    sf::SoundBuffer knobOnBuffer;
+    sf::SoundBuffer knobOffBuffer;
+
+    std::optional<sf::Sound> knobOnSound;
+    std::optional<sf::Sound> knobOffSound;
+
+    sf::SoundBuffer waterOnBuffer;
+    sf::SoundBuffer gasOnBuffer;
+
+    std::optional<sf::Sound> waterOnSound;
+    std::optional<sf::Sound> gasOnSound;
 
     // sink state data
     bool potInInventory = false;
@@ -141,6 +161,12 @@ public:
     void setupCookingTimes(CookingItem& cookingItem, IngredientType type);
 
     void resetGame();
+
+    void initAudio();
+
+    void playMenuMusic();
+
+    void playGameMusic();
 
     void loadStartingInventory();
 

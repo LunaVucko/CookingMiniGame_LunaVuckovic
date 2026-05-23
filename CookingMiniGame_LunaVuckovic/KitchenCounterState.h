@@ -7,6 +7,7 @@
 #include "Tools.h"
 #include <memory>
 #include <vector>
+#include <SFML/Audio.hpp>
 
 class KitchenCounterState : public GameState
 {
@@ -59,6 +60,15 @@ private:
 
    // animated tool sprite
    std::optional<sf::Sprite> animationSprite;
+
+
+   //sfx
+
+   sf::SoundBuffer cutBuffer;
+   sf::SoundBuffer peelBuffer;
+  
+   std::optional<sf::Sound> cutSound;
+   std::optional<sf::Sound> peelSound;
  
 
 public:

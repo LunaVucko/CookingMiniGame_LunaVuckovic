@@ -284,6 +284,17 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                     background.setTexture(currentBackgroundTexture);
 
+                    if (waterOn)
+                    {
+                        manager.knobOnSound.value().play();
+                        manager.waterOnSound.value().play();
+                    }
+                    else
+                    {
+                        manager.knobOffSound.value().play();
+                    }
+                         
+
                     std::cout << (waterOn ? "Water ON\n" : "Water OFF\n");
                 }
             }

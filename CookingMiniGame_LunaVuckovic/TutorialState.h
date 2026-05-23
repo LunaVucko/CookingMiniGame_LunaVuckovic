@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <vector>
 #include <string>
 #include "GameState.h"
@@ -30,4 +31,13 @@ private:
     int currentPage = 0;
 
     void loadPage(int index);
+
+    //sfx
+       //sfx
+
+    sf::SoundBuffer pageBuffer;
+
+
+    std::optional<sf::Sound> pageSound;
+  
 };

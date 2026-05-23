@@ -36,6 +36,20 @@ KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manage
          toolItems[i].sprite.setScale({ 0.1f, 0.1f });
      }
 
+     //sfx
+
+     if (!cutBuffer.loadFromFile("SFX/cut.wav"))
+         std::cout << "Failed to load cut sound\n";
+
+     if (!peelBuffer.loadFromFile("SFX/peel.wav"))
+         std::cout << "Failed to load peel sound\n";
+
+     cutSound.emplace(cutBuffer);
+     peelSound.emplace(peelBuffer);
+
+     cutSound.value().setVolume(100.f);
+     peelSound.value().setVolume(100.f);
+
 }
 
 void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
@@ -195,6 +209,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                             selectedIngredient->state = IngredientState::Cut;
                             selectedIngredient->updateSprite();
 
+                            cutSound.value().play();
+
                             // START CUT ANIMATION
                             isAnimating = true;
                             animationTool = ToolType::Knife;
@@ -230,6 +246,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         selectedIngredient->state = IngredientState::Peeled;
                         selectedIngredient->updateSprite();
 
+                        peelSound.value().play();
 
                         // START PEEL ANIMATION
                         isAnimating = true;

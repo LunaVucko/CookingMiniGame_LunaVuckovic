@@ -320,6 +320,17 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
             background.setTexture(manager.stoveHeatOn ? &manager.stoveFlameTexture: &manager.stovePotTexture);
 
+            if (manager.stoveHeatOn)
+            {
+                manager.knobOnSound.value().play();
+                manager.gasOnSound.value().play();
+            }
+            else
+            {
+                manager.knobOffSound.value().play();
+            }
+          
+
             std::cout << (manager.stoveHeatOn ? "Heat ON\n" : "Heat OFF\n");
         }
     }

@@ -1,5 +1,6 @@
 #include "StateManager.h"
 #include <iostream>
+#include "MenuState.h"
 
 
 StateManager::StateManager()
@@ -99,6 +100,42 @@ StateManager::StateManager()
 
     timerText.setPosition({ 760.f, 150.f });
 
+    //MUSIC
+
+    initAudio();
+
+    //sfx
+
+
+     //sfx
+
+    if (!knobOnBuffer.loadFromFile("SFX/stove_on.wav"))
+        std::cout << "Failed to load cut sound\n";
+
+    if (!knobOffBuffer.loadFromFile("SFX/stove_off.wav"))
+        std::cout << "Failed to load peel sound\n";
+
+
+    if (!gasOnBuffer.loadFromFile("SFX/gas.wav"))
+        std::cout << "Failed to load cut sound\n";
+
+    if (!waterOnBuffer.loadFromFile("SFX/water.wav"))
+        std::cout << "Failed to load peel sound\n";
+
+    knobOnSound.emplace(knobOnBuffer);
+    knobOffSound.emplace(knobOffBuffer);
+
+    knobOnSound.value().setVolume(100.f);
+    knobOffSound.value().setVolume(100.f);
+
+
+    waterOnSound.emplace(waterOnBuffer);
+    gasOnSound.emplace(gasOnBuffer);
+
+    waterOnSound.value().setVolume(100.f);
+    gasOnSound.value().setVolume(100.f);
+
+
     // Add items ONCE
 
     // CARROT
@@ -164,6 +201,16 @@ StateManager::StateManager()
 
 void StateManager::setState(std::unique_ptr<GameState> newState)
 {
+    // detect type BEFORE switching (optional but clean)
+    if (dynamic_cast<MenuState*>(newState.get()))
+    {
+        playMenuMusic();
+    }
+    else
+    {
+        playGameMusic();
+    }
+
     currentState = std::move(newState);
 }
 
@@ -503,6 +550,37 @@ void StateManager::resetGame()
 
     loadStartingInventory();
 
+}
+
+void StateManager::initAudio()
+{
+    if (!menuMusic.openFromFile("Music/puddleworld.ogg"))
+        std::cout << "Failed menu music\n";
+
+    menuMusic.setLooping(true);
+    menuMusic.setVolume(50.f);
+
+    if (!gameMusic.openFromFile("Music/comeaux.ogg"))
+        std::cout << "Failed game music\n";
+
+    gameMusic.setLooping(true);
+    gameMusic.setVolume(30.f);
+}
+
+void StateManager::playMenuMusic()
+{
+    gameMusic.stop();
+
+    if (menuMusic.getStatus() != sf::SoundSource::Status::Playing)
+        menuMusic.play();
+}
+
+void StateManager::playGameMusic()
+{
+    menuMusic.stop();
+
+    if (gameMusic.getStatus() != sf::SoundSource::Status::Playing)
+        gameMusic.play();
 }
 
 void StateManager::loadStartingInventory()

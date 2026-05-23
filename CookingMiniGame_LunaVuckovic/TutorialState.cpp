@@ -36,6 +36,16 @@ TutorialState::TutorialState(StateManager& manager, std::vector<std::string> ima
         });
 
     loadPage(0);
+
+    //sfx
+
+    if (!pageBuffer.loadFromFile("SFX/page.wav"))
+        std::cout << "Failed to load cut sound\n";
+
+
+    pageSound.emplace(pageBuffer);
+  
+    pageSound.value().setVolume(100.f);
 }
 
 void TutorialState::loadPage(int index)
@@ -71,9 +81,15 @@ void TutorialState::handleEvent(sf::RenderWindow& window, const sf::Event& event
     // LAST PAGE and then go to PLAY
     if (currentPage == (int)pages.size() - 1)
     {
+        pageSound.value().play();
+
+        // wait a tiny bit before switching state
+        sf::sleep(sf::milliseconds(650));
+
         manager.setState(std::make_unique<PlayState>(manager));
         return;
     }
+    pageSound.value().play();
 
     // NEXT PAGE
     currentPage++;
