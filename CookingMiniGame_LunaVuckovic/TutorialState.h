@@ -27,17 +27,20 @@ private:
     sf::RectangleShape nextButton;
     sf::Text nextText;
 
+    sf::RectangleShape skipButton;
+    sf::Text skipText;
+
     std::vector<std::string> pages;
     int currentPage = 0;
 
     void loadPage(int index);
 
     //sfx
-       //sfx
 
     sf::SoundBuffer pageBuffer;
-
-
     std::optional<sf::Sound> pageSound;
+
+    sf::SoundBuffer skipBuffer;
+    std::optional<sf::Sound> skipSound;
   
 };

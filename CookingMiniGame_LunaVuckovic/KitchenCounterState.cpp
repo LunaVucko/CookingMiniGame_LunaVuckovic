@@ -14,7 +14,7 @@ KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manage
     background.setTexture(&texture);
     
     // Cutting board area (adjust if needed)
-     cuttingBoardArea = sf::FloatRect({ 400.f, 300.f }, { 150.f, 150.f });
+     cuttingBoardArea = sf::FloatRect({ 200.f, 200.f }, { 450.f, 400.f });
 
      //spritesheet
 
@@ -93,6 +93,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
             // BLOCK dragging the jug
             if (dynamic_cast<Jug*>(clickedItem))
             {
+                manager.wrongBuzzSound.value().play();
                 std::cout << "Can't use the jug here!\n";
             }
             else if (clickedItem && currentTool == ToolType::None)
@@ -110,6 +111,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 if (tool.sprite.getGlobalBounds().contains(mousePos))
                 {
                     currentTool = tool.type;
+                    manager.selectSound.value().play();
                     std::cout << "Tool selected!\n";
                     return; 
                 }
@@ -242,6 +244,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         }
                         if (selectedIngredient->state == IngredientState::Cut)
                         {
+                            manager.wrongBuzzSound.value().play();
                             std::cout << "Already cut!\n";
                             currentTool = ToolType::None;
                         }
@@ -257,7 +260,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                             animationTool = ToolType::Knife;
 
                             animationSprite = toolItems[0].sprite;
-                            animationSprite.value().setPosition({ 500.f, 250.f });
+                            animationSprite.value().setPosition({ 300.f, 1350.f });
+                            animationSprite.value().setScale({ 0.3f, 0.3f });
 
                             animationClock.restart();
 
@@ -267,6 +271,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         }
                         else
                         {
+                            manager.wrongBuzzSound.value().play();
                             std::cout << "Can't cut yet!\n";
                             currentTool = ToolType::None;
                         }
@@ -278,6 +283,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 {
                     if (selectedIngredient->state == IngredientState::Peeled)
                     {
+                        manager.wrongBuzzSound.value().play();
                         std::cout << "Already peeled!\n";
                         currentTool = ToolType::None;
                     }
@@ -294,7 +300,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         animationTool = ToolType::Peeler;
 
                         animationSprite = toolItems[1].sprite;
-                        animationSprite.value().setPosition({ 500.f, 250.f });
+                        animationSprite.value().setPosition({ 300.f, 1350.f });
+                        animationSprite.value().setScale({ 0.3f, 0.3f });
 
                         animationClock.restart();
 
@@ -303,6 +310,7 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                     }
                     else
                     {
+                        manager.wrongBuzzSound.value().play();
                         std::cout << "Can't peel this!\n";
                         currentTool = ToolType::None;
                     }
@@ -323,6 +331,9 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 item->isDragging = false;
                 // place item at board center
                 item->sprite.setPosition({ 475.f, 375.f });
+                item->sprite.setScale({ 0.5f, 0.5f });
+
+                manager.placeSound.value().play();
 
                 counterItems.push_back(move(item));
                 return;
@@ -341,17 +352,20 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                     counterItems.erase(counterItems.begin() + i);
 
                     item->isDragging = false;
+                    item->sprite.setScale({ 0.2f, 0.2f });
                     //manager.inventory.addItem(std::move(item));
                     int slotIndex = manager.inventory.getSlotIndexAt(mousePos);
 
 
                     if (slotIndex != -1)
                     {
+                        manager.popSound.value().play();
                         manager.inventory.insertItemAt(std::move(item), slotIndex);
                     }
                     else
                     {
                         // fallback: put in first available slot
+                        manager.popSound.value().play();
                         manager.inventory.addItem(std::move(item));
                     }
                 }
@@ -403,8 +417,8 @@ void KitchenCounterState::update()
                 float offset = std::sin(t * 40.f) * 20.f;
 
                 animationSprite.value().setPosition({
-                        450.f,
-                        300.f + offset
+                        380.f,
+                        250.f + offset
                     });
             }
 
@@ -415,8 +429,8 @@ void KitchenCounterState::update()
 
 
                 animationSprite.value().setPosition({
-                        450.f,
-                        300.f + offset
+                        380.f,
+                        250.f + offset
                     });
             }
         }
@@ -450,12 +464,13 @@ void KitchenCounterState::draw(sf::RenderWindow& window)
         window.draw(animationSprite.value());
     }
 
-    // debug
-    sf::RectangleShape debug;
+    /*    sf::RectangleShape debug;
     debug.setPosition( cuttingBoardArea.position);
     debug.setSize( cuttingBoardArea.size);
     debug.setFillColor(sf::Color(255, 0, 0, 80));
 
-    window.draw(debug);
+    window.draw(debug);*/
+    // debug
+
 }
 

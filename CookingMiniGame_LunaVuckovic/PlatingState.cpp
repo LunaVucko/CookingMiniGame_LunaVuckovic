@@ -109,10 +109,12 @@ void PlatingState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                         ladle->state = LadleState::Filled;
                         ladle->updateSprite();
 
+                        manager.pourSound.value().play();
                         std::cout << "Ladle filled from pot\n";
                     }
                     else
                     {
+                        manager.wrongBuzzSound.value().play();
                         std::cout << "Ladle already filled!\n";
                     }
 
@@ -131,6 +133,8 @@ void PlatingState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                         bowl->addSoup();
                         bowl->updateSprite();
 
+                        manager.pourQuickSound.value().play();
+
                         std::cout << "Soup transferred to bowl\n";
                         std::cout << "[DEBUG] Bowl soup amount increased\n";
 
@@ -144,6 +148,7 @@ void PlatingState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                     }
                     else
                     {
+                        manager.wrongBuzzSound.value().play();
                         std::cout << "Ladle empty!\n";
                     }
 
@@ -179,13 +184,15 @@ void PlatingState::draw(sf::RenderWindow& window)
         window.draw(pot->sprite);
 
         sf::FloatRect potBounds = pot->sprite.getGlobalBounds();
-
-        sf::RectangleShape potDebug;
+        /*
+        *      sf::RectangleShape potDebug;
         potDebug.setPosition(potBounds.position);
         potDebug.setSize(potBounds.size);
         potDebug.setFillColor(sf::Color(0, 255, 0, 80));
 
         window.draw(potDebug);
+        */
+       
     }
 
     if (bowl)
@@ -196,12 +203,12 @@ void PlatingState::draw(sf::RenderWindow& window)
 
         sf::FloatRect bowlBounds = bowl->sprite.getGlobalBounds();
 
-        sf::RectangleShape bowlDebug;
+    /*    sf::RectangleShape bowlDebug;
         bowlDebug.setPosition(bowlBounds.position);
         bowlDebug.setSize(bowlBounds.size);
         bowlDebug.setFillColor(sf::Color(0, 0, 255, 80));
 
-        window.draw(bowlDebug);
+        window.draw(bowlDebug);*/
     }
     
     if (ladle)

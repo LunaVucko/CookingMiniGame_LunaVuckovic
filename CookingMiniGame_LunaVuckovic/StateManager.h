@@ -80,6 +80,36 @@ public:
     std::optional<sf::Sound> waterOnSound;
     std::optional<sf::Sound> gasOnSound;
 
+    sf::SoundBuffer selectBuffer;
+    std::optional<sf::Sound> selectSound;
+    sf::SoundBuffer enterBuffer;
+    std::optional<sf::Sound> enterSound;
+
+    sf::SoundBuffer popBuffer;
+    std::optional<sf::Sound> popSound;
+
+    sf::SoundBuffer wrongBuzzBuffer;
+    std::optional<sf::Sound> wrongBuzzSound;
+
+    sf::SoundBuffer placeBuffer;
+    std::optional<sf::Sound> placeSound;
+
+    sf::SoundBuffer sizzleBuffer;
+    std::optional<sf::Sound> sizzleSound;
+
+    sf::SoundBuffer pourBuffer;
+    std::optional<sf::Sound> pourSound;
+
+    sf::SoundBuffer pourQuickBuffer;
+    std::optional<sf::Sound> pourQuickSound;
+
+    sf::SoundBuffer tryAgainBuffer;
+    std::optional<sf::Sound> tryAgainSound;
+    sf::SoundBuffer goodBuffer;
+    std::optional<sf::Sound> goodSound;
+    sf::SoundBuffer amazingBuffer;
+    std::optional<sf::Sound> amazingSound;
+
     // sink state data
     bool potInInventory = false;
     bool jugInInventory = false;
@@ -165,6 +195,8 @@ public:
     void initAudio();
 
     void playMenuMusic();
+
+    void stopGameMusic();
 
     void playGameMusic();
 

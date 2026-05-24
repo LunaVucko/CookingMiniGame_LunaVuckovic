@@ -49,12 +49,42 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
         
 
     // Pot area and knob area
-    potArea = sf::FloatRect({ 400.f, 300.f }, { 150.f, 150.f });
+    potArea = sf::FloatRect({ 350.f, 200.f }, { 250.f, 250.f });
     knobArea = { {720.f,500.f},{120.f,120.f} };
 
 
    
 
+}
+
+void StoveState::spawnSmoke(sf::Vector2f position, sf::Color color)
+{
+    for (int i = 0; i < 30; i++)
+    {
+        SmokeParticle smoke;
+
+        float size = 50.f + rand() % 10;
+
+        smoke.shape.setRadius(size);
+        smoke.shape.setFillColor(color);
+
+        float offsetX = (rand() % 200 - 100);
+        float offsetY = (rand() % 200 - 100);
+
+        smoke.shape.setPosition({
+            position.x + offsetX,
+            position.y + offsetY
+            });
+
+        smoke.velocity = {
+            (rand() % 20 - 10) * 0.1f,
+            -(30.f + rand() % 30)
+        };
+
+        smoke.lifetime = 1.5f;
+
+        smokeParticles.push_back(smoke);
+    }
 }
 
 void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
@@ -146,6 +176,8 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                 background.setTexture(&manager.stovePotTexture);
 
+                manager.placeSound.value().play();
+
                 std::cout << "Pot placed!\n";
             }
 
@@ -163,6 +195,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
             if (!manager.stoveHasPot)
             {
+                manager.wrongBuzzSound.value().play();
                 std::cout << "Can't add ingredient yet! Place pot first.\n";
 
                 // put item back
@@ -203,6 +236,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                 if (jug->state != JugState::Filled)
                 {
+                    manager.wrongBuzzSound.value().play();
                     std::cout << "Jug is empty!\n";
                     manager.inventory.addItem(std::move(item));
                     return;
@@ -210,6 +244,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                 if (!manager.stovePot)
                 {
+                    manager.wrongBuzzSound.value().play();
                     std::cout << "Place pot first!\n";
                     manager.inventory.addItem(std::move(item));
                     return;
@@ -217,6 +252,8 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                 if (manager.stovePot->stoveItems.size() < manager.requiredIngredients)
                 {
+                    manager.wrongBuzzSound.value().play();
+
                     std::cout << "Add all the ingredients before adding the water!\n";
 
                     // return jug back to inventory
@@ -227,6 +264,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                 if (potHasWater)
                 {
+                    manager.wrongBuzzSound.value().play();
                     std::cout << "Pot already has water!\n";
                     manager.inventory.addItem(std::move(item));
                     return;
@@ -258,12 +296,12 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                             if (ingredient->state == IngredientState::Cut)
                             {
                                 // make the sprites bigger
-                                ingredient->sprite.setScale({ 0.6f, 0.6f });
+                                ingredient->sprite.setScale({ 0.4f, 0.4f });
 
                                 // position inside pot (optional but nice)
                                 ingredient->sprite.setPosition({
-                                    potArea.position.x + 40.f + (rand() % 50),
-                                    potArea.position.y + 40.f + (rand() % 50)
+                                    potArea.position.x + 80.f + (rand() % 50),
+                                    potArea.position.y + 100.f + (rand() % 50)
                                     });
 
                                 //manager.stoveItems.push_back(std::move(item));
@@ -296,10 +334,13 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                                 manager.stovePot->activeCookingItem = &manager.stovePot->stoveItems.back();
 
+                                manager.sizzleSound.value().play();
+
                                 std::cout << "Cut ingredient added\n";
                             }
                             else
                             {
+                                manager.wrongBuzzSound.value().play();
                                 std::cout << "Ingredient must be CUT first!\n";
 
                                 // put it back into inventory
@@ -332,6 +373,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             else
             {
                 manager.knobOffSound.value().play();
+                manager.gasOnSound.value().stop();
             }
           
 
@@ -381,6 +423,19 @@ void StoveState::update()
         {
             cookingItem.cookState = CookState::Cooked;
             cookingItem.item->sprite.setTextureRect(cookingItem.cookedRect);
+
+            sf::FloatRect potBounds = manager.stovePot->sprite.getGlobalBounds();
+
+            sf::Vector2f smokePos(
+                potBounds.position.x + potBounds.size.x / 3.f,
+                potBounds.position.y + potBounds.size.y / 4.f
+            );
+
+            spawnSmoke(
+                smokePos,
+                sf::Color(220, 220, 220, 180)
+            );
+
             std::cout << "Ingredient cooked\n";
         }
 
@@ -389,6 +444,19 @@ void StoveState::update()
         {
             cookingItem.cookState = CookState::Overcooked;
             cookingItem.item->sprite.setTextureRect(cookingItem.overcookedRect);
+
+            sf::FloatRect potBounds = manager.stovePot->sprite.getGlobalBounds();
+
+            sf::Vector2f smokePos(
+                potBounds.position.x + potBounds.size.x / 3.f,
+                potBounds.position.y + potBounds.size.y / 4.f
+            );
+
+            spawnSmoke(
+                smokePos,
+                sf::Color(220, 220, 220, 180)
+            );
+
             std::cout << "Ingredient burned\n";
         }
     }
@@ -427,6 +495,7 @@ void StoveState::update()
                 ResultType::Score
             ));*/
           
+            manager.gasOnSound.value().stop();
 
             manager.setState(std::make_unique<PlatingState>(manager));
 
@@ -434,6 +503,31 @@ void StoveState::update()
         }
 
         
+    }
+
+    for (size_t i = 0; i < smokeParticles.size(); )
+    {
+        smokeParticles[i].lifetime -= 0.016f;
+
+        smokeParticles[i].shape.move(
+            smokeParticles[i].velocity * 0.016f
+        );
+
+        sf::Color c = smokeParticles[i].shape.getFillColor();
+
+        if (c.a > 3)
+            c.a -= 3;
+
+        smokeParticles[i].shape.setFillColor(c);
+
+        if (smokeParticles[i].lifetime <= 0.f)
+        {
+            smokeParticles.erase(smokeParticles.begin() + i);
+        }
+        else
+        {
+            i++;
+        }
     }
 
 
@@ -484,7 +578,12 @@ void StoveState::draw(sf::RenderWindow& window)
         }
     }
 
-    // debug
+    for (auto& smoke : smokeParticles)
+    {
+        window.draw(smoke.shape);
+    }
+
+  /*  // debug
     sf::RectangleShape debug;
     debug.setPosition(potArea.position);
     debug.setSize(potArea.size);
@@ -499,5 +598,5 @@ void StoveState::draw(sf::RenderWindow& window)
     knobDebug.setSize(knobArea.size);
     knobDebug.setFillColor(sf::Color(0, 0, 255, 80)); // BLUE
 
-    window.draw(knobDebug);
+    window.draw(knobDebug);*/
 }

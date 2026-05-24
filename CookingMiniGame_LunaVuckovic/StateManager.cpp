@@ -104,9 +104,6 @@ StateManager::StateManager()
 
     initAudio();
 
-    //sfx
-
-
      //sfx
 
     if (!knobOnBuffer.loadFromFile("SFX/stove_on.wav"))
@@ -117,10 +114,52 @@ StateManager::StateManager()
 
 
     if (!gasOnBuffer.loadFromFile("SFX/gas.wav"))
-        std::cout << "Failed to load cut sound\n";
+        std::cout << "Failed to load gas sound\n";
 
     if (!waterOnBuffer.loadFromFile("SFX/water.wav"))
-        std::cout << "Failed to load peel sound\n";
+        std::cout << "Failed to load water sound\n";
+
+
+    if (!selectBuffer.loadFromFile("SFX/select.wav"))
+        std::cout << "Failed to load select sound\n";
+
+
+    if (!enterBuffer.loadFromFile("SFX/enter.wav"))
+        std::cout << "Failed to load enter sound\n";
+
+
+    if (!popBuffer.loadFromFile("SFX/pop.wav"))
+        std::cout << "Failed to load pop sound\n";
+
+
+    if (!wrongBuzzBuffer.loadFromFile("SFX/wrong.wav"))
+        std::cout << "Failed to load wrong buzz sound\n";
+
+
+    if (!placeBuffer.loadFromFile("SFX/place.wav"))
+        std::cout << "Failed to load place sound\n";
+
+
+    if (!sizzleBuffer.loadFromFile("SFX/sizzle.wav"))
+        std::cout << "Failed to load sizzle sound\n";
+
+    if (!pourBuffer.loadFromFile("SFX/pour.wav"))
+        std::cout << "Failed to load pour sound\n";
+
+    if (!pourQuickBuffer.loadFromFile("SFX/pour_fast.wav"))
+        std::cout << "Failed to load fast pour sound\n";
+
+
+    if (!tryAgainBuffer.loadFromFile("SFX/try_again.wav"))
+        std::cout << "Failed to try again sound\n";
+
+    if (!goodBuffer.loadFromFile("SFX/good.wav"))
+        std::cout << "Failed to good sound\n";
+
+    if (!amazingBuffer.loadFromFile("SFX/amazing.wav"))
+        std::cout << "Failed to load amazing sound\n";
+
+
 
     knobOnSound.emplace(knobOnBuffer);
     knobOffSound.emplace(knobOffBuffer);
@@ -134,6 +173,39 @@ StateManager::StateManager()
 
     waterOnSound.value().setVolume(100.f);
     gasOnSound.value().setVolume(100.f);
+
+    waterOnSound.value().setLooping(true);
+    gasOnSound.value().setLooping(true);
+
+    selectSound.emplace(selectBuffer);
+    selectSound.value().setVolume(50.f);
+    enterSound.emplace(enterBuffer);
+    enterSound.value().setVolume(50.f);
+
+    popSound.emplace(popBuffer);
+    popSound.value().setVolume(50.f);
+
+    wrongBuzzSound.emplace(wrongBuzzBuffer);
+    wrongBuzzSound.value().setVolume(50.f);
+
+    placeSound.emplace(placeBuffer);
+    placeSound.value().setVolume(50.f);
+
+    sizzleSound.emplace(sizzleBuffer);
+    sizzleSound.value().setVolume(40.f);
+
+
+    pourSound.emplace(pourBuffer);
+    pourSound.value().setVolume(40.f);
+    pourQuickSound.emplace(pourQuickBuffer);
+    pourQuickSound.value().setVolume(40.f);
+
+    tryAgainSound.emplace(tryAgainBuffer);
+    tryAgainSound.value().setVolume(70.f);
+    goodSound.emplace(goodBuffer);
+    goodSound.value().setVolume(70.f);
+    amazingSound.emplace(amazingBuffer);
+    amazingSound.value().setVolume(70.f);
 
 
     // Add items ONCE
@@ -582,6 +654,11 @@ void StateManager::playGameMusic()
 
     if (gameMusic.getStatus() != sf::SoundSource::Status::Playing)
         gameMusic.play();
+}
+
+void StateManager::stopGameMusic()
+{
+    gameMusic.stop();
 }
 
 void StateManager::loadStartingInventory()

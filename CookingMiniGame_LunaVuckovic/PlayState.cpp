@@ -97,7 +97,8 @@ void PlayState::draw(sf::RenderWindow& window)
     
     sf::RectangleShape debugRect;
 
-    //Sink (Left - blue)
+    /*
+    *     //Sink (Left - blue)
     debugRect.setPosition({ 0.f, 0.f });
     debugRect.setSize({ 320.f, 720.f });
     debugRect.setFillColor(sf::Color(0, 0, 225, 100));
@@ -113,5 +114,7 @@ void PlayState::draw(sf::RenderWindow& window)
     debugRect.setPosition({ 640.f, 0.f });
     debugRect.setFillColor(sf::Color(0, 255, 0, 100));
     window.draw(debugRect);
+    */
+
     
 }

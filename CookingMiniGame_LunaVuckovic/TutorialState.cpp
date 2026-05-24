@@ -5,7 +5,7 @@
 #include <iostream>
 
 TutorialState::TutorialState(StateManager& manager, std::vector<std::string> images)
-    : manager(manager), pages(std::move(images)), nextText(font)
+    : manager(manager), pages(std::move(images)), nextText(font), skipText(font)
 {
     manager.pauseTimer = true;
     manager.showTimer = false;
@@ -15,12 +15,13 @@ TutorialState::TutorialState(StateManager& manager, std::vector<std::string> ima
         std::cout << "Failed to load font\n";
     }
 
-    nextButton.setSize({ 180.f, 60.f });
-    nextButton.setPosition({ 740.f, 620.f });
-    nextButton.setFillColor(sf::Color(50, 50, 50));
+    //next button
+    nextButton.setSize({ 150.f, 50.f });
+    nextButton.setPosition({ 780.f, 650.f });
+    nextButton.setFillColor(sf::Color(186, 142, 35));
 
     nextText.setFont(font);
-    nextText.setCharacterSize(28);
+    nextText.setCharacterSize(22);
     nextText.setFillColor(sf::Color::White);
     nextText.setString("Next");
 
@@ -35,17 +36,49 @@ TutorialState::TutorialState(StateManager& manager, std::vector<std::string> ima
         nextButton.getPosition().y + nextButton.getSize().y / 2.f
         });
 
+    // skip button
+
+    skipButton.setSize({ 150.f, 50.f });
+    skipButton.setPosition({ 780.f, 590.f });
+    skipButton.setFillColor(sf::Color(34, 139, 34));
+
+    skipText.setFont(font);
+    skipText.setCharacterSize(22);
+    skipText.setFillColor(sf::Color::White);
+    skipText.setString("Skip");
+
+    sf::FloatRect skipBounds = skipText.getLocalBounds();
+
+    skipText.setOrigin({
+        skipBounds.position.x + skipBounds.size.x / 2.f,
+        skipBounds.position.y + skipBounds.size.y / 2.f
+        });
+
+    skipText.setPosition({
+        skipButton.getPosition().x + skipButton.getSize().x / 2.f,
+        skipButton.getPosition().y + skipButton.getSize().y / 2.f
+        });
+
+
     loadPage(0);
 
     //sfx
 
     if (!pageBuffer.loadFromFile("SFX/page.wav"))
-        std::cout << "Failed to load cut sound\n";
+        std::cout << "Failed to load page sound\n";
 
 
     pageSound.emplace(pageBuffer);
   
-    pageSound.value().setVolume(100.f);
+    pageSound.value().setVolume(50.f);
+
+    if (!skipBuffer.loadFromFile("SFX/skip.wav"))
+        std::cout << "Failed to load skip sound\n";
+
+
+    skipSound.emplace(skipBuffer);
+
+    skipSound.value().setVolume(50.f);
 }
 
 void TutorialState::loadPage(int index)
@@ -75,8 +108,23 @@ void TutorialState::handleEvent(sf::RenderWindow& window, const sf::Event& event
         (float)mouse->position.y
     );
 
-    if (!nextButton.getGlobalBounds().contains(mousePos))
+    //skip button
+
+    if (skipButton.getGlobalBounds().contains(mousePos))
+    {
+        skipSound.value().play();
+        sf::sleep(sf::milliseconds(650));
+        manager.setState(std::make_unique<PlayState>(manager));
         return;
+    }
+    
+    //next button
+
+    if (!nextButton.getGlobalBounds().contains(mousePos))
+    { 
+        return;
+    }
+
 
     // LAST PAGE and then go to PLAY
     if (currentPage == (int)pages.size() - 1)
@@ -90,6 +138,7 @@ void TutorialState::handleEvent(sf::RenderWindow& window, const sf::Event& event
         return;
     }
     pageSound.value().play();
+    sf::sleep(sf::milliseconds(450));
 
     // NEXT PAGE
     currentPage++;
@@ -105,4 +154,6 @@ void TutorialState::draw(sf::RenderWindow& window)
     window.draw(image);
     window.draw(nextButton);
     window.draw(nextText);
+    window.draw(skipButton);
+    window.draw(skipText);
 }

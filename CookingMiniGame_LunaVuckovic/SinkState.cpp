@@ -12,7 +12,7 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
 
     
     // sink area (adjust if needed)
-    sinkArea = sf::FloatRect({ 400.f, 300.f }, { 150.f, 150.f });
+    sinkArea = sf::FloatRect({ 300.f, 200.f }, { 350.f, 350.f });
 
     //water being turned on
     knobArea = sf::FloatRect({ 700.f, 290.f }, { 120.f, 120.f });
@@ -59,6 +59,7 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             // stop dragging ANY item
             if (auto* dragged = manager.inventory.getDraggedItem())
             {
+                manager.wrongBuzzSound.value().play();
                 dragged->isDragging = false;
             }
                 
@@ -206,6 +207,7 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             // prevent empty jug from entering inventory
             if (jug->state == JugState::Empty)
             {
+                manager.wrongBuzzSound.value().play();
                 jug->sprite.setPosition({ 350.f, 500.f });
 
                 std::cout << "Fill the jug with water first!\n";
@@ -217,10 +219,12 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
             if (slotIndex != -1)
             {
+                manager.popSound.value().play();
                 manager.inventory.insertItemAt(std::move(jug), slotIndex);
             }
             else
             {
+                manager.popSound.value().play();
                 manager.inventory.addItem(std::move(jug));
             }
 
@@ -246,15 +250,19 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                     jug->updateSprite();
 
+                    manager.pourSound.value().play();
+
                     std::cout << "Jug filled with water!\n";
                 }
                 else
                 {
+                    manager.wrongBuzzSound.value().play();
                     std::cout << "Jug already filled!\n";
                 }
             }
             else
             {
+                manager.wrongBuzzSound.value().play();
                 std::cout << "Turn on water first!\n";
             }
 
@@ -312,6 +320,7 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                     else
                     {
                         manager.knobOffSound.value().play();
+                        manager.waterOnSound.value().stop();
                     }
                          
 
@@ -355,15 +364,18 @@ void SinkState::draw(sf::RenderWindow& window)
     */
 
 
+   
+
+    // manager.inventory bar
+    manager.inventory.draw(window);
+
     if (jug)
     {
         window.draw(jug->sprite);
     }
 
-    // manager.inventory bar
-    manager.inventory.draw(window);
-
-    // debug sink
+    /*
+    *   // debug sink
     sf::RectangleShape debug;
     debug.setPosition(sinkArea.position);
     debug.setSize(sinkArea.size);
@@ -381,4 +393,7 @@ void SinkState::draw(sf::RenderWindow& window)
 
 
     window.draw(debug);
+    */
+
+  
 }

@@ -8,6 +8,13 @@
 #include <memory>
 #include <vector>
 
+struct SmokeParticle
+{
+    sf::CircleShape shape;
+    sf::Vector2f velocity;
+    float lifetime = 0.f;
+};
+
 class StoveState : public GameState
 {
 private:
@@ -29,6 +36,11 @@ private:
     //mouse 
     sf::Vector2f currentMousePos;
 
+    //animation
+
+    std::vector<SmokeParticle> smokeParticles;
+
+    void spawnSmoke(sf::Vector2f position, sf::Color color);
 
    // std::vector<std::unique_ptr<Ingredient>> potIngredients;
    // std::vector<std::unique_poptr<Item>> potItems;

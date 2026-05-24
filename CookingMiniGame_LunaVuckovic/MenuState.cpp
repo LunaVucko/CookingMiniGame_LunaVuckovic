@@ -11,10 +11,18 @@ void MenuState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         auto key = event.getIf<sf::Event::KeyReleased>();
 
         if (key->code == sf::Keyboard::Key::Up)
+        {
+            manager.selectSound.value().play();
             menu.MoveUp();
+        }
+            
 
         if (key->code == sf::Keyboard::Key::Down)
+        {
+            manager.selectSound.value().play();
             menu.MoveDown();
+        }
+            
 
         if (key->code == sf::Keyboard::Key::Enter)
         {
@@ -31,6 +39,9 @@ void MenuState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                 manager.elapsedTime = 0.f;
                 manager.lastFrameTime = manager.gameTimer.getElapsedTime().asSeconds();
+
+                manager.enterSound.value().play();
+                sf::sleep(sf::milliseconds(850));
 
                // manager.setState(std::make_unique<PlayState>(manager)); // PLAY
                 manager.setState(

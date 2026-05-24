@@ -11,6 +11,9 @@ ResultState::ResultState(StateManager& manager, ResultType type)
     continueText(font)
 {
 
+    manager.stopGameMusic();
+    //music stopped 
+
     manager.showTimer = false;
 
    // ResultType resultType;
@@ -48,6 +51,7 @@ ResultState::ResultState(StateManager& manager, ResultType type)
     //timer running out
     if (resultType == ResultType::TimeUp)
     {
+        manager.tryAgainSound.value().play();
         resultText.setString("TIME'S UP!");
         scoreText.setString("You ran out of time\nTry again!");
     }
@@ -57,14 +61,17 @@ ResultState::ResultState(StateManager& manager, ResultType type)
         // determine ranking
         if (manager.soupScore < 40)
         {
+            //manager.tryAgainSound.value().play();
             resultText.setString("TRY AGAIN");
         }
         else if (manager.soupScore < 70)
         {
+            //manager.goodSound.value().play();
             resultText.setString("GOOD");
         }
         else
         {
+            //manager.amazingSound.value().play();
             resultText.setString("AMAZING");
         }
 
