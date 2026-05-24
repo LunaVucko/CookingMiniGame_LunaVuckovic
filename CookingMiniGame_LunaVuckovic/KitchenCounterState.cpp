@@ -95,9 +95,11 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
             {
                 std::cout << "Can't use the jug here!\n";
             }
-            else
+            else if (clickedItem && currentTool == ToolType::None)
             {
-                manager.inventory.handleEvent(event);
+                pendingDragItem = clickedItem;
+                pressStartPos = mousePos;
+                mouseHeld = true;
             }
 
             dragStart = mousePos;
@@ -127,18 +129,32 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         // ONLY DRAG if NO tool selected
                         if (currentTool == ToolType::None)
                         {
-                            item->isDragging = true;
-                            item->dragOffset = item->sprite.getPosition() - mousePos;
+                           // item->isDragging = true;
+                           // item->dragOffset = item->sprite.getPosition() - mousePos;
+
+                            pendingDragItem = item.get();
+                            pressStartPos = mousePos;
+                            mouseHeld = true;
                         }
                     }
                     else
                     {
                         // It's NOT an ingredient (probably a Pot)
-                        selectedIngredient = nullptr;
+                        //selectedIngredient = nullptr;
 
                         // Still allow dragging!
-                        item->isDragging = true;
-                        item->dragOffset = item->sprite.getPosition() - mousePos;
+                        //item->isDragging = true;
+                        //item->dragOffset = item->sprite.getPosition() - mousePos;
+
+                        selectedIngredient = nullptr;
+
+
+                        if (currentTool == ToolType::None)
+                        {
+                            pendingDragItem = item.get();
+                            pressStartPos = mousePos;
+                            mouseHeld = true;
+                        }
                     }
 
                     return;
@@ -159,6 +175,23 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
         };
      
         manager.inventory.setMousePosition(currentMousePos);
+
+        if (mouseHeld && pendingDragItem && !pendingDragItem->isDragging)
+        {
+            sf::Vector2f delta = currentMousePos - pressStartPos;
+
+            if (std::hypot(delta.x, delta.y) > 10.f)
+            {
+                pendingDragItem->isDragging = true;
+
+                pendingDragItem->dragOffset =
+                    pendingDragItem->sprite.getPosition() - currentMousePos;
+
+                mouseHeld = false;
+
+                pendingDragItem = nullptr;
+            }
+        }
     }
 
 
@@ -167,6 +200,14 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
     if (event.is<sf::Event::MouseButtonReleased>())
     {
         auto mouse = event.getIf<sf::Event::MouseButtonReleased>();
+
+
+        if (!mouse)
+            return;
+
+
+        if (mouse->button != sf::Mouse::Button::Left)
+            return;
 
         sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
 
@@ -324,8 +365,10 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
         }
 
         // Reset!
-        selectedIngredient = nullptr;
+        //selectedIngredient = nullptr;
 
+        mouseHeld = false;
+        pendingDragItem = nullptr;
     }
 }  
 

@@ -201,9 +201,10 @@ StateManager::StateManager()
 
 void StateManager::setState(std::unique_ptr<GameState> newState)
 {
-    // detect type BEFORE switching (optional but clean)
+
     if (dynamic_cast<MenuState*>(newState.get()))
     {
+        resetGame();
         playMenuMusic();
     }
     else

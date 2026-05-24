@@ -49,6 +49,10 @@ private:
    sf::Vector2f dragEnd;
    bool isDraggingGesture = false;
 
+   Item* pendingDragItem = nullptr;
+   sf::Vector2f pressStartPos;
+   bool mouseHeld = false;
+
    // animation
    bool isAnimating = false;
 

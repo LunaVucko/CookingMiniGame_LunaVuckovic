@@ -107,8 +107,12 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             //pick up the jug
             if (jug && jug->sprite.getGlobalBounds().contains(mousePos))
             {
-                jug->isDragging = true;
-                jug->dragOffset = jug->sprite.getPosition() - mousePos;
+                pendingDragItem = jug.get();
+
+                pressStartPos = mousePos;
+
+                mouseHeld = true;
+            
             }
 
             if (knobArea.contains(mousePos))
@@ -136,6 +140,22 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         }
 
         manager.inventory.setMousePosition(currentMousePos);
+
+        if (mouseHeld && pendingDragItem && !pendingDragItem->isDragging)
+        {
+            sf::Vector2f delta = currentMousePos - pressStartPos;
+
+            if (std::hypot(delta.x, delta.y) > 10.f)
+            {
+                pendingDragItem->isDragging = true;
+
+                pendingDragItem->dragOffset =
+                    pendingDragItem->sprite.getPosition() - currentMousePos;
+
+                mouseHeld = false;
+                pendingDragItem = nullptr;
+            }
+        }
 
 
     }
@@ -301,6 +321,9 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
             knobTrail.clear();
         }
+
+        mouseHeld = false;
+        pendingDragItem = nullptr;
     }
 }
 

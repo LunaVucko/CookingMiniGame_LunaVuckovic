@@ -90,7 +90,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
 
              // pick up pot
-            if (manager.stovePot && manager.stovePot->sprite.getGlobalBounds().contains(mousePos))
+            if (manager.stovePot && !manager.stoveHasPot && manager.stovePot->sprite.getGlobalBounds().contains(mousePos))
             {
                 manager.stovePot->isDragging = true;
                 manager.stovePot->dragOffset = manager.stovePot->sprite.getPosition() - mousePos;
@@ -120,6 +120,10 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
     if (event.is<sf::Event::MouseButtonReleased>())
     {
         auto mouse = event.getIf<sf::Event::MouseButtonReleased>();
+
+
+        if (!mouse || mouse->button != sf::Mouse::Button::Left)
+            return;
 
         sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
 

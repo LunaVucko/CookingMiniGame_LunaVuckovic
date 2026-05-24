@@ -40,6 +40,12 @@ private:
     bool isTurningKnob = false;
     std::vector<sf::Vector2f> knobTrail;
 
+    Item* pendingDragItem = nullptr;
+
+    sf::Vector2f pressStartPos;
+
+    bool mouseHeld = false;
+
 public:
     SinkState(StateManager& manager);
 
