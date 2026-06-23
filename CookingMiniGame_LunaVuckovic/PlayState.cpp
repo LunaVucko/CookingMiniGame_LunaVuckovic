@@ -11,6 +11,18 @@ PlayState::PlayState(StateManager& manager) : manager(manager)
     {
         std::cout << "Failed to load kitchen background\n";
     }
+    if (!sinkHoverTexture.loadFromFile("Texture/game_photo_sink.png"))
+    {
+        std::cout << "Failed to load selected sink kitchen background\n";
+    }
+    if (!stoveHoverTexture.loadFromFile("Texture/game_photo_stove.png"))
+    {
+        std::cout << "Failed to load selected stove kitchen background\n";
+    }
+    if (!counterHoverTexture.loadFromFile("Texture/game_photo_cutting_board.png"))
+    {
+        std::cout << "Failed to load selected cutting board kitchen background\n";
+    }
 
     manager.pauseTimer = false;
     manager.showTimer = true;
@@ -33,6 +45,17 @@ PlayState::PlayState(StateManager& manager) : manager(manager)
 void PlayState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 {
     manager.inventory.handleEvent(event);
+
+    if (event.is<sf::Event::MouseMoved>())
+    {
+        auto mouse = event.getIf<sf::Event::MouseMoved>();
+
+        mousePos =
+        {
+            static_cast<float>(mouse->position.x),
+            static_cast<float>(mouse->position.y)
+        };
+    }
 
     if (event.is<sf::Event::MouseButtonPressed>())
     {
@@ -80,6 +103,24 @@ void PlayState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
 void PlayState::update() 
 {
+
+    if (sinkArea.contains(mousePos))
+    {
+        background.setTexture(&sinkHoverTexture);
+    }
+    else if (stoveArea.contains(mousePos))
+    {
+        background.setTexture(&stoveHoverTexture);
+    }
+    else if (kitchenCounterArea.contains(mousePos))
+    {
+        background.setTexture(&counterHoverTexture);
+    }
+    else
+    {
+        background.setTexture(&texture);
+    }
+
     if (nextState)
     {
         manager.setState(std::move(nextState));

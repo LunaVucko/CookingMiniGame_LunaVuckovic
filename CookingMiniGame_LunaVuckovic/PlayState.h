@@ -11,6 +11,12 @@ private:
     sf::Texture texture;
     StateManager& manager;
 
+    sf::Texture sinkHoverTexture;
+    sf::Texture stoveHoverTexture;
+    sf::Texture counterHoverTexture;
+
+    sf::Vector2f mousePos;
+
     //Inventory inventory;
     //sf::Texture ingredientsTexture;
 
