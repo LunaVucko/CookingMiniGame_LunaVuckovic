@@ -31,6 +31,11 @@ private:
     // knob area
     sf::FloatRect knobArea;
 
+    // Tutorial indicator
+    sf::RectangleShape knobIndicator;
+    float indicatorRotation = 0.f;
+    bool showKnobIndicator = true;
+
     // water state
     bool waterOn = false;
 
@@ -45,6 +50,8 @@ private:
     sf::Vector2f pressStartPos;
 
     bool mouseHeld = false;
+
+
 
 public:
     SinkState(StateManager& manager);

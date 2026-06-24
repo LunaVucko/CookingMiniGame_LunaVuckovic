@@ -58,6 +58,14 @@ StateManager::StateManager()
         std::cout << "Failed to load water texture\n";
     }
 
+    //roate hint 
+
+    if (!rotateHintTexture.loadFromFile("Texture/feedback_knob.png"))
+    {
+        std::cout << "Failed to load spritesheet\n";
+        return;
+    }
+
     // stove backrounds
 
     if (!stoveEmptyTexture.loadFromFile("Texture/stove_layout.png"))

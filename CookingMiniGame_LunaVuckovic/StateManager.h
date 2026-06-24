@@ -47,6 +47,10 @@ public:
     sf::Texture sinkTexture;
     sf::Texture waterTexture;
 
+    //knob indicator texture
+
+    sf::Texture rotateHintTexture;
+
     //ingedients in pot
     sf::Texture potIngredientsTexture;
 

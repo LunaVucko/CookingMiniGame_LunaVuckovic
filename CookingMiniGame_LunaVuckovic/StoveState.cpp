@@ -3,6 +3,7 @@
 #include "ResultState.h"
 #include <iostream>
 #include "PlatingState.h"
+#include <SFML/System/Angle.hpp>
 
 StoveState::StoveState(StateManager& manager) : manager(manager)
 {
@@ -52,6 +53,23 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
     potArea = sf::FloatRect({ 350.f, 200.f }, { 250.f, 250.f });
     knobArea = { {720.f,500.f},{120.f,120.f} };
 
+    //knob indicator area
+
+    knobIndicator.setTexture(&manager.rotateHintTexture);
+
+    knobIndicator.setSize({ 250.f, 250.f });
+
+
+    knobIndicator.setOrigin({
+        knobIndicator.getSize().x / 2.f,
+        knobIndicator.getSize().y / 2.f
+        });
+
+
+
+    knobIndicator.setPosition({ 780.f, 560.f });
+
+    knobIndicator.setFillColor(sf::Color::Yellow);
 
    
 
@@ -367,6 +385,7 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
             if (manager.stoveHeatOn)
             {
+                showKnobIndicator = false;
                 manager.knobOnSound.value().play();
                 manager.gasOnSound.value().play();
             }
@@ -384,6 +403,15 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
 void StoveState::update()
 {
+
+    if (showKnobIndicator)
+    {
+        indicatorRotation += -30.f * 0.016f;
+
+        knobIndicator.setRotation(sf::degrees(indicatorRotation));
+    }
+
+
     if (manager.stovePot && manager.stovePot->isDragging)
     {
         manager.stovePot->sprite.setPosition(currentMousePos + manager.stovePot->dragOffset);
@@ -576,6 +604,11 @@ void StoveState::draw(sf::RenderWindow& window)
 
             window.draw(waterItem.item->sprite);
         }
+    }
+
+    if (showKnobIndicator)
+    {
+        window.draw(knobIndicator);
     }
 
     for (auto& smoke : smokeParticles)

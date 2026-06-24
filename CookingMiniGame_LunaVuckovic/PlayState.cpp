@@ -55,6 +55,8 @@ void PlayState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             static_cast<float>(mouse->position.x),
             static_cast<float>(mouse->position.y)
         };
+
+        mouseInitialized = true;
     }
 
     if (event.is<sf::Event::MouseButtonPressed>())
@@ -103,8 +105,11 @@ void PlayState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
 void PlayState::update() 
 {
-
-    if (sinkArea.contains(mousePos))
+    if (!mouseInitialized)
+    {
+        background.setTexture(&texture);
+    }
+    else if (sinkArea.contains(mousePos))
     {
         background.setTexture(&sinkHoverTexture);
     }

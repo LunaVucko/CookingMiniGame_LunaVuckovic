@@ -27,6 +27,12 @@ private:
     // Inventory
     //Inventory inventory;
 
+
+    // Tutorial indicator
+    sf::RectangleShape knobIndicator;
+    float indicatorRotation = 0.f;
+    bool showKnobIndicator = true;
+
     // Pot
     sf::FloatRect potArea;
     sf::FloatRect knobArea;

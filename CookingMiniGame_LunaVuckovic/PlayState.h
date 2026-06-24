@@ -17,6 +17,8 @@ private:
 
     sf::Vector2f mousePos;
 
+    bool mouseInitialized = false;
+
     //Inventory inventory;
     //sf::Texture ingredientsTexture;
 
