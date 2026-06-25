@@ -62,7 +62,15 @@ StateManager::StateManager()
 
     if (!rotateHintTexture.loadFromFile("Texture/feedback_knob.png"))
     {
-        std::cout << "Failed to load spritesheet\n";
+        std::cout << "Failed to load knob feedback\n";
+        return;
+    }
+
+    //drag hint 
+
+    if (!arrowJugHintTexture.loadFromFile("Texture/feedback_arrow.png"))
+    {
+        std::cout << "Failed to load drag feedback\n";
         return;
     }
 

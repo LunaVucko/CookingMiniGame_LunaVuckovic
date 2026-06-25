@@ -71,7 +71,25 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
 
     knobIndicator.setFillColor(sf::Color::Yellow);
 
-   
+   //drag indicator
+
+    potArrow.setTexture(&manager.arrowJugHintTexture);
+
+    potArrow.setSize({ 120.f, 120.f });
+
+    potArrow.setOrigin({
+        potArrow.getSize().x / 2.f,
+        potArrow.getSize().y / 2.f
+        });
+
+    potArrow.setRotation(sf::degrees(-45.f));
+
+    potArrowStart = { 180.f, 600.f };
+    potArrowEnd = { 430.f, 350.f };
+
+    potArrow.setFillColor(sf::Color::Yellow);
+
+    showPotArrow = !manager.stoveHasPot;
 
 }
 
@@ -191,6 +209,8 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 manager.stovePot->sprite.setPosition({ 220.f, 100.f });
 
                 manager.stoveHasPot = true;
+                showPotArrow = false;
+                showKnobIndicator = true;
 
                 background.setTexture(&manager.stovePotTexture);
 
@@ -411,6 +431,25 @@ void StoveState::update()
         knobIndicator.setRotation(sf::degrees(indicatorRotation));
     }
 
+    if (showPotArrow)
+    {
+        potArrowAnimTime += 0.008f;
+
+        float t =
+            (std::sin(potArrowAnimTime * 0.8f) + 1.f) * 0.5f;
+
+        sf::Vector2f pos =
+        {
+            potArrowStart.x +
+            (potArrowEnd.x - potArrowStart.x) * t,
+
+            potArrowStart.y +
+            (potArrowEnd.y - potArrowStart.y) * t
+        };
+
+        potArrow.setPosition(pos);
+    }
+
 
     if (manager.stovePot && manager.stovePot->isDragging)
     {
@@ -604,6 +643,11 @@ void StoveState::draw(sf::RenderWindow& window)
 
             window.draw(waterItem.item->sprite);
         }
+    }
+
+    if (showPotArrow)
+    {
+        window.draw(potArrow);
     }
 
     if (showKnobIndicator)

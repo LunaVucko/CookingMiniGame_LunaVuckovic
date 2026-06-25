@@ -31,10 +31,21 @@ private:
     // knob area
     sf::FloatRect knobArea;
 
-    // Tutorial indicator
+    // Tutorial knob indicator
     sf::RectangleShape knobIndicator;
     float indicatorRotation = 0.f;
     bool showKnobIndicator = true;
+
+    //tutorial dragging jug
+
+    sf::RectangleShape dragArrow;
+
+    bool showDragArrow = false;
+
+    float arrowAnimTime = 0.f;
+
+    sf::Vector2f arrowStart;
+    sf::Vector2f arrowEnd;
 
     // water state
     bool waterOn = false;

@@ -49,6 +49,22 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
         jug->sprite.setPosition({ 350.f, 500.f });
 
         jug->sprite.setScale({ 0.3f, 0.3f });
+
+        dragArrow.setTexture(&manager.arrowJugHintTexture);
+
+        dragArrow.setSize({ 120.f, 120.f });
+
+        dragArrow.setOrigin({
+            dragArrow.getSize().x / 2.f,
+            dragArrow.getSize().y / 2.f
+            });
+
+        arrowStart = { 430.f, 620.f }; // near jug
+        arrowEnd = { 480.f, 330.f }; // center of sink
+
+        dragArrow.setRotation(sf::degrees(-60.f));
+
+        dragArrow.setFillColor(sf::Color::Yellow);
     }
 
    
@@ -210,6 +226,8 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 {
                     jug->state = JugState::Filled;
 
+                    showDragArrow = false;
+
                     jug->updateSprite();
 
                     manager.pourSound.value().play();
@@ -265,6 +283,7 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                     if (waterOn)
                     {
+                        showDragArrow = true;
                         showKnobIndicator = false;
 
                         manager.knobOnSound.value().play();
@@ -298,6 +317,21 @@ void SinkState::update()
         knobIndicator.setRotation(sf::degrees(indicatorRotation));
     }
 
+    if (showDragArrow)
+    {
+        arrowAnimTime += 0.016f;
+
+        float t = (std::sin(arrowAnimTime * 0.5f) + 1.f) * 0.5f;
+
+        sf::Vector2f pos =
+        {
+            arrowStart.x + (arrowEnd.x - arrowStart.x) * t,
+            arrowStart.y + (arrowEnd.y - arrowStart.y) * t
+        };
+
+        dragArrow.setPosition(pos);
+    }
+
     if (jug && jug->isDragging)
     {
         jug->sprite.setPosition(currentMousePos + jug->dragOffset);
@@ -316,6 +350,7 @@ void SinkState::draw(sf::RenderWindow& window)
         window.draw(pot->sprite);
     }
     */
+  
 
     if (showKnobIndicator)
     {
@@ -329,6 +364,11 @@ void SinkState::draw(sf::RenderWindow& window)
     if (jug)
     {
         window.draw(jug->sprite);
+    }
+
+    if (showDragArrow)
+    {
+        window.draw(dragArrow);
     }
 
     /*

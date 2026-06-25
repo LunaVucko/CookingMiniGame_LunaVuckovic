@@ -31,7 +31,18 @@ private:
     // Tutorial indicator
     sf::RectangleShape knobIndicator;
     float indicatorRotation = 0.f;
-    bool showKnobIndicator = true;
+    bool showKnobIndicator = false;
+
+    //drag tutorial indicator
+
+    sf::RectangleShape potArrow;
+
+    bool showPotArrow = true;
+
+    float potArrowAnimTime = 0.f;
+
+    sf::Vector2f potArrowStart;
+    sf::Vector2f potArrowEnd;
 
     // Pot
     sf::FloatRect potArea;

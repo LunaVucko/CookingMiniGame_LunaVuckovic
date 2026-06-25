@@ -51,6 +51,10 @@ public:
 
     sf::Texture rotateHintTexture;
 
+    //drag jug indicator texture
+
+    sf::Texture arrowJugHintTexture;
+
     //ingedients in pot
     sf::Texture potIngredientsTexture;
 
