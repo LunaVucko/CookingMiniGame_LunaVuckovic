@@ -159,6 +159,7 @@
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Jug.h" />
+    <ClInclude Include="counterTutorialStage.h" />
     <ClInclude Include="KitchenCounterState.h" />
     <ClInclude Include="Ladle.h" />
     <ClInclude Include="MenuState.h" />
@@ -169,8 +170,10 @@
     <ClInclude Include="Pot.h" />
     <ClInclude Include="ResultState.h" />
     <ClInclude Include="SinkState.h" />
+    <ClInclude Include="sinkTutorialStage.h" />
     <ClInclude Include="StateManager.h" />
     <ClInclude Include="StoveState.h" />
+    <ClInclude Include="stoveTutorialStage.h" />
     <ClInclude Include="Tools.h" />
     <ClInclude Include="TutorialState.h" />
   </ItemGroup>

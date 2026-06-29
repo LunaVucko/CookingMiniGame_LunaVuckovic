@@ -8,6 +8,7 @@
 #include <vector>
 #include "Pot.h"
 #include "Jug.h"
+#include "sinkTutorialStage.h"
 
 class SinkState : public GameState
 {
@@ -34,18 +35,20 @@ private:
     // Tutorial knob indicator
     sf::RectangleShape knobIndicator;
     float indicatorRotation = 0.f;
-    bool showKnobIndicator = true;
+  //  bool showKnobIndicator = true;
 
     //tutorial dragging jug
 
     sf::RectangleShape dragArrow;
 
-    bool showDragArrow = false;
+   // bool showDragArrow = false;
 
-    float arrowAnimTime = 0.f;
+    float hintAnimTime = 0.f;
 
     sf::Vector2f arrowStart;
     sf::Vector2f arrowEnd;
+
+    SinkTutorialStage sinkTutorialStage = SinkTutorialStage::TurnWaterOn;
 
     // water state
     bool waterOn = false;

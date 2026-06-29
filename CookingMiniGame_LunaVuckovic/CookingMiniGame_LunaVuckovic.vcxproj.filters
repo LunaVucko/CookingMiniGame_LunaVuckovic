@@ -63,6 +63,9 @@
     <ClCompile Include="Ladl.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="TutorialState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainMenu.h">
@@ -124,6 +127,18 @@
     </ClInclude>
     <ClInclude Include="PlatingState.h">
       <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="TutorialState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="counterTutorialStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sinkTutorialStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stoveTutorialStage.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

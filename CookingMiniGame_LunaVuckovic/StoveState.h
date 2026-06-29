@@ -7,6 +7,7 @@
 #include "Pot.h"
 #include <memory>
 #include <vector>
+#include "stoveTutorialStage.h"
 
 struct SmokeParticle
 {
@@ -29,20 +30,26 @@ private:
 
 
     // Tutorial indicator
-    sf::RectangleShape knobIndicator;
-    float indicatorRotation = 0.f;
-    bool showKnobIndicator = false;
 
-    //drag tutorial indicator
+    StoveTutorialStage stoveTutorialStage = StoveTutorialStage::DragPot;
 
+    float hintAnimTime = 0.f;
+
+    // Pot arrow
     sf::RectangleShape potArrow;
-
-    bool showPotArrow = true;
-
-    float potArrowAnimTime = 0.f;
-
     sf::Vector2f potArrowStart;
     sf::Vector2f potArrowEnd;
+
+    // Ingredient arrow
+    sf::RectangleShape ingredientArrow;
+    sf::Vector2f ingredientArrowStart;
+    sf::Vector2f ingredientArrowEnd;
+
+    //knob indicator
+
+    sf::RectangleShape knobIndicator;
+    float indicatorRotation = 0.f;
+
 
     // Pot
     sf::FloatRect potArea;

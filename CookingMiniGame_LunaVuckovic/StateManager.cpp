@@ -74,6 +74,35 @@ StateManager::StateManager()
         return;
     }
 
+    //cut hint 
+
+    if (!cutHintTexture.loadFromFile("Texture/cut_line.png"))
+    {
+        std::cout << "Failed to load cut feedback\n";
+        return;
+    }
+    //peel hint 
+
+    if (!peelHintTexture.loadFromFile("Texture/peel_line.png"))
+    {
+        std::cout << "Failed to load peel feedback\n";
+        return;
+    }
+    //knfie hint 
+
+    if (!knifeHintTexture.loadFromFile("Texture/knife_feedback.png"))
+    {
+        std::cout << "Failed to load drag feedback\n";
+        return;
+    }
+    //peeler hint 
+
+    if (!peelerHintTexture.loadFromFile("Texture/peeler_feedback_.png"))
+    {
+        std::cout << "Failed to load drag feedback\n";
+        return;
+    }
+
     // stove backrounds
 
     if (!stoveEmptyTexture.loadFromFile("Texture/stove_layout.png"))

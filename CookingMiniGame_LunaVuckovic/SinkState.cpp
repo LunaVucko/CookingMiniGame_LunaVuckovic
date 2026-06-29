@@ -38,6 +38,15 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
         });
 
     knobIndicator.setFillColor(sf::Color::Yellow);
+
+    if (manager.sinkTutorialFinished)
+    {
+        sinkTutorialStage = SinkTutorialStage::Finished;
+    }
+    else
+    {
+        sinkTutorialStage = SinkTutorialStage::TurnWaterOn;
+    }
    
 
     if (!manager.jugInInventory)
@@ -65,6 +74,7 @@ SinkState::SinkState(StateManager& manager) : manager(manager)
         dragArrow.setRotation(sf::degrees(-60.f));
 
         dragArrow.setFillColor(sf::Color::Yellow);
+
     }
 
    
@@ -211,6 +221,14 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             manager.jugInInventory = true;
 
             std::cout << "Jug added to inventory!\n";
+            if (manager.sinkTutorialFinished)
+            {
+                sinkTutorialStage = SinkTutorialStage::Finished;
+            }
+            else
+            {
+                sinkTutorialStage = SinkTutorialStage::TurnWaterOff;
+            }
 
             return;
         }
@@ -226,13 +244,19 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 {
                     jug->state = JugState::Filled;
 
-                    showDragArrow = false;
-
                     jug->updateSprite();
 
                     manager.pourSound.value().play();
 
                     std::cout << "Jug filled with water!\n";
+                    if (manager.sinkTutorialFinished)
+                    {
+                        sinkTutorialStage = SinkTutorialStage::Finished;
+                    }
+                    else
+                    {
+                        sinkTutorialStage = SinkTutorialStage::DragToInventory;
+                    }
                 }
                 else
                 {
@@ -283,14 +307,23 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                     if (waterOn)
                     {
-                        showDragArrow = true;
-                        showKnobIndicator = false;
+                        if (manager.sinkTutorialFinished)
+                        {
+                            sinkTutorialStage = SinkTutorialStage::Finished;
+                        }
+                        else
+                        {
+                            sinkTutorialStage = SinkTutorialStage::DragToSink;
+                        }
 
                         manager.knobOnSound.value().play();
                         manager.waterOnSound.value().play();
                     }
                     else
                     {
+                        manager.sinkTutorialFinished = true;
+                        sinkTutorialStage = SinkTutorialStage::Finished;
+
                         manager.knobOffSound.value().play();
                         manager.waterOnSound.value().stop();
                     }
@@ -310,26 +343,44 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
 void SinkState::update()
 {
-    if (showKnobIndicator)
-    {
-        indicatorRotation += -30.f * 0.016f;
+    hintAnimTime += 0.003f;
 
+    if (sinkTutorialStage == SinkTutorialStage::TurnWaterOn)
+    {
+        indicatorRotation += -30.f * 0.006f;
         knobIndicator.setRotation(sf::degrees(indicatorRotation));
     }
 
-    if (showDragArrow)
+    if (sinkTutorialStage == SinkTutorialStage::DragToSink)
     {
-        arrowAnimTime += 0.016f;
+        float t = (std::sin(hintAnimTime * 0.5f) + 1.f) * 0.5f;
 
-        float t = (std::sin(arrowAnimTime * 0.5f) + 1.f) * 0.5f;
-
-        sf::Vector2f pos =
-        {
+        dragArrow.setPosition({
             arrowStart.x + (arrowEnd.x - arrowStart.x) * t,
             arrowStart.y + (arrowEnd.y - arrowStart.y) * t
-        };
+            });
+    }
 
-        dragArrow.setPosition(pos);
+
+    if (sinkTutorialStage == SinkTutorialStage::TurnWaterOff)
+    {
+        indicatorRotation += -30.f * 0.006f;
+        knobIndicator.setRotation(sf::degrees(indicatorRotation));
+    }
+
+    if (sinkTutorialStage == SinkTutorialStage::DragToInventory)
+    {
+        float t = (std::sin(hintAnimTime * 0.5f) + 1.f) * 0.5f;
+
+
+        arrowStart = { 480.f, 330.f }; // near jug in the sink
+        arrowEnd = { 670.f,100.f }; // inventory
+       
+
+        dragArrow.setPosition({
+            arrowStart.x + (arrowEnd.x - arrowStart.x) * t,
+            arrowStart.y + (arrowEnd.y - arrowStart.y) * t
+            });
     }
 
     if (jug && jug->isDragging)
@@ -350,13 +401,7 @@ void SinkState::draw(sf::RenderWindow& window)
         window.draw(pot->sprite);
     }
     */
-  
-
-    if (showKnobIndicator)
-    {
-        window.draw(knobIndicator);
-    }
-   
+ 
 
     // manager.inventory bar
     manager.inventory.draw(window);
@@ -366,9 +411,20 @@ void SinkState::draw(sf::RenderWindow& window)
         window.draw(jug->sprite);
     }
 
-    if (showDragArrow)
+    switch (sinkTutorialStage)
     {
+    case SinkTutorialStage::TurnWaterOn:
+    case SinkTutorialStage::TurnWaterOff:
+        window.draw(knobIndicator);
+        break;
+
+    case SinkTutorialStage::DragToSink:
+    case SinkTutorialStage::DragToInventory:
         window.draw(dragArrow);
+        break;
+
+    default:
+        break;
     }
 
     /*

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cmath>
 
+
 KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manager)
 {
     if (!texture.loadFromFile("Texture/counter_layout.png")) // <= background
@@ -36,6 +37,55 @@ KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manage
          toolItems[i].sprite.setScale({ 0.1f, 0.1f });
      }
 
+     //cursor
+
+     toolCursor.setTexture(&toolsTexture);
+     toolCursor.setSize({ 150.f, 150.f });
+     toolCursor.setOrigin({
+         toolCursor.getSize().x / 2.f,
+         toolCursor.getSize().y / 2.f
+         });
+
+
+     //tuorial
+
+     tutorialArrow.setTexture(&manager.arrowJugHintTexture);
+     tutorialArrow.setSize({ 100.f,100.f });
+     tutorialArrow.setOrigin({ 50.f,50.f });
+     tutorialArrow.setRotation(sf::degrees(-45.f));
+
+
+     tutorialArrow.setFillColor(sf::Color::Yellow);
+
+     peelLine.setTexture(&manager.peelHintTexture);
+     peelLine.setSize({ 340.f,220.f });
+     peelLine.setFillColor(sf::Color::Yellow);
+
+
+     cutLine.setTexture(&manager.cutHintTexture);
+     cutLine.setSize({ 280.f,220.f });
+     cutLine.setRotation(sf::degrees(-85.f));
+     cutLine.setFillColor(sf::Color::Yellow);
+
+     knifeFeedback.setTexture(&manager.knifeHintTexture);
+     knifeFeedback.setSize({ 200.f,200.f });
+     knifeFeedback.setOrigin({ 60.f,60.f });
+     knifeFeedback.setFillColor(sf::Color::Yellow);
+
+     peelerFeedback.setTexture(&manager.peelerHintTexture);
+     peelerFeedback.setSize({ 200.f,200.f });
+     peelerFeedback.setOrigin({ 60.f,60.f });
+     peelerFeedback.setFillColor(sf::Color::Yellow);
+
+     if (manager.counterTutorialFinished)
+     {
+         counterTutorialStage = CounterTutorialStage::Finished;
+     }
+     else
+     {
+         counterTutorialStage = CounterTutorialStage::DragToBoard;
+     }
+
      //sfx
 
      if (!cutBuffer.loadFromFile("SFX/cut.wav"))
@@ -66,6 +116,9 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 dragged->isDragging = false;
 
             manager.setState(std::make_unique<PlayState>(manager));
+
+            showToolCursor = false;
+            window.setMouseCursorVisible(true);
 
         }
     }
@@ -111,6 +164,13 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 if (tool.sprite.getGlobalBounds().contains(mousePos))
                 {
                     currentTool = tool.type;
+
+                    showToolCursor = true;
+
+                    toolCursor.setTextureRect(tool.sprite.getTextureRect());
+
+                    window.setMouseCursorVisible(false);
+
                     manager.selectSound.value().play();
                     std::cout << "Tool selected!\n";
                     return; 
@@ -175,6 +235,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
       (float)mouse->position.x,
       (float)mouse->position.y
         };
+
+        toolCursor.setPosition(currentMousePos);
      
         manager.inventory.setMousePosition(currentMousePos);
 
@@ -247,11 +309,22 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                             manager.wrongBuzzSound.value().play();
                             std::cout << "Already cut!\n";
                             currentTool = ToolType::None;
+                            showToolCursor = false;
+                            window.setMouseCursorVisible(true);
                         }
                         else if (canCutNow)
                         {
                             selectedIngredient->state = IngredientState::Cut;
                             selectedIngredient->updateSprite();
+
+                            if (manager.counterTutorialFinished)
+                            {
+                                counterTutorialStage = CounterTutorialStage::Finished;
+                            }
+                            else
+                            {
+                                counterTutorialStage = CounterTutorialStage::DragToInventory;
+                            }
 
                             cutSound.value().play();
 
@@ -267,6 +340,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
 
 
                             currentTool = ToolType::None; //unselect the tool
+                            showToolCursor = false;
+                            window.setMouseCursorVisible(true);
                             std::cout << "Cut!\n";
                         }
                         else
@@ -274,6 +349,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                             manager.wrongBuzzSound.value().play();
                             std::cout << "Can't cut yet!\n";
                             currentTool = ToolType::None;
+                            showToolCursor = false;
+                            window.setMouseCursorVisible(true);
                         }
                     }
                 }
@@ -286,6 +363,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         manager.wrongBuzzSound.value().play();
                         std::cout << "Already peeled!\n";
                         currentTool = ToolType::None;
+                        showToolCursor = false;
+                        window.setMouseCursorVisible(true);
                     }
                     else if (selectedIngredient->state == IngredientState::Whole &&
                         canPeel(selectedIngredient->type))
@@ -293,6 +372,14 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         selectedIngredient->state = IngredientState::Peeled;
                         selectedIngredient->updateSprite();
 
+                        if (manager.counterTutorialFinished)
+                        {
+                            counterTutorialStage = CounterTutorialStage::Finished;
+                        }
+                        else
+                        {
+                            counterTutorialStage = CounterTutorialStage::Cut;
+                        }
                         peelSound.value().play();
 
                         // START PEEL ANIMATION
@@ -306,6 +393,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         animationClock.restart();
 
                         currentTool = ToolType::None;//unselect the tool
+                        showToolCursor = false;
+                        window.setMouseCursorVisible(true);
                         std::cout << "Peeled!\n";
                     }
                     else
@@ -313,6 +402,8 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         manager.wrongBuzzSound.value().play();
                         std::cout << "Can't peel this!\n";
                         currentTool = ToolType::None;
+                        showToolCursor = false;
+                        window.setMouseCursorVisible(true);
                     }
                 }
             }
@@ -336,6 +427,20 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 manager.placeSound.value().play();
 
                 counterItems.push_back(move(item));
+
+                if (manager.counterTutorialFinished)
+                {
+                    counterTutorialStage = CounterTutorialStage::Finished;
+                }
+                else 
+                {
+
+                    if (counterTutorialStage == CounterTutorialStage::DragToBoard)
+                    {
+                        counterTutorialStage = CounterTutorialStage::Peel;
+                    }
+                }
+
                 return;
             }
         }
@@ -354,6 +459,10 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                     item->isDragging = false;
                     item->sprite.setScale({ 0.2f, 0.2f });
                     //manager.inventory.addItem(std::move(item));
+
+                    manager.counterTutorialFinished = true;
+                    counterTutorialStage = CounterTutorialStage::Finished;
+
                     int slotIndex = manager.inventory.getSlotIndexAt(mousePos);
 
 
@@ -388,6 +497,62 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
 
 void KitchenCounterState::update()
 {
+    hintAnimTime += 0.003f;
+
+    if (counterTutorialStage == CounterTutorialStage::DragToBoard)
+    {
+        float t = (std::sin(hintAnimTime) + 1.f) * 0.5f;
+
+        sf::Vector2f start{ 70.f,100.f };
+        sf::Vector2f end{ 540.f,480.f };
+
+        tutorialArrow.setPosition(
+            {
+                start.x + (end.x - start.x) * t,
+                start.y + (end.y - start.y) * t
+            });
+    }
+
+    if (counterTutorialStage == CounterTutorialStage::Peel)
+    {
+        peelLine.setPosition({ 320.f,270.f });
+
+        float t = (std::sin(hintAnimTime) + 1.f) * 0.5f;
+
+        peelerFeedback.setPosition(
+            {
+                360.f + t * 320.f,
+                290.f
+            });
+    }
+
+    if (counterTutorialStage == CounterTutorialStage::Cut)
+    {
+        cutLine.setPosition({ 320.f,550.f });
+
+        float t = (std::sin(hintAnimTime) + 1.f) * 0.5f;
+
+        knifeFeedback.setPosition(
+            {
+                500.f - t * 200.f,
+                280.f + t * 200.f
+            });
+    }
+
+    if (counterTutorialStage == CounterTutorialStage::DragToInventory)
+    {
+        float t = (std::sin(hintAnimTime) + 1.f) * 0.5f;
+
+        sf::Vector2f start{ 540.f,430.f };
+        sf::Vector2f end{ 70.f,100.f };
+
+        tutorialArrow.setPosition(
+            {
+                start.x + (end.x - start.x) * t,
+                start.y + (end.y - start.y) * t
+            });
+    }
+
     manager.inventory.update();
 
    // sf::Vector2f mousePos = manager.inventory.getMousePos(); 
@@ -445,6 +610,8 @@ void KitchenCounterState::draw(sf::RenderWindow& window)
     // Inventory bar <= top inventory
     manager.inventory.draw(window);
 
+    
+
     // Cutting board ingredients
     for (auto& ing : counterItems)
     {
@@ -462,6 +629,35 @@ void KitchenCounterState::draw(sf::RenderWindow& window)
     if (isAnimating && animationSprite.has_value())
     {
         window.draw(animationSprite.value());
+    }
+
+    if (showToolCursor)
+    {
+        window.draw(toolCursor);
+    }
+
+    switch (counterTutorialStage)
+    {
+    case CounterTutorialStage::DragToBoard:
+        window.draw(tutorialArrow);
+        break;
+
+    case CounterTutorialStage::Peel:
+        window.draw(peelLine);
+        window.draw(peelerFeedback);
+        break;
+
+    case CounterTutorialStage::Cut:
+        window.draw(cutLine);
+        window.draw(knifeFeedback);
+        break;
+
+    case CounterTutorialStage::DragToInventory:
+        window.draw(tutorialArrow);
+        break;
+
+    default:
+        break;
     }
 
     /*    sf::RectangleShape debug;

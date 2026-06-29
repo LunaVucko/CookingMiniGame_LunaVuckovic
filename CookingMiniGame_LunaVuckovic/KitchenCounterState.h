@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 #include <SFML/Audio.hpp>
+#include "counterTutorialStage.h"
 
 class KitchenCounterState : public GameState
 {
@@ -30,6 +31,27 @@ private:
 
     std::vector<Tools> toolItems;
     ToolType currentTool = ToolType::None;
+
+    ///custom cursor
+
+    sf::RectangleShape toolCursor;
+    bool showToolCursor = false;
+
+    //turoial
+
+    sf::RectangleShape tutorialArrow;
+
+    sf::RectangleShape peelLine;
+    sf::RectangleShape cutLine;
+
+    sf::RectangleShape peelerFeedback;
+    sf::RectangleShape knifeFeedback;
+
+    CounterTutorialStage counterTutorialStage =
+        CounterTutorialStage::DragToBoard;
+
+    float hintAnimTime = 0.f;
+
 
 
     //spritesheet

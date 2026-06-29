@@ -55,6 +55,31 @@ public:
 
     sf::Texture arrowJugHintTexture;
 
+
+    //cut line indicator texture
+
+    sf::Texture cutHintTexture;
+
+
+    //peel line indicator texture
+
+    sf::Texture peelHintTexture;
+
+
+    //knife tutorial indicator texture
+
+    sf::Texture knifeHintTexture;
+
+
+    //peeler tutorial indicator texture
+
+    sf::Texture peelerHintTexture;
+
+    // Tutorial progress
+    bool sinkTutorialFinished = false;
+    bool counterTutorialFinished = false;
+    bool stoveTutorialFinished = false;
+   
     //ingedients in pot
     sf::Texture potIngredientsTexture;
 

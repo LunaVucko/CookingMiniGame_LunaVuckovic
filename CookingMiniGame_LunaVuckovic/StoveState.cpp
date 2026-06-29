@@ -89,7 +89,18 @@ StoveState::StoveState(StateManager& manager) : manager(manager)
 
     potArrow.setFillColor(sf::Color::Yellow);
 
-    showPotArrow = !manager.stoveHasPot;
+    if (manager.stoveTutorialFinished)
+    {
+        stoveTutorialStage = StoveTutorialStage::Finished;
+    }
+    else if (manager.stoveHasPot)
+    {
+        stoveTutorialStage = StoveTutorialStage::TurnOnStove;
+    }
+    else
+    {
+        stoveTutorialStage = StoveTutorialStage::DragPot;
+    }
 
 }
 
@@ -209,8 +220,11 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 manager.stovePot->sprite.setPosition({ 220.f, 100.f });
 
                 manager.stoveHasPot = true;
-                showPotArrow = false;
-                showKnobIndicator = true;
+
+                if (!manager.stoveTutorialFinished)
+                {
+                    stoveTutorialStage = StoveTutorialStage::TurnOnStove;
+                }
 
                 background.setTexture(&manager.stovePotTexture);
 
@@ -367,6 +381,12 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
                                 manager.stovePot->stoveItems.push_back(std::move(cookingItem));
 
+                                if (!manager.stoveTutorialFinished)
+                                {
+                                    manager.stoveTutorialFinished = true;
+                                    stoveTutorialStage = StoveTutorialStage::Finished;
+                                }
+
                                 manager.stovePot->state = PotState::Filled;
                                 manager.stovePot->updateSprite();
 
@@ -405,7 +425,10 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
             if (manager.stoveHeatOn)
             {
-                showKnobIndicator = false;
+                if (!manager.stoveTutorialFinished)
+                {
+                    stoveTutorialStage = StoveTutorialStage::DragIngredient;
+                }
                 manager.knobOnSound.value().play();
                 manager.gasOnSound.value().play();
             }
@@ -424,30 +447,51 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 void StoveState::update()
 {
 
-    if (showKnobIndicator)
-    {
-        indicatorRotation += -30.f * 0.016f;
+    hintAnimTime += 0.003f;
 
+    if (stoveTutorialStage == StoveTutorialStage::DragPot)
+    {
+        float t = (std::sin(hintAnimTime) + 1.f) * 0.5f;
+
+        potArrow.setPosition({
+            potArrowStart.x + (potArrowEnd.x - potArrowStart.x) * t,
+            potArrowStart.y + (potArrowEnd.y - potArrowStart.y) * t
+            });
+    }
+    
+    if (stoveTutorialStage == StoveTutorialStage::TurnOnStove)
+    {
+        indicatorRotation += -30.f * 0.006f;
         knobIndicator.setRotation(sf::degrees(indicatorRotation));
     }
 
-    if (showPotArrow)
+    if (stoveTutorialStage == StoveTutorialStage::DragIngredient)
     {
-        potArrowAnimTime += 0.008f;
+        float t = (std::sin(hintAnimTime) + 1.f) * 0.5f;
 
-        float t =
-            (std::sin(potArrowAnimTime * 0.8f) + 1.f) * 0.5f;
+        ingredientArrow.setTexture(&manager.arrowJugHintTexture);
 
-        sf::Vector2f pos =
-        {
-            potArrowStart.x +
-            (potArrowEnd.x - potArrowStart.x) * t,
+        ingredientArrow.setSize({ 120.f, 120.f });
 
-            potArrowStart.y +
-            (potArrowEnd.y - potArrowStart.y) * t
-        };
+        ingredientArrow.setOrigin({
+            ingredientArrow.getSize().x / 2.f,
+           ingredientArrow.getSize().y / 2.f
+            });
 
-        potArrow.setPosition(pos);
+        potArrow.setRotation(sf::degrees(-45.f));
+
+        ingredientArrowStart = { 30.f, 100.f };
+        ingredientArrowEnd = { 430.f, 350.f };
+
+        ingredientArrow.setFillColor(sf::Color::Yellow);
+
+        ingredientArrow.setPosition({
+            ingredientArrowStart.x +
+                (ingredientArrowEnd.x - ingredientArrowStart.x) * t,
+
+            ingredientArrowStart.y +
+                (ingredientArrowEnd.y - ingredientArrowStart.y) * t
+            });
     }
 
 
@@ -610,15 +654,11 @@ void StoveState::draw(sf::RenderWindow& window)
     // Inventory bar
     manager.inventory.draw(window);
 
-    if (auto* dragged = manager.inventory.getDraggedItem())
-    {
-        window.draw(dragged->sprite);
-    }
     
     if (manager.stovePot)
     {
+      
         window.draw(manager.stovePot->sprite);
-
 
         // Pot ingredients
         for (auto& cookingItem : manager.stovePot->stoveItems)
@@ -645,14 +685,28 @@ void StoveState::draw(sf::RenderWindow& window)
         }
     }
 
-    if (showPotArrow)
+
+    if (auto* dragged = manager.inventory.getDraggedItem())
     {
-        window.draw(potArrow);
+        window.draw(dragged->sprite);
     }
 
-    if (showKnobIndicator)
+    switch (stoveTutorialStage)
     {
+    case StoveTutorialStage::DragPot:
+        window.draw(potArrow);
+        break;
+
+    case StoveTutorialStage::TurnOnStove:
         window.draw(knobIndicator);
+        break;
+
+    case StoveTutorialStage::DragIngredient:
+        window.draw(ingredientArrow);   // or potArrow if reusing it
+        break;
+
+    default:
+        break;
     }
 
     for (auto& smoke : smokeParticles)
