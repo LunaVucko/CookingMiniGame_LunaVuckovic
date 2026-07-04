@@ -2,10 +2,39 @@
 #include "PlayState.h"
 #include <iostream>
 #include <cmath>
+#include "TutorialState.h"
 
 
-KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manager)
+KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manager), cookbookText(font)
 {
+    if (!font.openFromFile("Fonts/Super Starfish.ttf"))
+    {
+        std::cout << "Failed to load font\n";
+    }
+
+    //cookbookbutton
+    cookbookButton.setSize({ 150.f, 50.f });
+    cookbookButton.setPosition({ 350.f,150.f });
+    cookbookButton.setFillColor(sf::Color(34, 139, 34));
+
+
+
+    cookbookText.setFont(font);
+    cookbookText.setCharacterSize(22);
+    cookbookText.setFillColor(sf::Color::White);
+    cookbookText.setString("CookBook");
+
+    sf::FloatRect bounds = cookbookText.getLocalBounds();
+    cookbookText.setOrigin({
+        bounds.position.x + bounds.size.x / 2.f,
+        bounds.position.y + bounds.size.y / 2.f
+        });
+
+    cookbookText.setPosition({
+         cookbookButton.getPosition().x + cookbookButton.getSize().x / 2.f,
+           cookbookButton.getPosition().y + cookbookButton.getSize().y / 2.f
+        });
+    
     if (!texture.loadFromFile("Texture/counter_layout.png")) // <= background
     {
         std::cout << "Failed to load counter texture\n";
@@ -140,6 +169,16 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 (float)mouse->position.x,
                 (float)mouse->position.y
             );
+
+            if (cookbookButton.getGlobalBounds().contains(mousePos))
+            {
+                manager.setState(std::make_unique<TutorialState>(
+                    manager,
+                    manager.tutorialPages,
+                    TutorialReturn::Counter));
+
+                return;
+            }
 
             Item* clickedItem = manager.inventory.getItemAt(mousePos);
 
@@ -607,6 +646,10 @@ void KitchenCounterState::draw(sf::RenderWindow& window)
 {
     window.draw(background);
 
+    window.draw(cookbookButton);
+    window.draw(cookbookText);
+
+
     // Inventory bar <= top inventory
     manager.inventory.draw(window);
 
@@ -624,6 +667,7 @@ void KitchenCounterState::draw(sf::RenderWindow& window)
     {
         window.draw(tool.sprite);
     }
+
 
     //animation
     if (isAnimating && animationSprite.has_value())
@@ -659,6 +703,9 @@ void KitchenCounterState::draw(sf::RenderWindow& window)
     default:
         break;
     }
+
+
+ 
 
     /*    sf::RectangleShape debug;
     debug.setPosition( cuttingBoardArea.position);

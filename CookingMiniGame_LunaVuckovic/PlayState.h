@@ -19,6 +19,12 @@ private:
 
     bool mouseInitialized = false;
 
+    //tutoial buton
+
+    sf::Font font;
+    sf::Text cookbookText;
+    sf::RectangleShape cookbookButton;
+
     //Inventory inventory;
     //sf::Texture ingredientsTexture;
 

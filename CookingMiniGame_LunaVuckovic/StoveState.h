@@ -29,6 +29,12 @@ private:
     //Inventory inventory;
 
 
+       //tutoial buton
+
+    sf::Font font;
+    sf::Text cookbookText;
+    sf::RectangleShape cookbookButton;
+
     // Tutorial indicator
 
     StoveTutorialStage stoveTutorialStage = StoveTutorialStage::DragPot;

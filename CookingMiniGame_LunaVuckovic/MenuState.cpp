@@ -44,23 +44,11 @@ void MenuState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                 sf::sleep(sf::milliseconds(850));
 
                // manager.setState(std::make_unique<PlayState>(manager)); // PLAY
-                manager.setState(
-                    std::unique_ptr<GameState>(
-                        std::make_unique<TutorialState>(
-                            manager,
-                            std::vector<std::string>{
-                        "Texture/tutorial_screens_two_pages_cover_final.png",
-                        "Texture/tutorial_screens_two_pages_first_final.png",
-                        "Texture/tutorial_screens_two_pages_second_final.png",
-                        "Texture/tutorial_screens_two_pages_third_final.png",
-                        "Texture/tutorial_screens_two_pages_fourth_final.png",
-                        "Texture/tutorial_screens_two_pages_fifth_final.png",
-                        "Texture/tutorial_screens_two_sixth_second.png"
-
-                }
-                        )
-                    )
-                );
+                manager.setState(std::make_unique<TutorialState>(
+                    manager,
+                    manager.tutorialPages,
+                    TutorialReturn::StartGame
+                ));
             }
 
             if (x == 1)

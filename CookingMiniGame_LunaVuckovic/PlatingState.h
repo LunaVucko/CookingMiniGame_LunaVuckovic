@@ -12,6 +12,13 @@ private:
 
     StateManager& manager;
 
+    //tutoial buton
+
+    sf::Font font;
+    sf::Text cookbookText;
+    sf::RectangleShape cookbookButton;
+
+
     sf::RectangleShape background;
 
     std::unique_ptr<Pot> pot;

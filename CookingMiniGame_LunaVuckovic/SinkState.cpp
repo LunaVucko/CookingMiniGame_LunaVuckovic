@@ -2,9 +2,38 @@
 #include "PlayState.h"
 #include <iostream>
 #include <SFML/System/Angle.hpp>
+#include "TutorialState.h"
 
-SinkState::SinkState(StateManager& manager) : manager(manager)
+SinkState::SinkState(StateManager& manager) : manager(manager), cookbookText(font)
 {
+
+    if (!font.openFromFile("Fonts/Super Starfish.ttf"))
+    {
+        std::cout << "Failed to load font\n";
+    }
+
+    //cookbookbutton
+    cookbookButton.setSize({ 150.f, 50.f });
+    cookbookButton.setPosition({ 150.f,150.f });
+    cookbookButton.setFillColor(sf::Color(34, 139, 34));
+
+
+
+    cookbookText.setFont(font);
+    cookbookText.setCharacterSize(22);
+    cookbookText.setFillColor(sf::Color::White);
+    cookbookText.setString("CookBook");
+
+    sf::FloatRect bounds = cookbookText.getLocalBounds();
+    cookbookText.setOrigin({
+        bounds.position.x + bounds.size.x / 2.f,
+        bounds.position.y + bounds.size.y / 2.f
+        });
+
+    cookbookText.setPosition({
+         cookbookButton.getPosition().x + cookbookButton.getSize().x / 2.f,
+           cookbookButton.getPosition().y + cookbookButton.getSize().y / 2.f
+        });
 
     background.setSize({ 960, 720 });
    // background.setTexture(&texture);
@@ -121,6 +150,15 @@ void SinkState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         {
             sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
 
+            if (cookbookButton.getGlobalBounds().contains(mousePos))
+            {
+                manager.setState(std::make_unique<TutorialState>(
+                    manager,
+                    manager.tutorialPages,
+                    TutorialReturn::Sink));
+
+                return;
+            }
 
             //pick up the jug
             if (jug && jug->sprite.getGlobalBounds().contains(mousePos))
@@ -426,6 +464,10 @@ void SinkState::draw(sf::RenderWindow& window)
     default:
         break;
     }
+
+    window.draw(cookbookButton);
+    window.draw(cookbookText);
+
 
     /*
     *   // debug sink

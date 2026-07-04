@@ -3,9 +3,13 @@
 #include "PlayState.h"
 
 #include <iostream>
+#include "SinkState.h"
+#include "StoveState.h"
+#include "KitchenCounterState.h"
+#include "PlatingState.h"
 
-TutorialState::TutorialState(StateManager& manager, std::vector<std::string> images)
-    : manager(manager), pages(std::move(images)), nextText(font), skipText(font), previousText(font)
+TutorialState::TutorialState(StateManager& manager, std::vector<std::string> images, TutorialReturn mode)
+    : manager(manager), pages(std::move(images)), returnMode(mode), nextText(font), skipText(font), previousText(font)
 {
     manager.pauseTimer = true;
     manager.showTimer = false;
@@ -160,7 +164,29 @@ void TutorialState::handleEvent(sf::RenderWindow& window, const sf::Event& event
     {
         skipSound.value().play();
         sf::sleep(sf::milliseconds(650));
-        manager.setState(std::make_unique<PlayState>(manager));
+        switch (returnMode)
+        {
+        case TutorialReturn::StartGame:
+        case TutorialReturn::Play:
+            manager.setState(std::make_unique<PlayState>(manager));
+            break;
+
+        case TutorialReturn::Sink:
+            manager.setState(std::make_unique<SinkState>(manager));
+            break;
+
+        case TutorialReturn::Stove:
+            manager.setState(std::make_unique<StoveState>(manager));
+            break;
+
+        case TutorialReturn::Counter:
+            manager.setState(std::make_unique<KitchenCounterState>(manager));
+            break;
+
+        case TutorialReturn::Plating:
+            manager.setState(std::make_unique<PlatingState>(manager));
+            break;
+        }
         return;
     }
 
@@ -196,7 +222,29 @@ void TutorialState::handleEvent(sf::RenderWindow& window, const sf::Event& event
         // wait a tiny bit before switching state
         sf::sleep(sf::milliseconds(650));
 
-        manager.setState(std::make_unique<PlayState>(manager));
+        switch (returnMode)
+        {
+        case TutorialReturn::StartGame:
+        case TutorialReturn::Play:
+            manager.setState(std::make_unique<PlayState>(manager));
+            break;
+
+        case TutorialReturn::Sink:
+            manager.setState(std::make_unique<SinkState>(manager));
+            break;
+
+        case TutorialReturn::Stove:
+            manager.setState(std::make_unique<StoveState>(manager));
+            break;
+
+        case TutorialReturn::Counter:
+            manager.setState(std::make_unique<KitchenCounterState>(manager));
+            break;
+
+        case TutorialReturn::Plating:
+            manager.setState(std::make_unique<PlatingState>(manager));
+            break;
+        }
         return;
     }
     pageSound.value().play();

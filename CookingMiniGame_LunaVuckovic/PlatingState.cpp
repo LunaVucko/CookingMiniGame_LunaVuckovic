@@ -2,10 +2,40 @@
 #include "PlayState.h"
 #include "ResultState.h"
 #include <iostream>
+#include "TutorialState.h"
 
 PlatingState::PlatingState(StateManager& manager)
-    : manager(manager)
+    : manager(manager), cookbookText(font)
 {
+
+    if (!font.openFromFile("Fonts/Super Starfish.ttf"))
+    {
+        std::cout << "Failed to load font\n";
+    }
+
+    //cookbookbutton
+    cookbookButton.setSize({ 150.f, 50.f });
+    cookbookButton.setPosition({ 150.f,150.f });
+    cookbookButton.setFillColor(sf::Color(34, 139, 34));
+
+
+
+    cookbookText.setFont(font);
+    cookbookText.setCharacterSize(22);
+    cookbookText.setFillColor(sf::Color::White);
+    cookbookText.setString("CookBook");
+
+    sf::FloatRect bounds = cookbookText.getLocalBounds();
+    cookbookText.setOrigin({
+        bounds.position.x + bounds.size.x / 2.f,
+        bounds.position.y + bounds.size.y / 2.f
+        });
+
+    cookbookText.setPosition({
+         cookbookButton.getPosition().x + cookbookButton.getSize().x / 2.f,
+           cookbookButton.getPosition().y + cookbookButton.getSize().y / 2.f
+        });
+
     background.setSize({ 960.f, 720.f });
     background.setTexture(&manager.platingTexture);
 
@@ -57,6 +87,15 @@ void PlatingState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
         if (mouse->button == sf::Mouse::Button::Left)
         {
+            if (cookbookButton.getGlobalBounds().contains(mousePos))
+            {
+                manager.setState(std::make_unique<TutorialState>(
+                    manager,
+                    manager.tutorialPages,
+                    TutorialReturn::Plating));
+
+                return;
+            }
            
             if (ladle && ladle->sprite.getGlobalBounds().contains(mousePos))
             {
@@ -215,5 +254,10 @@ void PlatingState::draw(sf::RenderWindow& window)
     {
         window.draw(ladle->sprite);
     }
+
+    window.draw(cookbookButton);
+    window.draw(cookbookText);
+
+
 
 }

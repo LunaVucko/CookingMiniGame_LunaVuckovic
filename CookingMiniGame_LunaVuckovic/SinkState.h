@@ -32,6 +32,13 @@ private:
     // knob area
     sf::FloatRect knobArea;
 
+    //tutoial buton
+
+    sf::Font font;
+    sf::Text cookbookText;
+    sf::RectangleShape cookbookButton;
+
+
     // Tutorial knob indicator
     sf::RectangleShape knobIndicator;
     float indicatorRotation = 0.f;

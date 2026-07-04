@@ -4,9 +4,38 @@
 #include "KitchenCounterState.h"
 #include "MenuState.h"
 #include <iostream>
+#include "TutorialState.h"
 
-PlayState::PlayState(StateManager& manager) : manager(manager)
+PlayState::PlayState(StateManager& manager) : manager(manager), cookbookText(font)
 {
+    if (!font.openFromFile("Fonts/Super Starfish.ttf"))
+    {
+        std::cout << "Failed to load font\n";
+    }
+
+    //cookbookbutton
+    cookbookButton.setSize({ 150.f, 50.f });
+    cookbookButton.setPosition({ 350.f,150.f });
+    cookbookButton.setFillColor(sf::Color(34, 139, 34));
+
+ 
+
+    cookbookText.setFont(font);
+    cookbookText.setCharacterSize(22);
+    cookbookText.setFillColor(sf::Color::White);
+    cookbookText.setString("CookBook");
+
+    sf::FloatRect bounds = cookbookText.getLocalBounds();
+    cookbookText.setOrigin({
+        bounds.position.x + bounds.size.x / 2.f,
+        bounds.position.y + bounds.size.y / 2.f
+        });
+
+    cookbookText.setPosition({
+         cookbookButton.getPosition().x + cookbookButton.getSize().x / 2.f,
+           cookbookButton.getPosition().y + cookbookButton.getSize().y / 2.f
+        });
+
     if (!texture.loadFromFile("Texture/game_photo.png"))
     {
         std::cout << "Failed to load kitchen background\n";
@@ -40,6 +69,7 @@ PlayState::PlayState(StateManager& manager) : manager(manager)
     kitchenCounterArea = sf::FloatRect({ 640.f, 0.f }, { 320.f, 720.f - inventoryHeight}); //position of where to click the counter in the full kitchen layout
     sinkArea = sf::FloatRect({ 0.f, 0.f }, { 220.f, 720.f - inventoryHeight}); //position of where to click the sink in the full kitchen layout
 
+   
 }
 
 void PlayState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
@@ -72,6 +102,16 @@ void PlayState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
             
             if (manager.inventory.contains(mousePos))
                 return;
+
+            if (cookbookButton.getGlobalBounds().contains(mousePos))
+            {
+                manager.setState(std::make_unique<TutorialState>(
+                    manager,
+                    manager.tutorialPages,
+                    TutorialReturn::Play));
+
+                return;
+            }
 
             if (sinkArea.contains(mousePos))
             {
@@ -134,14 +174,22 @@ void PlayState::update()
 
 void PlayState::draw(sf::RenderWindow& window)
 {
+
+ 
     window.draw(background);
 
     //inventory
 
     manager.inventory.draw(window);
 
+
     
     sf::RectangleShape debugRect;
+
+    window.draw(cookbookButton);
+    window.draw(cookbookText);
+   
+   
 
     /*
     *     //Sink (Left - blue)

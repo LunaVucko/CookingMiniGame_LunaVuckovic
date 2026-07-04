@@ -37,6 +37,12 @@ private:
     sf::RectangleShape toolCursor;
     bool showToolCursor = false;
 
+    //tutoial buton
+
+    sf::Font font;
+    sf::Text cookbookText;
+    sf::RectangleShape cookbookButton;
+
     //turoial
 
     sf::RectangleShape tutorialArrow;

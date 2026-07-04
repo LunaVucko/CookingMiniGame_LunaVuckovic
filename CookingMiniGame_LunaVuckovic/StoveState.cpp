@@ -4,10 +4,39 @@
 #include <iostream>
 #include "PlatingState.h"
 #include <SFML/System/Angle.hpp>
+#include "TutorialState.h"
 
-StoveState::StoveState(StateManager& manager) : manager(manager)
+StoveState::StoveState(StateManager& manager) : manager(manager), cookbookText(font)
 {
  
+    if (!font.openFromFile("Fonts/Super Starfish.ttf"))
+    {
+        std::cout << "Failed to load font\n";
+    }
+
+    //cookbookbutton
+    cookbookButton.setSize({ 150.f, 50.f });
+    cookbookButton.setPosition({ 100.f,150.f });
+    cookbookButton.setFillColor(sf::Color(34, 139, 34));
+
+
+
+    cookbookText.setFont(font);
+    cookbookText.setCharacterSize(22);
+    cookbookText.setFillColor(sf::Color::White);
+    cookbookText.setString("CookBook");
+
+    sf::FloatRect bounds = cookbookText.getLocalBounds();
+    cookbookText.setOrigin({
+        bounds.position.x + bounds.size.x / 2.f,
+        bounds.position.y + bounds.size.y / 2.f
+        });
+
+    cookbookText.setPosition({
+         cookbookButton.getPosition().x + cookbookButton.getSize().x / 2.f,
+           cookbookButton.getPosition().y + cookbookButton.getSize().y / 2.f
+        });
+
 
     background.setSize({ 960, 720 });
    // background.setTexture(&manager.stoveEmptyTexture);
@@ -163,6 +192,8 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
 
         if (mouse->button == sf::Mouse::Button::Left)
         {
+
+
             sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
 
 
@@ -202,7 +233,20 @@ void StoveState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
         if (!mouse || mouse->button != sf::Mouse::Button::Left)
             return;
 
+
+
+
         sf::Vector2f mousePos((float)mouse->position.x, (float)mouse->position.y);
+
+        if (cookbookButton.getGlobalBounds().contains(mousePos))
+        {
+            manager.setState(std::make_unique<TutorialState>(
+                manager,
+                manager.tutorialPages,
+                TutorialReturn::Stove));
+
+            return;
+        }
 
         if (manager.stovePot && manager.stovePot->isDragging)
         {
@@ -713,6 +757,11 @@ void StoveState::draw(sf::RenderWindow& window)
     {
         window.draw(smoke.shape);
     }
+
+    window.draw(cookbookButton);
+    window.draw(cookbookText);
+
+
 
   /*  // debug
     sf::RectangleShape debug;

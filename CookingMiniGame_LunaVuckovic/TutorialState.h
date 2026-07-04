@@ -5,12 +5,22 @@
 #include <string>
 #include "GameState.h"
 
+enum class TutorialReturn
+{
+    StartGame,
+    Play,
+    Sink,
+    Stove,
+    Counter,
+    Plating
+};
+
 class StateManager;
 
 class TutorialState : public GameState
 {
 public:
-    TutorialState(StateManager& manager, std::vector<std::string> images);
+    TutorialState(StateManager& manager, std::vector<std::string> images, TutorialReturn mode = TutorialReturn::StartGame);
 
     void handleEvent(sf::RenderWindow& window, const sf::Event& event);
     void update();
@@ -18,6 +28,8 @@ public:
 
 private:
     StateManager& manager;
+
+    TutorialReturn returnMode;
 
     sf::Texture texture;
     sf::RectangleShape image;

@@ -204,8 +204,6 @@ StateManager::StateManager()
     if (!amazingBuffer.loadFromFile("SFX/amazing.wav"))
         std::cout << "Failed to load amazing sound\n";
 
-
-
     knobOnSound.emplace(knobOnBuffer);
     knobOffSound.emplace(knobOffBuffer);
 
