@@ -5,7 +5,7 @@
 #include <iostream>
 
 TutorialState::TutorialState(StateManager& manager, std::vector<std::string> images)
-    : manager(manager), pages(std::move(images)), nextText(font), skipText(font)
+    : manager(manager), pages(std::move(images)), nextText(font), skipText(font), previousText(font)
 {
     manager.pauseTimer = true;
     manager.showTimer = false;
@@ -17,7 +17,7 @@ TutorialState::TutorialState(StateManager& manager, std::vector<std::string> ima
 
     //next button
     nextButton.setSize({ 150.f, 50.f });
-    nextButton.setPosition({ 780.f, 650.f });
+    nextButton.setPosition({ 780.f, 610.f });
     nextButton.setFillColor(sf::Color(186, 142, 35));
 
     nextText.setFont(font);
@@ -36,10 +36,33 @@ TutorialState::TutorialState(StateManager& manager, std::vector<std::string> ima
         nextButton.getPosition().y + nextButton.getSize().y / 2.f
         });
 
+    //previous button
+
+    previousButton.setSize({ 150.f, 50.f });
+    previousButton.setPosition({ 780.f, 550.f });
+    previousButton.setFillColor(sf::Color(144, 213, 255));
+
+    previousText.setFont(font);
+    previousText.setCharacterSize(22);
+    previousText.setFillColor(sf::Color::White);
+    previousText.setString("Previous");
+
+    sf::FloatRect previousBounds = previousText.getLocalBounds();
+
+    previousText.setOrigin({
+        previousBounds.position.x + previousBounds.size.x / 2.f,
+        previousBounds.position.y + previousBounds.size.y / 2.f
+        });
+
+    previousText.setPosition({
+        previousButton.getPosition().x + previousButton.getSize().x / 2.f,
+        previousButton.getPosition().y + previousButton.getSize().y / 2.f
+        });
+
     // skip button
 
     skipButton.setSize({ 150.f, 50.f });
-    skipButton.setPosition({ 780.f, 590.f });
+    skipButton.setPosition({ 780.f, 490.f });
     skipButton.setFillColor(sf::Color(34, 139, 34));
 
     skipText.setFont(font);
@@ -94,6 +117,29 @@ void TutorialState::loadPage(int index)
     image.setSize({ 960.f, 720.f });
     image.setTexture(&texture);
     image.setPosition({ 0.f, 0.f });
+
+    // Change button text on the last page
+    if (index == (int)pages.size() - 1)
+    {
+        nextText.setString("Cook!");
+    }
+    else
+    {
+        nextText.setString("Next");
+    }
+
+    // Re-center the text because the width changed
+    sf::FloatRect bounds = nextText.getLocalBounds();
+
+    nextText.setOrigin({
+        bounds.position.x + bounds.size.x / 2.f,
+        bounds.position.y + bounds.size.y / 2.f
+        });
+
+    nextText.setPosition({
+        nextButton.getPosition().x + nextButton.getSize().x / 2.f,
+        nextButton.getPosition().y + nextButton.getSize().y / 2.f
+        });
 }
 
 void TutorialState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
@@ -117,6 +163,22 @@ void TutorialState::handleEvent(sf::RenderWindow& window, const sf::Event& event
         manager.setState(std::make_unique<PlayState>(manager));
         return;
     }
+
+    // Previous button
+
+    if (previousButton.getGlobalBounds().contains(mousePos))
+    {
+        if (currentPage > 0)
+        {
+            pageSound.value().play();
+            sf::sleep(sf::milliseconds(450));
+
+            currentPage--;
+            loadPage(currentPage);
+        }
+
+        return;
+    }
     
     //next button
 
@@ -129,7 +191,7 @@ void TutorialState::handleEvent(sf::RenderWindow& window, const sf::Event& event
     // LAST PAGE and then go to PLAY
     if (currentPage == (int)pages.size() - 1)
     {
-        pageSound.value().play();
+        manager.enterSound.value().play();
 
         // wait a tiny bit before switching state
         sf::sleep(sf::milliseconds(650));
@@ -147,11 +209,21 @@ void TutorialState::handleEvent(sf::RenderWindow& window, const sf::Event& event
 
 void TutorialState::update()
 {
+    if (currentPage == 0)
+    {
+        previousButton.setFillColor(sf::Color(120, 120, 120));
+    }
+    else
+    {
+        previousButton.setFillColor(sf::Color(70, 130, 180));
+    }
 }
 
 void TutorialState::draw(sf::RenderWindow& window)
 {
     window.draw(image);
+    window.draw(previousButton);
+    window.draw(previousText);
     window.draw(nextButton);
     window.draw(nextText);
     window.draw(skipButton);

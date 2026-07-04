@@ -49,15 +49,13 @@ void MenuState::handleEvent(sf::RenderWindow& window, const sf::Event& event)
                         std::make_unique<TutorialState>(
                             manager,
                             std::vector<std::string>{
-                        "Texture/tutorial_screens_goal.png",
-                        "Texture/tutorial_screens_how.png",
-                        "Texture/tutorial_screen_full_layout.png",
-                        "Texture/tutorial_screens_sink.png",
-                        "Texture/tutorial_screens_cut.png",
-                        "Texture/tutorial_screens_cut_two.png",
-                        "Texture/tutorial_screens_stove.png",
-                        "Texture/tutorial_screens_stove_two_version_two.png",
-                        "Texture/tutorial_screens_plating.png"
+                        "Texture/tutorial_screens_two_pages_cover_final.png",
+                        "Texture/tutorial_screens_two_pages_first_final.png",
+                        "Texture/tutorial_screens_two_pages_second_final.png",
+                        "Texture/tutorial_screens_two_pages_third_final.png",
+                        "Texture/tutorial_screens_two_pages_fourth_final.png",
+                        "Texture/tutorial_screens_two_pages_fifth_final.png",
+                        "Texture/tutorial_screens_two_sixth_second.png"
 
                 }
                         )

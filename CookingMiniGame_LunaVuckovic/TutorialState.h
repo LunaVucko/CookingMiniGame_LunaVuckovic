@@ -27,6 +27,9 @@ private:
     sf::RectangleShape nextButton;
     sf::Text nextText;
 
+    sf::RectangleShape previousButton;
+    sf::Text previousText;
+
     sf::RectangleShape skipButton;
     sf::Text skipText;
 
