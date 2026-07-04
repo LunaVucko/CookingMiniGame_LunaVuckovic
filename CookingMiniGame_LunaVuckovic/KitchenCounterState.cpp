@@ -40,6 +40,14 @@ KitchenCounterState::KitchenCounterState(StateManager& manager) : manager(manage
         std::cout << "Failed to load counter texture\n";
     }
 
+    //creature
+
+    creature.setSize({ 280.f, 280.f });
+    creature.setTexture(&manager.creatureDefaultTexture);
+
+    // left side, slightly up
+    creature.setPosition({ 20.f, 120.f });
+
     background.setSize({ 960, 720 });
     background.setTexture(&texture);
     
@@ -186,6 +194,10 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
             if (dynamic_cast<Jug*>(clickedItem))
             {
                 manager.wrongBuzzSound.value().play();
+
+                setCreatureMood(CreatureMood::Angry);
+                creatureClock.restart();
+
                 std::cout << "Can't use the jug here!\n";
             }
             else if (clickedItem && currentTool == ToolType::None)
@@ -203,6 +215,9 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 if (tool.sprite.getGlobalBounds().contains(mousePos))
                 {
                     currentTool = tool.type;
+
+                    setCreatureMood(CreatureMood::Scared);
+                    creatureClock.restart();
 
                     showToolCursor = true;
 
@@ -348,6 +363,10 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                             manager.wrongBuzzSound.value().play();
                             std::cout << "Already cut!\n";
                             currentTool = ToolType::None;
+
+                            setCreatureMood(CreatureMood::Angry);
+                            creatureClock.restart();
+
                             showToolCursor = false;
                             window.setMouseCursorVisible(true);
                         }
@@ -366,6 +385,9 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                             }
 
                             cutSound.value().play();
+
+                            setCreatureMood(CreatureMood::Happy);
+                            creatureClock.restart();
 
                             // START CUT ANIMATION
                             isAnimating = true;
@@ -388,6 +410,10 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                             manager.wrongBuzzSound.value().play();
                             std::cout << "Can't cut yet!\n";
                             currentTool = ToolType::None;
+
+                            setCreatureMood(CreatureMood::Angry);
+                            creatureClock.restart();
+
                             showToolCursor = false;
                             window.setMouseCursorVisible(true);
                         }
@@ -400,6 +426,10 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                     if (selectedIngredient->state == IngredientState::Peeled)
                     {
                         manager.wrongBuzzSound.value().play();
+
+                        setCreatureMood(CreatureMood::Angry);
+                        creatureClock.restart();
+
                         std::cout << "Already peeled!\n";
                         currentTool = ToolType::None;
                         showToolCursor = false;
@@ -421,6 +451,9 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         }
                         peelSound.value().play();
 
+                        setCreatureMood(CreatureMood::Happy);
+                        creatureClock.restart();
+
                         // START PEEL ANIMATION
                         isAnimating = true;
                         animationTool = ToolType::Peeler;
@@ -441,6 +474,10 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                         manager.wrongBuzzSound.value().play();
                         std::cout << "Can't peel this!\n";
                         currentTool = ToolType::None;
+
+                        setCreatureMood(CreatureMood::Angry);
+                        creatureClock.restart();
+
                         showToolCursor = false;
                         window.setMouseCursorVisible(true);
                     }
@@ -464,6 +501,10 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
                 item->sprite.setScale({ 0.5f, 0.5f });
 
                 manager.placeSound.value().play();
+
+                setCreatureMood(CreatureMood::SideEye);
+                creatureClock.restart();
+
 
                 counterItems.push_back(move(item));
 
@@ -536,6 +577,12 @@ void KitchenCounterState::handleEvent(sf::RenderWindow& window, const sf::Event&
 
 void KitchenCounterState::update()
 {
+    if (creatureMood != CreatureMood::Default &&
+        creatureClock.getElapsedTime().asSeconds() > creatureDuration)
+    {
+        setCreatureMood(CreatureMood::Default);
+    }
+
     hintAnimTime += 0.003f;
 
     if (counterTutorialStage == CounterTutorialStage::DragToBoard)
@@ -646,6 +693,8 @@ void KitchenCounterState::draw(sf::RenderWindow& window)
 {
     window.draw(background);
 
+    window.draw(creature);
+
     window.draw(cookbookButton);
     window.draw(cookbookText);
 
@@ -715,5 +764,39 @@ void KitchenCounterState::draw(sf::RenderWindow& window)
     window.draw(debug);*/
     // debug
 
+}
+
+void KitchenCounterState::setCreatureMood(CreatureMood mood)
+{
+
+    std::cout << "Changing mood...\n";
+
+
+    creatureMood = mood;
+
+    switch (mood)
+    {
+    case CreatureMood::Default:
+        creature.setTexture(&manager.creatureDefaultTexture);
+        break;
+
+    case CreatureMood::Happy:
+        creature.setTexture(&manager.creatureHappyTexture);
+        break;
+
+    case CreatureMood::Angry:
+        creature.setTexture(&manager.creatureAngryTexture);
+        break;
+
+    case CreatureMood::Scared:
+        creature.setTexture(&manager.creatureScaredTexture);
+        break;
+
+    case CreatureMood::SideEye:
+        creature.setTexture(&manager.creatureSideEyeTexture);
+        break;
+    }
+
+    std::cout << "Mood changed.\n";
 }
 

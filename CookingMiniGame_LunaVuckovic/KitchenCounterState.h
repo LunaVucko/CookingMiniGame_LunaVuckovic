@@ -10,6 +10,15 @@
 #include <SFML/Audio.hpp>
 #include "counterTutorialStage.h"
 
+enum class CreatureMood
+{
+    Default,
+    Happy,
+    Angry,
+    Scared,
+    SideEye
+};
+
 class KitchenCounterState : public GameState
 {
 private:
@@ -21,6 +30,13 @@ private:
 
     // Inventory
    // Inventory inventory; //top inventory <= ingredients
+
+    // Creature
+    sf::RectangleShape creature;
+    CreatureMood creatureMood = CreatureMood::Default;
+
+    sf::Clock creatureClock;
+    float creatureDuration = 1.5f;
 
     // Cutting board
     sf::FloatRect cuttingBoardArea;
@@ -109,5 +125,7 @@ public:
     void handleEvent(sf::RenderWindow& window, const sf::Event& event) override;
     void update() override;
     void draw(sf::RenderWindow& window) override;
+
+    void setCreatureMood(CreatureMood mood);
     
 };

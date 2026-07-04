@@ -112,6 +112,14 @@ public:
 
     sf::Texture platingTexture;
 
+    // Counter creature
+
+    sf::Texture creatureDefaultTexture;
+    sf::Texture creatureHappyTexture;
+    sf::Texture creatureAngryTexture;
+    sf::Texture creatureScaredTexture;
+    sf::Texture creatureSideEyeTexture;
+
     //music
 
     sf::Music menuMusic;

@@ -103,6 +103,23 @@ StateManager::StateManager()
         return;
     }
 
+    //creature sprites
+
+    if (!creatureDefaultTexture.loadFromFile("Texture/creature_default.png"))
+        std::cout << "Failed creature default\n";
+
+    if (!creatureHappyTexture.loadFromFile("Texture/creature_happy.png"))
+        std::cout << "Failed creature happy\n";
+
+    if (!creatureAngryTexture.loadFromFile("Texture/creature_angry.png"))
+        std::cout << "Failed creature angry\n";
+
+    if (!creatureScaredTexture.loadFromFile("Texture/creature_scared.png"))
+        std::cout << "Failed creature scared\n";
+
+    if (!creatureSideEyeTexture.loadFromFile("Texture/creature_sideeye.png"))
+        std::cout << "Failed creature side eye\n";
+
     // stove backrounds
 
     if (!stoveEmptyTexture.loadFromFile("Texture/stove_layout.png"))
